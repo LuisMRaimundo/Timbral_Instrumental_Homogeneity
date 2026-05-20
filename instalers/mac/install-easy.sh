@@ -5,8 +5,8 @@ set -euo pipefail
 INSTALL_ROOT="${HOME}/Applications/Orchomogeneity"
 APP_DIR="${INSTALL_ROOT}/app"
 VENV_DIR="${INSTALL_ROOT}/venv"
-GITHUB_ZIP="https://github.com/LuisMRaimundo/orchomogeneity/archive/refs/heads/main.zip"
-ZIP_FOLDER="orchomogeneity-main"
+GITHUB_ZIP="https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/archive/refs/heads/main.zip"
+ZIP_FOLDER="Orchomogeneity_Analyser-main"
 
 echo "=== Orchomogeneity — Installer (macOS) ==="
 
