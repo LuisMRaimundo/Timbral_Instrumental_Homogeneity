@@ -2,7 +2,7 @@
 
 ## End users (recommended)
 
-1. Download this repository (or only the `instalers/windows` folder from [GitHub](https://github.com/LuisMRaimundo/orchomogeneity)).
+1. Download this repository (or only the `instalers/windows` folder from [GitHub](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)).
 2. Double-click **`INSTALL.bat`**.
 3. Wait until the window reports success (first run: **10–25 minutes**).
 4. Start the app from **Desktop** or **Start menu → Orchomogeneity**.

@@ -1,8 +1,8 @@
 # Orchomogeneity — Windows installer constants
 $script:OrchomogeneityConfig = @{
-    GitHubRepoUrl   = 'https://github.com/LuisMRaimundo/orchomogeneity'
-    GitHubZipUrl    = 'https://github.com/LuisMRaimundo/orchomogeneity/archive/refs/heads/main.zip'
-    GitHubZipFolder = 'orchomogeneity-main'
+    GitHubRepoUrl   = 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser'
+    GitHubZipUrl    = 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/archive/refs/heads/main.zip'
+    GitHubZipFolder = 'Orchomogeneity_Analyser-main'
     GitHubBranch    = 'main'
     AppName         = 'Orchomogeneity'
     PythonVersion   = '3.11'

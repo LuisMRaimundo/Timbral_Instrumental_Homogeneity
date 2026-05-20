@@ -54,3 +54,4 @@ def test_append_hti_symbolic_blend_series_row_disabled_and_enabled() -> None:
         nan_value=float("nan"),
     )
     assert results2["literal_interval_semitone_pair_mass"][0].get("2", 0) > 0.99
+    assert isinstance(results2["interval_class_profile_display"][0], dict)

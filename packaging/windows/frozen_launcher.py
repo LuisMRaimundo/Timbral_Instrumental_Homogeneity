@@ -51,7 +51,7 @@ def _configure_runtime() -> None:
 def main() -> None:
     _configure_runtime()
     from homogeneity_analyser.ui.gradio_app import build_demo
-    from homogeneity_analyser.utils.output_paths import cleanup_stale_exports
+    from homogeneity_analyser.utils.output_paths import cleanup_stale_exports, gradio_launch_kwargs
 
     cleanup_stale_exports()
     host = (os.environ.get("GRADIO_SERVER_NAME") or "127.0.0.1").strip() or "127.0.0.1"
@@ -61,10 +61,11 @@ def main() -> None:
     print(f"Homogeneity Analyser (frozen): http://{host}:{port}/ (browser will open if supported)")
     # Same Blocks entry as dev: ``python -m homogeneity_analyser`` → ``build_demo()`` (H_TI + Symbolic inspection).
     build_demo().launch(
-        server_name=host,
-        server_port=port,
-        inbrowser=True,
-        show_error=True,
+        **gradio_launch_kwargs(
+            server_name=host,
+            server_port=port,
+            inbrowser=True,
+        )
     )
 
 

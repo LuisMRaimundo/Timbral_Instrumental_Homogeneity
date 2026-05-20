@@ -36,6 +36,24 @@ def test_hti_plot_title_includes_mode() -> None:
     assert "4.0" in t
 
 
+def test_build_hti_csv_rows_all_columns_same_length() -> None:
+    from pathlib import Path
+
+    from homogeneity_analyser.services.analysis_service_hti import run_symbolic_ti_homogeneity_analysis
+
+    fx = Path("tests/fixtures/musicxml/golden_two_violins_unison_c5.musicxml")
+    p = build_hti_analysis_params_from_ui(include_symbolic_blend_potential=True)
+    out = run_symbolic_ti_homogeneity_analysis(str(fx), p)
+    assert out.get("error") is None
+    results = out["results"]
+    n = len(results["t"])
+    for col in HTI_CSV_COLUMNS:
+        key = "t" if col == "t_quarterLength" else col
+        assert len(results[key]) == n, f"{col}: {len(results[key])} != {n}"
+    rows = build_hti_csv_rows_from_results(results)
+    assert len(rows) == n
+
+
 def test_build_hti_csv_rows_minimal_results() -> None:
     results: dict = {"t": [0.0]}
     for col in HTI_CSV_COLUMNS:

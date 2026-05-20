@@ -580,7 +580,7 @@ HTI_SYMBOLIC_BLEND_CSV_JSON_DICT_KEYS: frozenset[str] = frozenset(
 _IVB_PROFILE_KEYS: tuple[str, ...] = tuple(
     k
     for k in HTI_SYMBOLIC_BLEND_SERIES_KEYS
-    if k.endswith("_profile") or k.endswith("_mass")
+    if k.endswith("_profile") or k.endswith("_mass") or k.endswith("_display")
 )
 
 

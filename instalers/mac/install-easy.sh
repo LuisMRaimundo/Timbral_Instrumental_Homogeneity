@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-click setup for macOS (non-expert). Repo: https://github.com/LuisMRaimundo/orchomogeneity
+# One-click setup for macOS (non-expert). Repo: https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
 set -euo pipefail
 
 INSTALL_ROOT="${HOME}/Applications/Orchomogeneity"

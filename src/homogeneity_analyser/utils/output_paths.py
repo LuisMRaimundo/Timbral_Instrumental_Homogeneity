@@ -12,6 +12,7 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
+from typing import Any
 
 _DEFAULT_SUBDIR = "homogeneity_analyser_exports"
 
@@ -22,6 +23,46 @@ def export_directory() -> Path:
     p = Path(env) if env else Path(tempfile.gettempdir()) / _DEFAULT_SUBDIR
     p.mkdir(parents=True, exist_ok=True)
     return p
+
+
+def gradio_allowed_paths() -> list[str]:
+    """
+    Directories Gradio may read/write for File/Download outputs.
+
+    Required when ``HOMOGENEITY_CACHE_DIR`` points outside cwd and system temp
+    (e.g. ``%LOCALAPPDATA%\\Orchomogeneity\\exports`` from ``run.bat``).
+    """
+    seen: set[str] = set()
+    out: list[str] = []
+    for raw in (
+        export_directory(),
+        Path.cwd(),
+        Path(tempfile.gettempdir()),
+        Path(os.environ.get("LOCALAPPDATA", "")) / "Orchomogeneity" / "exports",
+        Path(os.environ.get("LOCALAPPDATA", "")) / "HomogeneityAnalyser" / "exports",
+    ):
+        s = str(raw)
+        if not s or s in seen:
+            continue
+        try:
+            resolved = str(Path(s).resolve())
+        except OSError:
+            resolved = s
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        out.append(resolved)
+    return out
+
+
+def gradio_launch_kwargs(**overrides: Any) -> dict[str, Any]:
+    """Common ``Blocks.launch()`` options (``allowed_paths``, ``show_error``)."""
+    kw: dict[str, Any] = {
+        "allowed_paths": gradio_allowed_paths(),
+        "show_error": True,
+    }
+    kw.update(overrides)
+    return kw
 
 
 def new_export_path(prefix: str, suffix: str) -> str:

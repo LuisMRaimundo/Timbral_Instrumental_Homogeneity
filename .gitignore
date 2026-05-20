@@ -10,7 +10,6 @@ __pycache__/
 **/homogeneity_analyser.egg-info/
 # MkDocs static site output (local docs server / build)
 site/
-.mypy_cache/
 
 # Build / distribution trees (setuptools copy, PyInstaller, wheels, etc.)
 build/

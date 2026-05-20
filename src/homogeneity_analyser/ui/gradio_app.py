@@ -341,8 +341,10 @@ def build_demo() -> gr.Blocks:
 
 
 def main() -> None:
+    from homogeneity_analyser.utils.output_paths import gradio_launch_kwargs
+
     cleanup_stale_exports()
-    build_demo().launch()
+    build_demo().launch(**gradio_launch_kwargs(inbrowser=True))
 
 
 if __name__ == "__main__":

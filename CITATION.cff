@@ -6,8 +6,8 @@ type: software
 authors:
   - family-names: Raimundo
     given-names: Luís
-repository-code: 'https://github.com/LuisMRaimundo/orchomogeneity'
-url: 'https://github.com/LuisMRaimundo/orchomogeneity'
+repository-code: 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser'
+url: 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser'
 version: 2.0.0
 keywords:
   - MusicXML

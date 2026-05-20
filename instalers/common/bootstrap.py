@@ -194,11 +194,10 @@ def launch_gradio(py: Path) -> int:
         pass
 
     code = (
-        "from homogeneity_analyser.utils.output_paths import cleanup_stale_exports\n"
+        "from homogeneity_analyser.utils.output_paths import cleanup_stale_exports, gradio_launch_kwargs\n"
         "from homogeneity_analyser.ui.gradio_app import build_demo\n"
         "cleanup_stale_exports()\n"
-        f"build_demo().launch(server_name={GRADIO_HOST!r}, server_port={port}, "
-        "inbrowser=False, show_error=True)\n"
+        f"build_demo().launch(**gradio_launch_kwargs(server_name={GRADIO_HOST!r}, server_port={port}, inbrowser=False))\n"
     )
     return subprocess.call([str(py), "-c", code], cwd=PROJECT_ROOT, env=env)
 

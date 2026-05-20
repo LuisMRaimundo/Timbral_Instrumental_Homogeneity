@@ -57,17 +57,18 @@ def main() -> None:
     os.environ.setdefault("HOMOGENEITY_CACHE_DIR", str(Path(os.environ.get("LOCALAPPDATA", "")) / "HomogeneityAnalyser" / "exports"))
     Path(os.environ["HOMOGENEITY_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
 
-    from homogeneity_analyser.utils.output_paths import cleanup_stale_exports
+    from homogeneity_analyser.utils.output_paths import cleanup_stale_exports, gradio_launch_kwargs
     from homogeneity_analyser.ui.gradio_app import build_demo
 
     cleanup_stale_exports()
     url = f"http://{host}:{port}/"
     print(f"Homogeneity Analyser: binding {url} (browser will open if supported)")
     build_demo().launch(
-        server_name=host,
-        server_port=port,
-        inbrowser=True,
-        show_error=True,
+        **gradio_launch_kwargs(
+            server_name=host,
+            server_port=port,
+            inbrowser=True,
+        )
     )
 
 

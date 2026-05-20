@@ -6,7 +6,7 @@ echo.
 echo Orchomogeneity - automatic setup
 echo (Python + libraries + shortcuts)
 echo.
-echo GitHub: https://github.com/LuisMRaimundo/orchomogeneity
+echo GitHub: https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
 echo.
 echo Do not close this window until finished.
 echo.

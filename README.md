@@ -29,7 +29,7 @@ First end-user install may take **10–25 minutes** (Internet required).
 
 ## Installers (optional)
 
-**Repository:** https://github.com/LuisMRaimundo/orchomogeneity
+**Repository:** https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
 
 End users without Python: see [`instalers/`](instalers/) — especially on Windows, double-click **`instalers/windows/INSTALL.bat`** (installs Python 3.11, downloads this repo, installs libraries, creates shortcuts).
 
@@ -41,7 +41,7 @@ Reference installer layout (same pattern as [SoundSpectrAnalyse](https://github.
 | `instalers/mac/` | `install-easy.sh` | `build-all.sh` |
 | `instalers/linux/` | `install-easy.sh` | `build-all.sh` |
 
-Built `.exe` / `.app` / `.dmg` / `.tar.gz` files are **not** in git — use [GitHub Releases](https://github.com/LuisMRaimundo/orchomogeneity/releases) if you distribute frozen builds.
+Built `.exe` / `.app` / `.dmg` / `.tar.gz` files are **not** in git — use [GitHub Releases](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/releases) if you distribute frozen builds.
 
 Maintainer builds: [`packaging/windows/`](packaging/windows/).
 

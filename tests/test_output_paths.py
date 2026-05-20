@@ -3,7 +3,11 @@ from __future__ import annotations
 import os
 import unittest
 
-from homogeneity_analyser.utils.output_paths import export_directory, new_export_path
+from homogeneity_analyser.utils.output_paths import (
+    export_directory,
+    gradio_allowed_paths,
+    new_export_path,
+)
 
 
 class TestOutputPaths(unittest.TestCase):
@@ -19,6 +23,10 @@ class TestOutputPaths(unittest.TestCase):
     def test_export_directory_exists(self):
         d = export_directory()
         self.assertTrue(d.is_dir())
+
+    def test_gradio_allowed_paths_includes_export_directory(self):
+        exp = str(export_directory().resolve())
+        self.assertIn(exp, gradio_allowed_paths())
 
 
 if __name__ == "__main__":

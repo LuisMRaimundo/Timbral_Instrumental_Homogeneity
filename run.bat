@@ -1,23 +1,32 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
 
 if not exist "pyproject.toml" (
-    echo This script must stay next to pyproject.toml ^(repository root^).
+    echo Keep run.bat in the repository root ^(next to pyproject.toml^).
     pause
     exit /b 1
 )
 
-echo Starting Homogeneity Analyser ^(Gradio^)...
-echo Install once if needed: pip install -r requirements.txt
-echo.
-
-python -m homogeneity_analyser
-set "RC=%ERRORLEVEL%"
-if %RC% neq 0 (
-    echo.
-    echo Exit code: %RC%
-    echo If "No module named homogeneity_analyser", run: pip install -r requirements.txt
-    pause
+set "PYTHONPATH=%CD%\src"
+if not defined HOMOGENEITY_CACHE_DIR (
+    set "HOMOGENEITY_CACHE_DIR=%LOCALAPPDATA%\Orchomogeneity\exports"
 )
+if not exist "%HOMOGENEITY_CACHE_DIR%" mkdir "%HOMOGENEITY_CACHE_DIR%" 2>nul
+
+rem Quick dependency check (first run only installs; then starts Gradio + browser)
+python -c "import gradio, homogeneity_analyser" 2>nul
+if errorlevel 1 (
+    echo First run: installing libraries ^(one time, may take a few minutes^)...
+    python -m pip install -q -r requirements-install.txt
+    if errorlevel 1 (
+        echo Install failed. Try: pip install -r requirements-install.txt
+        pause
+        exit /b 1
+    )
+)
+
+python "%~dp0packaging\windows\launcher.py"
+set "RC=%ERRORLEVEL%"
+if %RC% neq 0 pause
 exit /b %RC%

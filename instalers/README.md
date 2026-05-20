@@ -1,6 +1,6 @@
 # Orchomogeneity — installers
 
-**Repository:** https://github.com/LuisMRaimundo/orchomogeneity
+**Repository:** https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
 
 This folder contains scripts to install **Orchomogeneity** for users **without prior Python setup**. Open the folder for your operating system:
 
@@ -15,7 +15,7 @@ Each subfolder includes a **README** with platform-specific steps.
 ## What the standard installer does
 
 1. Installs or detects **Python 3.10 or 3.11** (on Windows, installs automatically if missing).
-2. Fetches source from **https://github.com/LuisMRaimundo/orchomogeneity** (`main` branch).
+2. Fetches source from **https://github.com/LuisMRaimundo/Orchomogeneity_Analyser** (`main` branch).
 3. Creates an isolated environment and installs libraries from `requirements-install.txt`.
 4. Adds a **shortcut** to launch the **Gradio** interface (H-TI analyser).
 
@@ -23,7 +23,7 @@ The first run may take **10–25 minutes** (download plus scientific packages). 
 
 ## Not included in Git
 
-Folders `runtime/`, `build/`, `dist/`, `output/`, and compiled `.exe` / `.zip` / `.dmg` / `.tar.gz` artefacts are **not** committed. To distribute ready-made binaries, use [GitHub Releases](https://github.com/LuisMRaimundo/orchomogeneity/releases).
+Folders `runtime/`, `build/`, `dist/`, `output/`, and compiled `.exe` / `.zip` / `.dmg` / `.tar.gz` artefacts are **not** committed. To distribute ready-made binaries, use [GitHub Releases](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/releases).
 
 ## Portable builds (developers)
 
