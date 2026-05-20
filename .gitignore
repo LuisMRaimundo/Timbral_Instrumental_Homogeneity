@@ -1,0 +1,62 @@
+# Tests / Python
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+# Generated package / install metadata (never edit; never treat as authoritative)
+*.egg-info/
+.eggs/
+**/homogeneity_analyser.egg-info/
+# MkDocs static site output (local docs server / build)
+site/
+.mypy_cache/
+
+# Build / distribution trees (setuptools copy, PyInstaller, wheels, etc.)
+build/
+dist/
+**/build/
+**/dist/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Gradio local uploads / exports
+.gradio/
+
+# Windows distribution binaries (README in Homogeneity_analiser_install stays committed)
+Homogeneity_analiser_install/HomogeneityAnalyserSetup.exe
+Homogeneity_analiser_install/portable/
+
+# Optional: local env
+.env
+.venv/
+venv/
+
+# Editor
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local doc / manual exports (canonical sources are .md in repo root)
+*.mhtml
+docs.zip
+TECHNICAL_MANUAL.zip
+dist_wheel_test/
+recovery/
+
+# End-user installer runtime (portable Python, venvs) — not committed
+instalers/runtime/
+instalers/**/build/
+instalers/**/dist/
+instalers/**/output/
+
+# Copyrighted local references (never commit)
+private_sources/
+*.pdf
+.local_sources.yaml

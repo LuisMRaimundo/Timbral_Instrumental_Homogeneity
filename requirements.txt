@@ -1,0 +1,4 @@
+# Editable install with dev dependencies (tests, ruff, mypy, coverage).
+# From repo root:
+#   pip install -r requirements.txt
+-e ".[dev]"

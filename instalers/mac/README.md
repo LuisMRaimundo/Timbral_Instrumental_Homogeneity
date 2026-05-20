@@ -1,0 +1,24 @@
+# macOS installers — Orchomogeneity
+
+## End users
+
+1. Open Terminal in this folder (`instalers/mac/`).
+2. Run:
+   ```bash
+   chmod +x install-easy.sh
+   ./install-easy.sh
+   ```
+3. Launch **Orchomogeneity** from `~/Desktop/Orchomogeneity.command` or `~/Applications/Orchomogeneity/Launch-Orchomogeneity.command`.
+
+First run needs **Internet** and may take **10–25 minutes**.
+
+## Cloned repository
+
+```bash
+chmod +x install-and-run.sh setup-runtime.sh
+./install-and-run.sh
+```
+
+## Developers
+
+`./build-all.sh` — see `packaging/windows/` and publish binaries via **GitHub Releases**.

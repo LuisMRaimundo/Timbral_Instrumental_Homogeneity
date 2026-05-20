@@ -1,0 +1,3 @@
+# End-user install (no dev/test tools). Used by instalers/ scripts.
+# From repository root: pip install -r requirements-install.txt
+-e .
