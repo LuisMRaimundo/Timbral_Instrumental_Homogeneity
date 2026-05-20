@@ -47,16 +47,6 @@ Maintainer builds: [`packaging/windows/`](packaging/windows/).
 
 ---
 
-## Acknowledgements
-
-This project was developed by **Luís Raimundo** with the support and funding of the **Fundação para a Ciência e a Tecnologia (FCT)** and **Universidade NOVA de Lisboa**.
-
-**Funding DOI:** https://doi.org/10.54499/2020.08817.BD
-
-The author also gratefully acknowledges **Isabel Pires** for her support throughout the development of this work.
-
----
-
 ## Technical reference
 
 ---
@@ -249,3 +239,13 @@ All optional layers default **off** and **do not** change **`H_TI_core`**, **`H_
 - **`docs/METRIC_CODE_MAP.md`** — code entry points.
 - **`CURRENT_CODE_CHARACTERISTICS_REPORT.md`** — developer inventory aligned with the current product.
 - **`FINAL_VERIFICATION_REPORT.md`** — latest full-test / lint / doc-alignment verification pass.
+
+---
+
+## Acknowledgements
+
+This project was developed by Luís Raimundo with the support and funding of the Fundação para a Ciência e a Tecnologia (FCT) and Universidade NOVA de Lisboa.
+
+**Funding DOI:** https://doi.org/10.54499/2020.08817.BD
+
+The author also gratefully acknowledges Isabel Pires for her support throughout the development of this work.
