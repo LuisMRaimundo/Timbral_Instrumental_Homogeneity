@@ -26,8 +26,8 @@ New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
 
 Write-Host ''
 Write-Host '========================================' -ForegroundColor Cyan
-Write-Host ' Orchomogeneity — Installer' -ForegroundColor Cyan
-Write-Host ' ' $cfg.GitHubRepoUrl -ForegroundColor Cyan
+Write-Host '  Orchomogeneity - Installer' -ForegroundColor Cyan
+Write-Host '  ' $cfg.GitHubRepoUrl -ForegroundColor Cyan
 Write-Host '========================================' -ForegroundColor Cyan
 Write-Host ''
 
@@ -41,7 +41,7 @@ try {
 Python 3.10 or 3.11 is required and was not found.
 Run this installer again (it will install Python), or install from:
   https://www.python.org/downloads/
-Then tick 'Add python.exe to PATH'.
+Then enable Add python.exe to PATH.
 "@
     }
     Write-InstallLog "Using Python: $pythonExe"
@@ -64,15 +64,15 @@ Repo: $($cfg.GitHubRepoUrl)
 "@ | Set-Content -LiteralPath (Join-Path $InstallRoot 'install-info.txt') -Encoding UTF8
 
     Write-Host ''
-    Write-Host 'SUCCESS — Installation complete.' -ForegroundColor Green
-    Write-Host " Location: $InstallRoot"
-    Write-Host ' Start: Desktop or Start menu → Orchomogeneity'
+    Write-Host 'SUCCESS - Installation complete.' -ForegroundColor Green
+    Write-Host "  Location: $InstallRoot"
+    Write-Host '  Start: Desktop or Start menu - Orchomogeneity'
     Write-Host ''
 
     if (-not $NoLaunch) {
         $launch = Join-Path $InstallRoot 'Launch-Orchomogeneity.bat'
         if (Test-Path $launch) {
-            Write-InstallLog 'Launching Orchomogeneity…'
+            Write-InstallLog 'Launching Orchomogeneity...'
             Start-Process -FilePath $launch
         }
     }

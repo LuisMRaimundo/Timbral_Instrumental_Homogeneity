@@ -1,4 +1,4 @@
-# Orchomogeneity — Windows installer constants
+# Orchomogeneity - Windows installer constants
 $script:OrchomogeneityConfig = @{
     GitHubRepoUrl   = 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser'
     GitHubZipUrl    = 'https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/archive/refs/heads/main.zip'

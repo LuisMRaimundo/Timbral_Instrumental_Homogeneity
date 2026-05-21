@@ -1,3 +1,4 @@
+#Requires -Version 5.1
 # Shared helpers for Orchomogeneity Windows one-click install
 
 function Write-InstallLog {
@@ -6,48 +7,193 @@ function Write-InstallLog {
     if ($script:InstallLogPath) {
         Add-Content -LiteralPath $script:InstallLogPath -Value $line -Encoding UTF8
     }
-    if ($Level -eq 'ERROR') { Write-Host $Message -ForegroundColor Red }
-    elseif ($Level -eq 'WARN') { Write-Host $Message -ForegroundColor Yellow }
-    else { Write-Host $Message }
+    switch ($Level) {
+        'ERROR' { Write-Host $line -ForegroundColor Red }
+        'WARN'  { Write-Host $line -ForegroundColor Yellow }
+        default { Write-Host $line }
+    }
 }
 
-function Find-ExistingPython {
-    $candidates = @(
-        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
-        "$env:LOCALAPPDATA\Programs\Python\Python310\python.exe",
-        "$env:ProgramFiles\Python311\python.exe",
-        "$env:ProgramFiles\Python310\python.exe"
-    )
-    foreach ($p in $candidates) {
-        if (Test-Path $p) { return $p }
+function Refresh-SessionPath {
+    $machine = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+    $user = [Environment]::GetEnvironmentVariable('Path', 'User')
+    $env:Path = "$machine;$user"
+}
+
+function Test-PythonVersionOk {
+    param([string]$PythonExe)
+    if (-not (Test-Path -LiteralPath $PythonExe)) { return $false }
+    try {
+        $out = & $PythonExe -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>$null
+        if ($out -match '^3\.(\d+)$') {
+            $minor = [int]$Matches[1]
+            $cfg = $script:OrchomogeneityConfig
+            return ($minor -ge $cfg.PythonMinMinor -and $minor -le $cfg.PythonMaxMinor)
+        }
+    } catch { }
+    return $false
+}
+
+function Test-IsPythonPathCandidate {
+    param([string]$PythonExe)
+    if (-not $PythonExe) { return $false }
+    $normalized = $PythonExe.Replace('/', '\')
+    if ($normalized -match '\\WindowsApps\\') { return $false }
+    if ($normalized -match '\\Microsoft\\WindowsApps\\') { return $false }
+    if (-not (Test-Path -LiteralPath $PythonExe)) { return $false }
+    try {
+        if ((Get-Item -LiteralPath $PythonExe).Length -lt 1024) { return $false }
+    } catch { return $false }
+    return $true
+}
+
+function Get-KnownPythonCandidatePaths {
+    $candidates = @()
+    $localPython = Join-Path $env:LOCALAPPDATA 'Programs\Python'
+    foreach ($folder in @('Python311', 'Python310')) {
+        $candidates += Join-Path $localPython "$folder\python.exe"
     }
-    foreach ($name in @('python3.11', 'python3.10', 'python')) {
-        $cmd = Get-Command $name -ErrorAction SilentlyContinue
-        if (-not $cmd) { continue }
+    foreach ($root in @(${env:ProgramFiles}, ${env:ProgramFiles(x86)})) {
+        if (-not $root) { continue }
+        foreach ($folder in @('Python311', 'Python310')) {
+            $candidates += Join-Path $root "$folder\python.exe"
+        }
+    }
+    return $candidates | Where-Object { Test-IsPythonPathCandidate -PythonExe $_ }
+}
+
+function Resolve-PythonViaPyLauncher {
+    $pyCmd = Get-Command py -ErrorAction SilentlyContinue
+    if (-not $pyCmd) { return $null }
+    foreach ($tag in @('3.11', '3.10')) {
         try {
-            $minor = & $cmd.Source -c 'import sys; print(sys.version_info.minor)' 2>$null
-            if ([int]$minor -ge $script:OrchomogeneityConfig.PythonMinMinor -and
-                [int]$minor -le $script:OrchomogeneityConfig.PythonMaxMinor) {
-                return $cmd.Source
+            $exe = & $pyCmd.Source -$tag -c "import sys; print(sys.executable)" 2>$null
+            $exe = ($exe | Select-Object -First 1).Trim()
+            if ($exe -and (Test-IsPythonPathCandidate -PythonExe $exe) -and (Test-PythonVersionOk -PythonExe $exe)) {
+                return (Resolve-Path -LiteralPath $exe).Path
             }
         } catch { }
     }
     return $null
 }
 
+function Find-ExistingPython {
+    foreach ($exe in (Get-KnownPythonCandidatePaths)) {
+        if (Test-PythonVersionOk -PythonExe $exe) {
+            return (Resolve-Path -LiteralPath $exe).Path
+        }
+    }
+    $viaPy = Resolve-PythonViaPyLauncher
+    if ($viaPy) { return $viaPy }
+    $found = @()
+    foreach ($name in @('python', 'python3')) {
+        $cmd = Get-Command $name -ErrorAction SilentlyContinue
+        if ($cmd -and (Test-IsPythonPathCandidate -PythonExe $cmd.Source)) {
+            $found += $cmd.Source
+        }
+    }
+    $roots = @(
+        (Join-Path $env:LOCALAPPDATA 'Programs\Python'),
+        ${env:ProgramFiles},
+        ${env:ProgramFiles(x86)}
+    ) | Where-Object { $_ -and (Test-Path $_) }
+    foreach ($root in $roots) {
+        $found += Get-ChildItem -Path $root -Filter 'python.exe' -Recurse -Depth 3 -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty FullName
+    }
+    foreach ($exe in ($found | Select-Object -Unique)) {
+        if (-not (Test-IsPythonPathCandidate -PythonExe $exe)) { continue }
+        if (Test-PythonVersionOk -PythonExe $exe) { return (Resolve-Path -LiteralPath $exe).Path }
+    }
+    return $null
+}
+
+function Wait-ForPythonAfterInstall {
+    param([int]$TimeoutSeconds = 90)
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        Refresh-SessionPath
+        $py = Find-ExistingPython
+        if ($py) { return $py }
+        Start-Sleep -Seconds 2
+    }
+    return $null
+}
+
+function Test-PythonInstallerExitOk {
+    param([int]$ExitCode)
+    return ($ExitCode -eq 0 -or $ExitCode -eq 3010)
+}
+
 function Install-Python311 {
     $cfg = $script:OrchomogeneityConfig
-    $installer = Join-Path $env:TEMP "python-$($cfg.PythonVersion)-amd64.exe"
-    Write-InstallLog "Downloading Python $($cfg.PythonVersion) …"
-    Invoke-WebRequest -Uri $cfg.PythonInstallerUrl -OutFile $installer -UseBasicParsing
-    Write-InstallLog 'Installing Python (silent) …'
-    $args = @('/quiet', 'InstallAllUsers=0', 'PrependPath=1', 'Include_test=0')
-    $proc = Start-Process -FilePath $installer -ArgumentList $args -Wait -PassThru
-    if ($proc.ExitCode -ne 0) {
-        throw "Python installer exited with code $($proc.ExitCode)"
+    Write-InstallLog "Python 3.10-3.11 not found. Installing Python $($cfg.PythonVersion)..."
+
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    } catch { }
+
+    $winget = Get-Command winget -ErrorAction SilentlyContinue
+    if ($winget) {
+        Write-InstallLog 'Trying winget (Python.Python.3.11, current user)...'
+        $p = Start-Process -FilePath 'winget' -ArgumentList @(
+            'install', '-e', '--id', 'Python.Python.3.11',
+            '--accept-package-agreements', '--accept-source-agreements',
+            '--disable-interactivity',
+            '--scope', 'user'
+        ) -Wait -PassThru -NoNewWindow
+        Write-InstallLog "winget exit code: $($p.ExitCode)"
+        $py = Wait-ForPythonAfterInstall -TimeoutSeconds 60
+        if ($py) {
+            Write-InstallLog "Python available after winget: $py"
+            return $py
+        }
+        Write-InstallLog 'winget finished but Python not detected; trying python.org installer.' 'WARN'
+    } else {
+        Write-InstallLog 'winget not available; using python.org installer.' 'WARN'
     }
-    Start-Sleep -Seconds 3
-    return Find-ExistingPython
+
+    $installer = Join-Path $env:TEMP 'python-3.11.9-amd64.exe'
+    Write-InstallLog 'Downloading Python installer from python.org...'
+    try {
+        Invoke-WebRequest -Uri $cfg.PythonInstallerUrl -OutFile $installer -UseBasicParsing
+    } catch {
+        throw "Could not download Python installer. Check Internet/firewall. $($_.Exception.Message)"
+    }
+    if (-not (Test-Path -LiteralPath $installer)) {
+        throw 'Python installer download failed (file missing).'
+    }
+
+    Write-InstallLog 'Running Python installer (per-user, adds to PATH)...'
+    $installArgs = @(
+        '/passive', 'InstallAllUsers=0', 'PrependPath=1',
+        'Include_test=0', 'Include_pip=1', 'Include_launcher=1',
+        'AssociateFiles=0', 'SimpleInstall=1'
+    )
+    $p = Start-Process -FilePath $installer -ArgumentList $installArgs -Wait -PassThru
+    Remove-Item -LiteralPath $installer -Force -ErrorAction SilentlyContinue
+    Write-InstallLog "python.org installer exit code: $($p.ExitCode)"
+
+    if (-not (Test-PythonInstallerExitOk -ExitCode $p.ExitCode)) {
+        throw "Python installer failed (exit $($p.ExitCode)). Install Python 3.11 from https://www.python.org/downloads/ with Add to PATH, then run INSTALL.bat again."
+    }
+
+    $py = Wait-ForPythonAfterInstall -TimeoutSeconds 90
+    if (-not $py) {
+        throw "Python installed but not found yet. Install Python 3.11 from https://www.python.org/downloads/, enable Add to PATH, then run INSTALL.bat again. Log: $script:InstallLogPath"
+    }
+    Write-InstallLog "Python installed: $py"
+    return $py
+}
+
+function Get-LocalSourceCopy {
+    param([string]$InstallerRoot)
+    $candidate = (Resolve-Path (Join-Path $InstallerRoot '..\..')).Path
+    if (Test-Path (Join-Path $candidate 'pyproject.toml')) {
+        Write-InstallLog "Using local source copy: $candidate"
+        return $candidate
+    }
+    return $null
 }
 
 function Initialize-AppSource {
@@ -62,14 +208,27 @@ function Initialize-AppSource {
         Write-InstallLog "Application source already present: $DestAppDir"
         return
     }
+
+    $local = Get-LocalSourceCopy -InstallerRoot $InstallerRoot
+    if ($local -and -not $ForceRefresh) {
+        Write-InstallLog 'Copying local project into install folder...'
+        if (Test-Path $DestAppDir) { Remove-Item -LiteralPath $DestAppDir -Recurse -Force }
+        Copy-Item -LiteralPath $local -Destination $DestAppDir -Recurse -Force
+        return
+    }
+
     if (Test-Path $DestAppDir) {
         Remove-Item -LiteralPath $DestAppDir -Recurse -Force
     }
     $tmp = Join-Path $env:TEMP ("orchomogeneity-src-" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     $zipPath = Join-Path $tmp 'repo.zip'
-    Write-InstallLog "Downloading from $($cfg.GitHubRepoUrl) …"
-    Invoke-WebRequest -Uri $cfg.GitHubZipUrl -OutFile $zipPath -UseBasicParsing
+    Write-InstallLog "Downloading from $($cfg.GitHubRepoUrl)..."
+    try {
+        Invoke-WebRequest -Uri $cfg.GitHubZipUrl -OutFile $zipPath -UseBasicParsing
+    } catch {
+        throw "Could not download from GitHub. Check Internet/firewall. $($_.Exception.Message)"
+    }
     Expand-Archive -LiteralPath $zipPath -DestinationPath $tmp -Force
     $extracted = Join-Path $tmp $cfg.GitHubZipFolder
     if (-not (Test-Path $extracted)) {
@@ -86,18 +245,28 @@ function Initialize-PythonVenv {
         [string]$VenvDir,
         [string]$AppDir
     )
-    if (-not (Test-Path $VenvDir)) {
-        Write-InstallLog 'Creating virtual environment …'
-        & $PythonExe -m venv $VenvDir
-    }
+    Write-InstallLog 'Creating virtual environment...'
+    if (Test-Path $VenvDir) { Remove-Item -LiteralPath $VenvDir -Recurse -Force }
+    & $PythonExe -m venv $VenvDir
+    if ($LASTEXITCODE -ne 0) { throw 'venv creation failed.' }
+
     $venvPy = Join-Path $VenvDir 'Scripts\python.exe'
     $req = Join-Path $AppDir 'requirements-install.txt'
     if (-not (Test-Path $req)) {
-        throw "Missing $req in application folder"
+        throw "Missing requirements-install.txt in $AppDir"
     }
-    Write-InstallLog 'Installing Python packages (10–25 min first time) …'
+    Write-InstallLog 'Installing Python packages (may take 10-25 minutes on first run)...'
     & $venvPy -m pip install --upgrade pip wheel setuptools
+    if ($LASTEXITCODE -ne 0) { throw 'pip upgrade failed.' }
     & $venvPy -m pip install -r $req
+    if ($LASTEXITCODE -ne 0) { throw 'pip install -r requirements-install.txt failed.' }
+    $pyproject = Join-Path $AppDir 'pyproject.toml'
+    if (Test-Path $pyproject) {
+        Write-InstallLog 'Installing Orchomogeneity package (editable)...'
+        & $venvPy -m pip install -e $AppDir
+        if ($LASTEXITCODE -ne 0) { Write-InstallLog 'pip install -e failed; app may still run.' 'WARN' }
+    }
+    Write-InstallLog 'Dependencies installed.'
 }
 
 function Test-TkAvailable {
@@ -116,14 +285,26 @@ function Register-Shortcuts {
     )
     $cfg = $script:OrchomogeneityConfig
     $launchBat = Join-Path $InstallRoot 'Launch-Orchomogeneity.bat'
-    $exe = Join-Path $VenvDir 'Scripts\homogeneity-analyser.exe'
-    @"
+    $exe = Join-Path $VenvDir "Scripts\$($cfg.LaunchScript).exe"
+    if (-not (Test-Path $exe)) {
+        $exe = Join-Path $VenvDir 'Scripts\python.exe'
+        $launchContent = @"
+@echo off
+title $($cfg.AppName)
+cd /d "$AppDir"
+"$exe" -m $($cfg.LaunchScript)
+if errorlevel 1 pause
+"@
+    } else {
+        $launchContent = @"
 @echo off
 title $($cfg.AppName)
 cd /d "$AppDir"
 "$exe"
 if errorlevel 1 pause
-"@ | Set-Content -LiteralPath $launchBat -Encoding ASCII
+"@
+    }
+    Set-Content -LiteralPath $launchBat -Value $launchContent -Encoding ASCII
 
     $wsh = New-Object -ComObject WScript.Shell
     $desktop = [Environment]::GetFolderPath('Desktop')
@@ -138,5 +319,5 @@ if errorlevel 1 pause
         $sc.Description = 'Orchomogeneity H-TI analyser (Gradio)'
         $sc.Save()
     }
-    Write-InstallLog "Shortcuts created (Desktop and Start menu)"
+    Write-InstallLog 'Shortcuts created (Desktop and Start menu).'
 }
