@@ -10,8 +10,9 @@ This document is the maintainer map. End users should start from [Product scope]
 flowchart LR
     subgraph extract [1. Score → events]
         A[parsing_bridge]
-        B[timbral.py]
-        C[timbral_event_build]
+        B[symbolic_score_analyzer]
+        C[symbolic_event_pipeline]
+        TEB[timbral_event_build]
     end
     subgraph normalize [2. Normalization]
         D[taxonomy / instrument]
@@ -32,8 +33,8 @@ flowchart LR
         O[hti_analyze_series]
         P[hti_export_rows]
     end
-    A --> B --> C
-    C --> D & E & F & G
+    A --> B --> C --> TEB
+    TEB --> D & E & F & G
     D & E & F & G --> H --> I
     I --> J & K & L
     I --> M --> N --> O --> P
@@ -44,22 +45,23 @@ flowchart LR
 | Concern | Module |
 |---------|--------|
 | Parse MusicXML/MIDI | `parsing_bridge.py` |
+| Score holder + time axis | `symbolic_score_analyzer.py` — `SymbolicScoreAnalyzer` |
 | Walk score, assemble event list | `symbolic_event_pipeline.py` — `build_symbolic_score_events` |
 | Instrument / family names | `symbolic_instrument_resolve.py` + `taxonomy/instrument_taxonomy.py` |
 | Sounding vs written pitch, transposition | `symbolic_pitch_resolve.py`, `pitch_interpretation.py`, `timbral_sounding_pitch.py` |
 | Harmonic / natural pitch policy | `harmonic_pitch.py` (via pitch resolve) |
 | Technique state per family | `technique_state.py`, `*_technique.py`, `notation_context.py` |
-| Assemble one event dict | `timbral_event_build.py` |
+| Assemble one event dict | `timbral_event_build.py` — `build_symbolic_score_event` |
 | Percussion pitched/unpitched | `percussion_ontology.py` |
 | H_timbral metric on events (legacy) | `timbral.py` — `extract_timbral_features`, `analyze_timbral` |
 
-**Contract:** `SymbolicTIHomogeneityAnalyzer` **subclasses** `TimbralHomogeneityAnalyzer` and inherits the event list from `build_symbolic_score_events` (via `timbral.py`).
+**Contract:** `SymbolicTIHomogeneityAnalyzer` and `TimbralHomogeneityAnalyzer` both inherit `SymbolicScoreAnalyzer`, which calls `build_symbolic_score_events`. H_TI does **not** subclass `timbral.py`.
 
 ## Stage 2 — Window overlap
 
 | Concern | Module |
 |---------|--------|
-| Event active in `[t_start, t_end)` | `timbral.py` — `_active_in_window` |
+| Event active in `[t_start, t_end)` | `hti_window_overlap.py` — `is_event_active_in_window` (also `SymbolicScoreAnalyzer._active_in_window`) |
 | Overlap mass per event | `hti_window_overlap.py` — `event_overlap_ql`, `build_window_contrib` |
 
 ## Stage 3 — Per-window features (inputs to H_TI_core)
@@ -96,7 +98,7 @@ flowchart LR
 | `SymbolicTIHomogeneityAnalyzer` public API | Register math → `hti_register_compactness.py` |
 | `analyze_hti` window loop | Window mass aggregation → `hti_window_features.py` |
 | `compute_H_TI` delegate | Technique coverage rules → `hti_technique_coverage.py` |
-| Backward-compatible re-exports | Event building → `timbral.py` / `timbral_event_build.py` |
+| Backward-compatible re-exports | Event building → `symbolic_event_pipeline.py` / `timbral_event_build.build_symbolic_score_event` |
 
 ## Optional layers (orthogonal to H_TI_core)
 

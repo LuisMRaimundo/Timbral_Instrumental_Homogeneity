@@ -1,6 +1,6 @@
 # Timbral score representation (sounding pitch, notation context, percussion register)
 
-> **Legacy / internal documentation** — supports the **symbolic event pipeline** shared with **H_TI_core** (`TimbralHomogeneityAnalyzer`). Not a separate current user-facing metric tab.
+> **Legacy / internal documentation** — supports the **symbolic event pipeline** shared with **H_TI_core** (`SymbolicScoreAnalyzer`). Not a separate current user-facing metric tab.
 
 **Terminology (H_TIMBRAL vs H_TI 3.0):** In this legacy/internal H_TIMBRAL document, terms such as “blend” refer to symbolic timbral-design or affinity heuristics within that module. They should not be confused with the H_TI 3.0 export fields. In H_TI 3.0, `H_TI_core` denotes score-based symbolic timbral–instrumental homogeneity; `register_compactness` denotes pitch-space proximity/dispersion; `interval_class_blend_factor` denotes symbolic interval-relation favourability; and `symbolic_blend_potential` is an optional interpretive diagnostic, not measured acoustic or perceptual fusion.
 

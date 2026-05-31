@@ -1,4 +1,4 @@
-"""Helpers for building symbolic timbral score events (extracted from ``timbral.py``)."""
+"""Assemble one symbolic score event dict (used by ``symbolic_event_pipeline``)."""
 
 from __future__ import annotations
 
@@ -125,7 +125,7 @@ def collect_per_family_technique_fields(
     }
 
 
-def build_timbral_score_event(
+def build_symbolic_score_event(
     *,
     n: Any,
     part_index: int,
@@ -145,7 +145,7 @@ def build_timbral_score_event(
     harmonic_pitch_policy: str,
     note_salient_accent: bool,
 ) -> dict[str, Any]:
-    """Assemble one symbolic event dict for ``TimbralHomogeneityAnalyzer._events``."""
+    """Assemble one symbolic event dict for ``SymbolicScoreAnalyzer._events``."""
     o = float(n.offset)
     d = float(getattr(n, "quarterLength", 0.0))
     ts_dict = technique_state_to_dict(st)
@@ -194,3 +194,6 @@ def build_timbral_score_event(
         "clarinet_register_zone": crz,
         "brass_symbolic_blend_tendency": brass_symbolic_blend_tendency_for_instrument(instrument, family),
     }
+
+
+build_timbral_score_event = build_symbolic_score_event  # backward-compatible alias

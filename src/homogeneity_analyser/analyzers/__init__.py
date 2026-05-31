@@ -1,7 +1,7 @@
 """
 Computational core: H_TI (product) plus lazy legacy re-exports.
 
-**Product:** ``SymbolicTIHomogeneityAnalyzer``, ``TimbralHomogeneityAnalyzer``, helpers in
+**Product:** ``SymbolicTIHomogeneityAnalyzer``, ``SymbolicScoreAnalyzer``, ``TimbralHomogeneityAnalyzer``,
 ``common``. **Legacy multimetric:** import ``homogeneity_analyser.legacy`` (not the shim
 files in this directory — see ``analyzers/README.md``).
 """
@@ -18,6 +18,7 @@ from homogeneity_analyser.analyzers.common import (
     note_name_to_midi_ps,
 )
 from homogeneity_analyser.analyzers.hti import SymbolicTIHomogeneityAnalyzer
+from homogeneity_analyser.analyzers.symbolic_score_analyzer import SymbolicScoreAnalyzer
 from homogeneity_analyser.analyzers.timbral import TimbralHomogeneityAnalyzer
 
 _LEGACY_NAMES: dict[str, tuple[str, str]] = {
@@ -45,6 +46,7 @@ __all__ = [
     "NotatedFusionPotentialAnalyzer",
     "OrchestrationSymbolicAnalyzer",
     "RegisterUniformityAnalyzer",
+    "SymbolicScoreAnalyzer",
     "SymbolicTIHomogeneityAnalyzer",
     "TimbralHomogeneityAnalyzer",
     "combine_weighted_geometric",

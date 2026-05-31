@@ -12,8 +12,9 @@ Practical map for developers changing exports, weights, UI copy, or documentatio
 
 | Area | Primary locations |
 |------|-------------------|
-| **Core H_TI / organological homogeneity** | `analyzers/hti.py` (analyzer class + register compactness), `hti_active_weights.py`, `hti_technique_coverage.py`, `hti_concentration.py`, `hti_export_rows.py` — map in `analyzers/README.md` |
-| **Gradio UI (tested helpers)** | `ui/callbacks.py` = entry points; `hti_ui_params.py`, `legacy_ui_params.py`, `timbral_ui_params.py`, `legacy_multimetric_ui_params.py`, `callback_result_formatting.py` — `ui/README.md` |
+| **Core H_TI / organological homogeneity** | **Orchestration:** `analyzers/hti.py` — **implementation:** `hti_window_features.py`, `hti_register_compactness.py`, `hti_active_weights.py`, `hti_technique_coverage.py`, `hti_concentration.py`, `hti_analyze_series.py`, `hti_comparability.py`, `hti_export_rows.py` — map in `analyzers/README.md` and **`docs/HTI_SYMBOLIC_PIPELINE.md`** |
+| **Symbolic score → events (shared H_TI + H_timbral)** | `symbolic_event_pipeline.py`, `symbolic_instrument_resolve.py`, `symbolic_pitch_resolve.py`, `timbral_event_build.py`, `pitch_interpretation.py`, `technique_state.py`, `taxonomy/instrument_taxonomy.py` |
+| **Gradio UI (tested helpers)** | `ui/callbacks.py` (facade); **`callbacks_hti.py`**, **`callbacks_legacy.py`**, **`callbacks_inspection.py`**, **`callback_helpers.py`**; `hti_ui_params.py`, `legacy_ui_params.py`, `timbral_ui_params.py`, `legacy_multimetric_ui_params.py`, `callback_result_formatting.py` — `ui/README.md` |
 | **Legacy multimetric (internal)** | `legacy/` only — **`LEGACY.md`**; `analyzers/*.py` shims are re-exports; import via `homogeneity_analyser.legacy` |
 | **Run orchestration & defaults** | **H_TI:** `services/analysis_service_hti.py` — **legacy metrics:** `services/analysis_service_legacy.py` — facade `analysis_service.py`; `constants.py`, `param_validation.py` |
 | **Symbolic-blend optional layer** | `analyzers/symbolic_blend_layers.py`, `taxonomy/symbolic_blend_conditioning.json` |
@@ -30,7 +31,7 @@ Practical map for developers changing exports, weights, UI copy, or documentatio
 When adding or renaming a **per-window export column**:
 
 1. Add the stable key to the correct registry tuple (`HTI_SYMBOLIC_BLEND_SERIES_KEYS` or `HTI_ACOUSTIC_PROXY_SERIES_KEYS`). If the CSV stores a JSON-encoded dict, add it to the matching `*_CSV_JSON_DICT_KEYS` frozenset.
-2. Wire **`hti.py`** via `*REGISTRY` unpack in `series_keys`, `HTI_CSV_COLUMNS`, and `HTI_EXPORT_TIME_SERIES_KEYS` — do not paste the same string list in four places.
+2. Wire **`hti_analyze_series.py`** (`HTI_ANALYZE_SERIES_KEYS`) and **`hti_export_rows.py`** (`HTI_CSV_COLUMNS`, `HTI_EXPORT_TIME_SERIES_KEYS`) — do not paste the same string list in four places. `hti.py` re-exports tuples for backward-compatible imports only.
 3. Extend **`append_hti_*_series_row`** (or `acoustic_proxy_series_value` semantics) for enabled/disabled/empty-window behaviour.
 4. Update **`hti_csv_row_dict`** if the column is dict-shaped in CSV.
 5. Add or extend tests in `tests/test_hti_symbolic_blend_exports.py` and/or `tests/test_hti_acoustic_proxy_exports.py`.
@@ -45,19 +46,19 @@ python -m ruff check src tests
 python -m mypy src/homogeneity_analyser
 ```
 
-**Coverage policy:** `pyproject.toml` enforces **`fail_under = 77`** on the **product path** (`legacy/*` omitted; **`callbacks.py` is included** — see `tests/test_coverage_policy.py`). Pure UI adapters (`hti_ui_params.py`, `legacy_*_ui_params.py`, `callback_result_formatting.py`) carry focused tests; `callbacks.py` remains Gradio orchestration. Measured product-path coverage is ~78–79%. Prefer **localized tests** over inflating the global threshold.
+**Coverage policy:** `pyproject.toml` enforces **`fail_under = 77`** on the **product path** (`legacy/*` omitted; UI facade + **`callbacks_hti.py`** included — see `tests/test_coverage_policy.py`). Pure UI adapters (`hti_ui_params.py`, `legacy_*_ui_params.py`, `callback_result_formatting.py`) carry focused tests. Measured product-path coverage is ~78–79%. Prefer **localized tests** over inflating the global threshold.
 
 **Cleanup log:** `docs/CLEANUP_REPORT.md` — archived point-in-time reports under `docs/archive_legacy/`.
 
-**Onboarding:** `docs/ONBOARDING_H_TI.md` — symbolic pipeline vs legacy metrics.
+**Onboarding:** `docs/ONBOARDING_H_TI.md`, **`docs/PRODUCT_SCOPE.md`**, **`docs/HTI_SYMBOLIC_PIPELINE.md`** — symbolic pipeline vs legacy metrics.
 
 **Tests (day-to-day):** `python -m pytest tests/ -m "not legacy" -q` — full suite without marker runs everything.
 
 ## What to avoid
 
-- **Large architectural refactors** (splitting `hti.py` into many modules, plugin frameworks, new packages) unless there is a clear responsibility split and full regression proof.
 - **Changing `H_TI_core` weights or formulas** without explicit approval and numeric regression tests (`test_hti_core_golden_outputs.py`, `test_hti_refinement.py`, `test_analyze_hti_core_hti_strict_unchanged_when_*`).
 - **Renaming public export columns** without updating registries, docs, and consistency tests in the same change.
+- **Adding logic to `hti.py` or `timbral.py` facades** when a dedicated module exists (see **`docs/HTI_SYMBOLIC_PIPELINE.md`**) — extend the focused module instead.
 
 ## Optional layers (quick reference)
 

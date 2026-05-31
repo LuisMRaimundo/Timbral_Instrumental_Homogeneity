@@ -21,7 +21,7 @@ from homogeneity_analyser.analyzers.technique_state import (
     iter_timbral_elements,
     merge_note_technique_state,
 )
-from homogeneity_analyser.analyzers.timbral_event_build import build_timbral_score_event, note_salient_accent
+from homogeneity_analyser.analyzers.timbral_event_build import build_symbolic_score_event, note_salient_accent
 from homogeneity_analyser.taxonomy.instrument_taxonomy import resolve_instrument_taxonomy
 
 
@@ -79,7 +79,7 @@ def build_symbolic_score_events(
             apply_persistent_text(notation_text_context_for_note(n, measure_text="none"), work)
             st = merge_note_technique_state(work, n, instrument=instrument, family=family)
             events.append(
-                build_timbral_score_event(
+                build_symbolic_score_event(
                     n=n,
                     part_index=part_index,
                     part=part,

@@ -34,15 +34,17 @@
 
 | `hti_adaptive_windows.py`, `hti_dynamics.py`, `hti_dynamic_conditioning.py`, `hti_taxonomy.py` | Windowing, dynamics, taxonomy |
 
+| `symbolic_score_analyzer.py` | Score load, time axis, `_events` holder (`SymbolicScoreAnalyzer`) |
+
 | `symbolic_event_pipeline.py` | Score → event list (`build_symbolic_score_events`) |
 
 | `symbolic_instrument_resolve.py` | Canonical instrument / family per note |
 
 | `symbolic_pitch_resolve.py` | Sounding + written pitch per note |
 
-| `timbral.py` | H_timbral legacy metric; delegates event build to pipeline |
+| `timbral.py` | H_timbral legacy metric only (subclasses `SymbolicScoreAnalyzer`) |
 
-| `timbral_event_build.py` | One-event dict assembly + accent helper |
+| `timbral_event_build.py` | `build_symbolic_score_event` + accent helper |
 
 | `pitch_interpretation.py`, `harmonic_pitch.py`, `technique_state.py` | Pitch / technique normalization |
 

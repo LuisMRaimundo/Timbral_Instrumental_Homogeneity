@@ -15,4 +15,4 @@ This folder holds **superseded** or **narrow-audience** documentation that is **
 
 **Current cleanup log:** `docs/CLEANUP_REPORT.md` (repository hygiene; no metric changes).
 
-Pointers inside `default_profiles.json`, `source_registry.json`, and **§18 Bibliography** in `TECHNICAL_MANUAL.md` were updated to these paths when files were moved (cleanup pass).
+**Note (2026-05-31):** Files in this folder may cite pre-refactor module paths (e.g. register math “in `hti.py`”, monolithic `callbacks.py`). For **current** paths see **`docs/HTI_SYMBOLIC_PIPELINE.md`**, **`docs/ARCHITECTURE.md`**, and root **`MAINTAINERS.md`**. Archived text is preserved intentionally.

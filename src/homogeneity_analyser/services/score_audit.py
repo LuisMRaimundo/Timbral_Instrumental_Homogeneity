@@ -632,12 +632,11 @@ def build_symbolic_inspection_tables(
     harmonic_pitch_policy: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     """Single parse: inventory + flattened event audit + vertical sonorities."""
-    from homogeneity_analyser.analyzers.timbral import TimbralHomogeneityAnalyzer
+    from homogeneity_analyser.analyzers.symbolic_score_analyzer import SymbolicScoreAnalyzer
 
-    analyzer = TimbralHomogeneityAnalyzer(
+    analyzer = SymbolicScoreAnalyzer(
         music21_score=score,
         time_step=0.25,
-        timbral_model_mode="legacy",
         pitch_interpretation_mode=pitch_interpretation_mode,
         harmonic_pitch_policy=harmonic_pitch_policy,
     )

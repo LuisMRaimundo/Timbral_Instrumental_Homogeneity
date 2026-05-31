@@ -203,7 +203,7 @@ pytest -m "not legacy"   # H_TI / product path (day-to-day)
 pytest                   # full suite including multimetric JSON 1.8
 pytest --cov=homogeneity_analyser --cov-report=term-missing  # product-path gate: fail_under 77 (see pyproject.toml)
 
-**Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md`. Golden `H_TI_core`: `tests/test_hti_core_golden_outputs.py`. Legacy map: **`LEGACY.md`**. Analyzer layout: `analyzers/README.md`.
+**Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md`, **`docs/PRODUCT_SCOPE.md`**, **`docs/HTI_SYMBOLIC_PIPELINE.md`**. Golden `H_TI_core`: `tests/test_hti_core_golden_outputs.py`. Legacy map: **`LEGACY.md`**. Analyzer layout: `analyzers/README.md`.
 mypy  # optional; see pyproject.toml for scope
 ```
 

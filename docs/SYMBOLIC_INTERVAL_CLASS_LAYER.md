@@ -55,5 +55,5 @@ If **`acoustic_proxy_include_interval_class`** is enabled on the **H_TA** layer,
 ## Code entry points
 
 - `interval_class_key_for_d12`, `interval_class_display_label`, `compute_interval_class_blend_factor` — `analyzers/symbolic_blend_layers.py`
-- CSV / JSON columns — `HTI_CSV_COLUMNS`, `HTI_EXPORT_TIME_SERIES_KEYS` in `analyzers/hti.py`
+- CSV / JSON columns — `HTI_CSV_COLUMNS`, `HTI_EXPORT_TIME_SERIES_KEYS` in `analyzers/hti_export_rows.py` (re-exported from `hti.py`); series keys in `hti_analyze_series.py`
 - Operator summary — `QUICK_REFERENCE.md`, formal tables — `TECHNICAL_MANUAL.md` (metric glossary + §9 export notes)

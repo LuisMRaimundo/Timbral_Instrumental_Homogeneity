@@ -1,9 +1,9 @@
 """Symbolic score event pipeline and optional **H_timbral** metric (not acoustic timbre).
 
-**H_TI** (`SymbolicTIHomogeneityAnalyzer` in ``hti.py``) **subclasses** this module: it reuses
-event construction, ``instrument`` / ``family`` taxonomy resolution, and pitch interpretation.
-That shared pipeline is **product infrastructure**, not the deprecated multimetric package under
-``homogeneity_analyser.legacy/``.
+**H_TI** (`SymbolicTIHomogeneityAnalyzer` in ``hti.py``) and **H_timbral** both inherit
+``SymbolicScoreAnalyzer`` (``symbolic_score_analyzer.py``): shared score loading and
+``build_symbolic_score_events``. That pipeline is **product infrastructure**, not the deprecated
+multimetric package under ``homogeneity_analyser.legacy/``.
 
 The **H_timbral** time series (``analyze_timbral``, pairwise family kernels) is a **separate legacy
 metric** — orchestrated from ``services/analysis_service_legacy.py``, not required for ``H_TI_core``.
@@ -57,15 +57,12 @@ from homogeneity_analyser.analyzers.flute_pairwise_timbral import (
     is_flute_family,
     pairwise_flute_homogeneity,
 )
-from homogeneity_analyser.analyzers.harmonic_pitch import normalize_harmonic_pitch_policy
-from homogeneity_analyser.analyzers.parsing_bridge import parse_score
 from homogeneity_analyser.analyzers.percussion_ontology import PitchStatus, get_percussion_meta
 from homogeneity_analyser.analyzers.percussion_pairwise_timbral import (
     is_percussion_family,
     pairwise_percussion_homogeneity,
     unpitched_percussion_register_proxy,
 )
-from homogeneity_analyser.analyzers.pitch_interpretation import normalize_pitch_interpretation_mode
 from homogeneity_analyser.analyzers.saxophone_pairwise_timbral import (
     is_saxophone_family,
     pairwise_saxophone_homogeneity,
@@ -74,7 +71,7 @@ from homogeneity_analyser.analyzers.string_pairwise_timbral import (
     is_bowed_orchestral_string,
     pairwise_string_homogeneity,
 )
-from homogeneity_analyser.analyzers.symbolic_event_pipeline import build_symbolic_score_events
+from homogeneity_analyser.analyzers.symbolic_score_analyzer import SymbolicScoreAnalyzer
 from homogeneity_analyser.analyzers.technique_state import (
     dominant_timbral_state,
     timbral_state_concentration_from_distribution,
@@ -259,7 +256,7 @@ def _timbral_overlap_mass_distributions(features: dict[str, Any]) -> tuple[dict[
     return inst_out, fam_out
 
 
-class TimbralHomogeneityAnalyzer:
+class TimbralHomogeneityAnalyzer(SymbolicScoreAnalyzer):
     """
     Part-name / orchestration homogeneity (H_timbral), not acoustic timbre.
 
@@ -302,17 +299,13 @@ class TimbralHomogeneityAnalyzer:
         pitch_interpretation_mode: str | None = None,
         harmonic_pitch_policy: str | None = None,
     ):
-        if music21_score is not None:
-            self.score = music21_score
-        elif score_path is not None:
-            self.score = parse_score(score_path)
-        else:
-            raise TypeError("TimbralHomogeneityAnalyzer requires score_path or music21_score=…")
-        ts = float(time_step)
-        if not math.isfinite(ts) or ts <= 0.0:
-            raise ValueError(f"time_step must be finite and > 0; got {time_step!r}.")
-        self.end_time = float(self.score.highestTime)
-        self.time_axis = np.arange(0.0, self.end_time + 1e-9, ts)
+        super().__init__(
+            score_path=score_path,
+            time_step=time_step,
+            music21_score=music21_score,
+            pitch_interpretation_mode=pitch_interpretation_mode,
+            harmonic_pitch_policy=harmonic_pitch_policy,
+        )
         tc = dict(timbral_config) if timbral_config else {}
         nested_mode = tc.pop("timbral_model_mode", None)
         arg_mode = timbral_model_mode
@@ -329,25 +322,6 @@ class TimbralHomogeneityAnalyzer:
         if tc:
             cfg = {**cfg, **{k: v for k, v in tc.items() if k in cfg}}
         self._timbral_config = cfg
-        self._pitch_interpretation_mode = normalize_pitch_interpretation_mode(pitch_interpretation_mode)
-        self._harmonic_pitch_policy = normalize_harmonic_pitch_policy(harmonic_pitch_policy)
-        self._events: list[dict[str, Any]] = []
-        self._build_events_with_instruments()
-
-    @property
-    def score_events(self) -> list[dict[str, Any]]:
-        """Notation events built for H_timbral / H_TI (read-only reference)."""
-        return self._events
-
-    def _build_events_with_instruments(self) -> None:
-        self._events = build_symbolic_score_events(
-            self.score,
-            pitch_interpretation_mode=self._pitch_interpretation_mode,
-            harmonic_pitch_policy=self._harmonic_pitch_policy,
-        )
-
-    def _active_in_window(self, ev: dict, t_start: float, t_end: float) -> bool:
-        return ev["offset"] < t_end and ev["end"] > t_start
 
     def extract_timbral_features(self, window_center: float, window_size: float) -> dict | None:
         t_start = window_center - window_size / 2.0

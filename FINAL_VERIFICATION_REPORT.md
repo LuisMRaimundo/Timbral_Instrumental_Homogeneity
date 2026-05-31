@@ -103,7 +103,7 @@ No active document presents **`H_TA`** as a loudness meter, masking measurement,
 | Location | Value |
 |----------|--------|
 | `services/constants.py` → `DEFAULT_HTI_PARAMS` | `"include_acoustic_proxy": False` |
-| `ui/callbacks.py` → `run_hti_app` signature | `include_acoustic_proxy=False` |
+| `ui/callbacks_hti.py` → `run_hti_app` signature (facade: `callbacks.py`) | `include_acoustic_proxy=False` |
 | `ui/gradio_app.py` checkbox | `DEFAULT_HTI_PARAMS.get("include_acoustic_proxy", False)` |
 | `services/analysis_service.py` | `bool(p.get("include_acoustic_proxy", False))` |
 | `docs/H_TA_ACOUSTIC_PROXY.md` parameters table | `false` |
@@ -184,3 +184,18 @@ Files touched: `README.md`, `QUICK_REFERENCE.md`, `TECHNICAL_MANUAL.md`, `CURREN
 - Consistency test: `test_docs_interval_class_seconds_sevenths_semantics` in `tests/test_documentation_consistency.py`.
 
 *End of final verification report.*
+
+---
+
+## 12. Module refactor — documentation sync (2026-05-31)
+
+Active docs updated for the **structural split** (no metric or export-schema changes):
+
+- **H_TI:** `hti_window_features.py`, `hti_register_compactness.py`, `hti_analyze_series.py`; `hti.py` = orchestration + re-exports
+- **Symbolic pipeline:** `symbolic_event_pipeline.py`, `symbolic_instrument_resolve.py`, `symbolic_pitch_resolve.py`
+- **UI:** `callbacks_hti.py`, `callbacks_legacy.py`, `callbacks_inspection.py`; `callbacks.py` = facade
+- **New guides:** `docs/HTI_SYMBOLIC_PIPELINE.md`, `docs/PRODUCT_SCOPE.md`
+
+Files touched: `README.md`, `MAINTAINERS.md`, `TECHNICAL_MANUAL.md`, `CURRENT_CODE_CHARACTERISTICS_REPORT.md`, `docs/ARCHITECTURE.md`, `docs/ONBOARDING_H_TI.md`, `docs/METRIC_CODE_MAP.md`, `docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`, `docs/CLEANUP_REPORT.md`, `analyzers/README.md`, `ui/README.md`, `docs/index.md`, `mkdocs.yml`.
+
+Product-path pytest at sync time: **786 passed** (`pytest -m "not legacy"`).

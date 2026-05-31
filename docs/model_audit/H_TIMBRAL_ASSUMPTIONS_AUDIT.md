@@ -166,7 +166,7 @@ Modules: `string_technique.py`, `brass_technique.py`, `flute_technique.py`, `cla
 | `services/param_validation.py` | Validates timbral overrides against `get_timbral_config()` keys | (a) |
 | `services/json_export.py` | `TIMBRAL_HOMOGENEITY_NOTE`, `_h_timbral_effective_parameters` reflection | (a) — documentation payload only |
 | `services/analysis_service.py` | Wiring, summaries, diagnostics keys | (a) |
-| `ui/callbacks.py` / `ui/gradio_app.py` | Default Gradio numbers for timbral optional weights (`0.65`, `0.35`, …) | (c) | Must match taxonomy defaults for UX consistency. |
+| `ui/callbacks_hti.py` / `ui/gradio_app.py` (facade: `callbacks.py`) | Default Gradio numbers for timbral optional weights (`0.65`, `0.35`, …) | (c) | Must match taxonomy defaults for UX consistency. |
 
 ---
 

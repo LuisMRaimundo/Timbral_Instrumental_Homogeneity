@@ -275,7 +275,7 @@ Copy and fill in the brackets:
 
 ## 2) Mathematical specification (code-aligned)
 
-This section states **only** what `src/homogeneity_analyser` implements. Symbols follow `analyzers/hti.py`, `analyzers/hti_dynamics.py`, `analyzers/hti_dynamic_conditioning.py`, `analyzers/hti_adaptive_windows.py`, `analyzers/pitch_interpretation.py`, `analyzers/harmonic_pitch.py`, `analyzers/timbral_affinity.py`, `analyzers/dominant_distribution.py`, and `services/score_audit.py`. Constants such as `_EPS = 1e-12` and default weights are taken from source.
+This section states **only** what `src/homogeneity_analyser` implements. Symbols follow `analyzers/hti.py` (orchestration), `analyzers/hti_window_features.py`, `analyzers/hti_register_compactness.py`, `analyzers/hti_active_weights.py`, `analyzers/hti_analyze_series.py`, `analyzers/symbolic_event_pipeline.py`, `analyzers/hti_dynamics.py`, `analyzers/hti_dynamic_conditioning.py`, `analyzers/hti_adaptive_windows.py`, `analyzers/pitch_interpretation.py`, `analyzers/harmonic_pitch.py`, `analyzers/timbral_affinity.py`, `analyzers/dominant_distribution.py`, and `services/score_audit.py`. Constants such as `_EPS = 1e-12` (`hti_register_compactness.py`) and default weights are taken from source. Maintainer map: **`docs/HTI_SYMBOLIC_PIPELINE.md`**.
 
 ### 2.1) Sliding windows and overlap mass
 
@@ -302,7 +302,7 @@ $$
 
 **Instrument Herfindahl** uses a different normalisation (shares $p_i$ relative to total **instrument** overlap mass); see **§2.2**.
 
-Aggregates use **non-negative** masses; empty or zero-total windows yield no **H_TI** row (`extract_hti_window` returns `None`).
+Aggregates use **non-negative** masses; empty or zero-total windows yield no **H_TI** row (`extract_hti_window` / `extract_hti_window_features` returns `None`).
 
 ### 2.2) Category shares and Herfindahl uniformity
 
@@ -343,7 +343,7 @@ $$
 U_{\mathrm{tech}}(t) = \sum_{k\in K_t} Q_k(t)^2.
 $$
 
-**Coverage and inclusion rule** (`extract_hti_window`): let $T_{\mathrm{ol}}=\sum_e m_e$, let $M_{\mathrm{nonempty}}$ be the overlap mass on events with non-empty technique key, and $M_{\mathrm{empty}}=\max(0,\,T_{\mathrm{ol}}-M_{\mathrm{nonempty}})$. Let `any_special` = any event with a **special** explicit technique (`event_has_special_explicit_technique`), and $K$ = number of distinct non-empty keys with positive mass among special/default mix.
+**Coverage and inclusion rule** (`hti_window_features.extract_hti_window_features`): let $T_{\mathrm{ol}}=\sum_e m_e$, let $M_{\mathrm{nonempty}}$ be the overlap mass on events with non-empty technique key, and $M_{\mathrm{empty}}=\max(0,\,T_{\mathrm{ol}}-M_{\mathrm{nonempty}})$. Let `any_special` = any event with a **special** explicit technique (`event_has_special_explicit_technique`), and $K$ = number of distinct non-empty keys with positive mass among special/default mix.
 
 | `technique_coverage_status` | Technique term in H_TI_core |
 |----------------------------|-----------------------------|
@@ -357,7 +357,7 @@ If status is `unavailable` or `ambiguous`, `technique_uniformity` is **NaN** and
 
 ### 2.4) Register compactness (span + pairwise, geometric blend)
 
-Let $r$ be **`register_ref_semitones`** (default **7.0** semitones if non-finite or $r\le 0$). Input list `pitch_occurrences` lists pairs $(m_a,\omega_a)$: one entry per **chord tone** / sounding pitch carrying the parent event’s overlap mass $\omega_a$ (code stores MIDI in $m_a$). **Unpitched** percussion excluded when `is_percussion_family` and ontology `PitchStatus.UNPITCHED` (`extract_hti_window`).
+Let $r$ be **`register_ref_semitones`** (default **7.0** semitones if non-finite or $r\le 0$). Input list `pitch_occurrences` lists pairs $(m_a,\omega_a)$: one entry per **chord tone** / sounding pitch carrying the parent event’s overlap mass $\omega_a$ (code stores MIDI in $m_a$). **Unpitched** percussion excluded when `is_percussion_family` and ontology `PitchStatus.UNPITCHED` (`collect_pitched_occurrences_from_contrib` in `hti_register_compactness.py`, called from `hti_window_features.py`).
 
 Let $M_t=\{m_a\}$ be the multiset of active sounding MIDI values in the window. The **register span** (semitones) is
 
@@ -380,7 +380,7 @@ $$
 R_{\mathrm{pair}}(t)=\frac{\sum_{a<b}\omega_{ab}(t)\bigl(1+d_{ab}/r\bigr)^{-1}}{\sum_{a<b}\omega_{ab}(t)}.
 $$
 
-For fewer than two pitched rows, code sets $R_{\mathrm{pair}}=1$ and `pairwise_interval_coverage_status` = **`insufficient_pairs`**. If there are no pitched rows at all → **`unpitched_only`**, NaN span/pair/compactness, **`register_coverage_status`** = `unpitched_only`, register term **omitted** from **H_TI_core**. With $\varepsilon=10^{-12}$ (**`_EPS`** in `hti.py`), **register compactness** is
+For fewer than two pitched rows, code sets $R_{\mathrm{pair}}=1$ and `pairwise_interval_coverage_status` = **`insufficient_pairs`**. If there are no pitched rows at all → **`unpitched_only`**, NaN span/pair/compactness, **`register_coverage_status`** = `unpitched_only`, register term **omitted** from **H_TI_core**. With $\varepsilon=10^{-12}$ (**`_EPS`** in `hti_register_compactness.py`), **register compactness** is
 
 
 $$
@@ -545,7 +545,7 @@ Defaults: $N_{\mathrm{target}}=100$ (**`target_window_count`**), $\rho_{w/s}=10$
 
 ### 2.12) Symbolic inspection (diagnostic pipeline)
 
-`build_symbolic_inspection_tables` constructs `TimbralHomogeneityAnalyzer` events (same pipeline as H_TI), then **`instrument_inventory`**, flattened **`event_audit`** (one row per **chord tone** / pitch with `effective_sounding_midi`, harmonic columns, `active_dynamic`, technique fields), and **`vertical_sonorities`** grouped by rounded `offset_quarterLength`. Column orders: `SCORE_AUDIT_*_COLUMNS` in `score_audit.py`. **Field-by-field glossary:** **Appendix D.13**. **Not** a homogeneity metric.
+`build_symbolic_inspection_tables` constructs `SymbolicScoreAnalyzer` events (same pipeline as H_TI), then **`instrument_inventory`**, flattened **`event_audit`** (one row per **chord tone** / pitch with `effective_sounding_midi`, harmonic columns, `active_dynamic`, technique fields), and **`vertical_sonorities`** grouped by rounded `offset_quarterLength`. Column orders: `SCORE_AUDIT_*_COLUMNS` in `score_audit.py`. **Field-by-field glossary:** **Appendix D.13**. **Not** a homogeneity metric.
 
 ---
 
@@ -566,9 +566,9 @@ i.e. **`effective_sounding_midi` = `effective_written_midi` + `total_transpose_a
 4. **Unpitched percussion** — register pitch lists follow the same rule as **timbral** slices: only **percussion-family** parts with ontology **`UNPITCHED`** status skip `pitches` for register; other instruments always contribute sounding MIDI to span / pairwise terms.
 5. **Technique / articulation / directions** — `notation_context.py` and `technique_state.py` merge measure directions and note attachments into persistent **`TechniqueState`**; **`technique_state_id`** is the full fingerprint (`instrument|…`); **`technique_uniformity_key`** is the instrument-free bucket used for **technique_uniformity** and for **`technique_state_distribution`** in H_TI exports.
 6. **Dynamics** — written marks and hairpins are carried on events; `hti_dynamics.py` aggregates overlap-mass distributions per window.
-7. **H_TI_core** — `SymbolicTIHomogeneityAnalyzer` (`analyzers/hti.py`) subclasses `TimbralHomogeneityAnalyzer` (`timbral.py`) to **reuse the event list** without exposing legacy pairwise **H_timbral** as a user product.
+7. **H_TI_core** — `SymbolicTIHomogeneityAnalyzer` (`analyzers/hti.py`) subclasses `SymbolicScoreAnalyzer` (`symbolic_score_analyzer.py`) for the shared event list from `symbolic_event_pipeline.build_symbolic_score_events`; it does **not** depend on the H_timbral metric in `timbral.py`.
 8. **Conditioning** — `hti_dynamic_conditioning.py` attaches family-aware interpretive scalars and a single **`dynamic_interpretation_label`** per window.
-9. **Exports** — CSV column order in `hti_export_rows.py` (`HTI_CSV_COLUMNS`, `hti_csv_row_dict`); Gradio writes files in `callbacks.py`; JSON via `services/json_export.build_hti_export` (`schema_version` **3.0**). `analyzers/hti.py` re-exports column tuples for backward-compatible imports.
+9. **Exports** — CSV column order in `hti_export_rows.py` (`HTI_CSV_COLUMNS`, `hti_csv_row_dict`); Gradio writes files via **`callbacks_hti.py`** (facade: `callbacks.py`); JSON via `services/json_export.build_hti_export` (`schema_version` **3.0**). `analyzers/hti.py` re-exports column tuples for backward-compatible imports only.
 
 ### 3.1) Adaptive window orchestration (optional; formula unchanged)
 
@@ -667,7 +667,7 @@ Columns follow `homogeneity_analyser.analyzers.hti_export_rows.HTI_CSV_COLUMNS` 
 
 ## 9b) Symbolic inspection (Loaded XML inspection)
 
-The Gradio UI includes an accordion **Symbolic inspection (Loaded XML inspection)** below the shared upload and **H_TI** controls. On every upload **or pitch-interpretation mode** change, `ui/callbacks.run_loaded_xml_inspection` parses the score once via `services/score_audit.build_symbolic_inspection_tables`, which builds `TimbralHomogeneityAnalyzer` events (same notation pipeline as **H_TI_core**) and materialises three **pandas**/**Gradio Dataframe** tables plus UTF-8 CSV files: **`instrument_inventory.csv`**, **`event_audit.csv`**, **`vertical_sonorities.csv`**. No **H_TI** windowing run is required.
+The Gradio UI includes an accordion **Symbolic inspection (Loaded XML inspection)** below the shared upload and **H_TI** controls. On every upload **or pitch-interpretation mode** change, `ui/callbacks.run_loaded_xml_inspection` parses the score once via `services/score_audit.build_symbolic_inspection_tables`, which builds `SymbolicScoreAnalyzer` events (same notation pipeline as **H_TI_core**) and materialises three **pandas**/**Gradio Dataframe** tables plus UTF-8 CSV files: **`instrument_inventory.csv`**, **`event_audit.csv`**, **`vertical_sonorities.csv`**. No **H_TI** windowing run is required.
 
 The Symbolic inspection report shows what the parser actually found in the uploaded score. It is intended to verify instrument mapping, sounding pitch, dynamics, techniques, articulations, effects, and vertical sonorities before interpreting **H_TI**. It is **diagnostic only** — not a metric, not part of **H_TI_core**, and not a revived legacy metric tab.
 
@@ -779,7 +779,7 @@ The Python package retains **internal** implementations used by tests, research 
 | `analyzers/fusion_acoustic_heuristic.py` | **H_fusion_acoustic_heuristic** (literature-linked distances; **not** waveform analysis). |
 | `analyzers/register.py` | **U(t)** register uniformity. |
 
-These are **not acoustically validated fusion** products in the current Gradio workflow. **H_TI** reuses **`TimbralHomogeneityAnalyzer`** event construction only.
+These are **not acoustically validated fusion** products in the current Gradio workflow. **H_TI** and inspection share **`SymbolicScoreAnalyzer`** / `build_symbolic_score_events` only.
 
 Where legacy **combined** JSON (**`schema_version` `1.8`**) still exposes **`confidence_score`** / **`confidence_label`** on heuristic branches, interpret them as **internal notation-linked coverage** — **not** empirical validation against microphones or audiences.
 
@@ -799,7 +799,7 @@ Pseudocode mirrors control flow in source; it is **normative** only insofar as i
 
 ```
 load score (MusicXML / MIDI) → validate (size, extension)
-build TimbralHomogeneityAnalyzer / SymbolicTIHomogeneityAnalyzer events
+build SymbolicScoreAnalyzer / SymbolicTIHomogeneityAnalyzer events
 resolve window_mode → window_size_effective, time_step_effective, edge_policy
 centres ← build_hti_window_centers(excerpt_end, time_step_effective, window_size_effective, edge_policy)
 for each centre t:
@@ -841,7 +841,7 @@ instrument_uniformity ← Herfindahl(inst_mass)
 family_uniformity ← Herfindahl(fam_mass)
 macrofamily_uniformity ← Herfindahl(macro_mass)
 (technique_uniformity, technique_coverage_status) ← policy in §2.3
-register bundle ← compute_register_compactness_fields(pitch_occurrences, ref)
+register bundle ← compute_register_compactness_fields(pitch_occurrences, ref)   # hti_register_compactness.py
 ```
 
 ### C.4) Register compactness
@@ -859,7 +859,7 @@ R_compact ← sqrt( max(eps,R_span) * max(eps,R_pair) )
 register_proximity ← R_compact
 ```
 
-**Mathematical form:** with $\varepsilon=10^{-12}$ (`_EPS` in `hti.py`),
+**Mathematical form:** with $\varepsilon=10^{-12}$ (`_EPS` in `hti_register_compactness.py`),
 
 
 $$
@@ -918,7 +918,7 @@ for each tone index:
 ### C.8) Symbolic inspection tables
 
 ```
-analyzer ← TimbralHomogeneityAnalyzer(score, pitch_interpretation_mode, harmonic_pitch_policy)
+analyzer ← SymbolicScoreAnalyzer(score, pitch_interpretation_mode, harmonic_pitch_policy)
 events ← flatten_timbral_events(analyzer)
 inventory ← per-part taxonomy + counts from events
 vertical ← group events by round(offset_quarterLength); aggregate dynamics, techniques, register diagnostics

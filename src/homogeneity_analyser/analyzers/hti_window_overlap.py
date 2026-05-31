@@ -6,6 +6,11 @@ from collections.abc import Callable
 from typing import Any
 
 
+def is_event_active_in_window(ev: dict[str, Any], t_start: float, t_end: float) -> bool:
+    """True when event interval ``[offset, end)`` intersects ``[t_start, t_end)``."""
+    return float(ev["offset"]) < t_end and float(ev["end"]) > t_start
+
+
 def event_overlap_ql(event: dict[str, Any], t_start: float, t_end: float) -> float:
     """Return overlap duration in quarter lengths between ``event`` and ``[t_start, t_end)``."""
     o = float(event["offset"])
@@ -23,7 +28,7 @@ def build_window_contrib(
     """
     Active events in the window with positive overlap mass.
 
-    ``is_event_active_in_window`` is typically ``TimbralHomogeneityAnalyzer._active_in_window``.
+    ``is_event_active_in_window`` is the module-level helper or ``SymbolicScoreAnalyzer._active_in_window``.
     """
     active = [e for e in events if is_event_active_in_window(e, t_start, t_end)]
     contrib: list[tuple[dict[str, Any], float]] = []

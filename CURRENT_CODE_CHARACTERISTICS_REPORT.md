@@ -12,10 +12,10 @@
 
 1. **Primary product:** **Symbolic timbral–instrumental homogeneity** — **H_TI_core(t)** on a quarter-note time axis, from **MusicXML / MXL / MIDI** only. Headline series **H_TI(t)** is numerically identical to **H_TI_core(t)** in exports.
 2. **Interpretive layer:** **Notated dynamic conditioning** (ordinal written dynamics, coherence, family-aware scalars, **`dynamic_interpretation_label`**). It does **not** rescale **H_TI_core**; it qualifies reading. **`not_audio_analysis: true`** on H_TI JSON.
-3. **Register term:** **register_compactness** = geometric mean of **register_span_proximity** (outer span) and overlap-weighted **pairwise_interval_proximity** (pairwise **semitone-distance** vs reference — **not** mod‑12 interval-class consonance). Exports also emit **`register_span_factor`** and **`register_pair_distance_factor`** as explicit aliases of those two components. The column **`register_proximity`** duplicates **register_compactness** for backward compatibility. Percussion-family **unpitched** instruments skip pitched register mass (aligned with **`timbral.py`**). Optional **`interval_class_blend_factor`** / **`symbolic_blend_potential`** (when enabled) are **orthogonal** symbolic layers — see **`symbolic_blend_layers.py`** and **`docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`** (**`seconds_sevenths`** = mod‑12 bucket, not literal sevenths).
+3. **Register term:** **register_compactness** = geometric mean of **register_span_proximity** (outer span) and overlap-weighted **pairwise_interval_proximity** (pairwise **semitone-distance** vs reference — **not** mod‑12 interval-class consonance). Implementation: **`hti_register_compactness.py`** (re-exported from `hti.py`). Exports also emit **`register_span_factor`** and **`register_pair_distance_factor`** as explicit aliases of those two components. The column **`register_proximity`** duplicates **register_compactness** for backward compatibility. Percussion-family **unpitched** instruments skip pitched register mass (same rule in **`hti_window_features.py`** / **`symbolic_event_pipeline`**). Optional **`interval_class_blend_factor`** / **`symbolic_blend_potential`** (when enabled) are **orthogonal** symbolic layers — see **`symbolic_blend_layers.py`** and **`docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`** (**`seconds_sevenths`** = mod‑12 bucket, not literal sevenths).
 4. **Optional H_TA_acoustic_proxy:** Score-derived **timbral-acoustic affinity** (event-level pairwise kernel). **Orthogonal** to **H_TI_core**; default **off** (`include_acoustic_proxy`). **Not** measured audio; **not** the literature-governed **`timbral_affinity_*`** relief layer. See **`docs/H_TA_ACOUSTIC_PROXY.md`**.
 5. **Gradio UI:** **H_TI** run + **symbolic inspection** (upload-driven); separate accordions for **interval-class / symbolic-blend-potential** (`include_symbolic_blend_potential`) and **H_TA acoustic proxy** (`include_acoustic_proxy`, default off).
-6. **Legacy / internal:** Multimetric implementations under **`src/homogeneity_analyser/legacy/`** (compatibility shims in **`analyzers/`**). **Combined** JSON (**`schema_version` `1.8`**) for **tests** and **batch/research** — **not** the Gradio product. Coverage CI gate (**`fail_under` 77**) applies to the **product path** (legacy omitted; measured total ~**79%**). **`tests/test_hti_core_golden_outputs.py`** locks **`H_TI_core`** numerics. UI: **`callbacks.py`** is the Gradio boundary; parameter/result adapters live in **`ui/hti_ui_params.py`** and legacy/timbral/combined **`ui/*_ui_params.py`** (no analytical change). Repository hygiene log: **`docs/CLEANUP_REPORT.md`**. See **`legacy/README.md`**, **`docs/METRIC_CODE_MAP.md`**, **`docs/archive_legacy/`**.
+6. **Legacy / internal:** Multimetric implementations under **`src/homogeneity_analyser/legacy/`** (compatibility shims in **`analyzers/`**). **Combined** JSON (**`schema_version` `1.8`**) for **tests** and **batch/research** — **not** the Gradio product. Coverage CI gate (**`fail_under` 77**) applies to the **product path** (legacy omitted; measured total ~**79%**). **`tests/test_hti_core_golden_outputs.py`** locks **`H_TI_core`** numerics. UI: **`callbacks.py`** facade + **`callbacks_hti.py`** / **`callbacks_legacy.py`**; parameter adapters in **`ui/*_ui_params.py`**. Repository hygiene: **`docs/CLEANUP_REPORT.md`**. Module map: **`docs/HTI_SYMBOLIC_PIPELINE.md`**, **`docs/PRODUCT_SCOPE.md`**. See **`legacy/README.md`**, **`docs/METRIC_CODE_MAP.md`**, **`docs/archive_legacy/`** (historical paths).
 
 ---
 
@@ -23,8 +23,14 @@
 
 | Concern | Location |
 |--------|----------|
-| Window features, register compactness | `src/homogeneity_analyser/analyzers/hti.py` (`SymbolicTIHomogeneityAnalyzer`, `compute_register_compactness_fields`). CSV/JSON column lists: **`hti_export_rows.py`** (`HTI_CSV_COLUMNS`, `HTI_EXPORT_TIME_SERIES_KEYS`, `hti_csv_row_dict`; re-exported from `hti.py` for compatibility). Optional export registries: **`HTI_SYMBOLIC_BLEND_SERIES_KEYS`** / `append_hti_symbolic_blend_series_row` in `symbolic_blend_layers.py`; **`HTI_ACOUSTIC_PROXY_SERIES_KEYS`** / `append_hti_acoustic_proxy_series_row` in `timbral_acoustic_proxy.py`. See **`MAINTAINERS.md`**. |
-| Event list / sounding pitches / taxonomy | `analyzers/timbral.py` (base class reused by H_TI) |
+| H_TI orchestration (public API) | `analyzers/hti.py` — `SymbolicTIHomogeneityAnalyzer`, `analyze_hti`, `compute_H_TI` |
+| Per-window features (Herfindahl, technique, dynamics) | `analyzers/hti_window_features.py` — `extract_hti_window_features` |
+| Register compactness math | `analyzers/hti_register_compactness.py` — `compute_register_compactness_fields` (re-exported from `hti.py`) |
+| H_TI_core weighted geometric mean | `analyzers/hti_active_weights.py` |
+| Time-series row append + optional layers | `analyzers/hti_analyze_series.py` |
+| Comparability fingerprint | `analyzers/hti_comparability.py` |
+| CSV/JSON column lists | **`hti_export_rows.py`** (`HTI_CSV_COLUMNS`, `HTI_EXPORT_TIME_SERIES_KEYS`, `hti_csv_row_dict`; re-exported from `hti.py`). Optional registries: **`symbolic_blend_layers.py`**, **`timbral_acoustic_proxy.py`**. See **`MAINTAINERS.md`**. |
+| Event list / sounding pitches / taxonomy | `symbolic_score_analyzer.py`, `symbolic_event_pipeline.py`, `symbolic_instrument_resolve.py`, `symbolic_pitch_resolve.py`, `timbral_event_build.py` |
 | Written dynamics aggregation | `analyzers/hti_dynamics.py` |
 | Dynamic conditioning + labels | `analyzers/hti_dynamic_conditioning.py` |
 | Macrofamily diagnostic | `analyzers/hti_taxonomy.py` |
@@ -51,14 +57,14 @@
 |------|--------|
 | Entry | `homogeneity-analyser` → `homogeneity_analyser.ui.gradio_app:main`; `python -m homogeneity_analyser` |
 | Layout | `ui/gradio_app.py` — **H_TI_core** plot; timbral-affinity relief controls; accordion **Optional symbolic interval-class / blend-potential diagnostics**; accordion **Acoustic-aligned symbolic timbral-affinity proxy**; accordion **Symbolic inspection** |
-| Run path | `ui/callbacks.py` — **`run_hti_app`** → `run_symbolic_ti_homogeneity_analysis` → CSV/JSON/plot paths |
+| Run path | `ui/callbacks_hti.py` — **`run_hti_app`** (facade: `callbacks.run_hti_app`) → `run_symbolic_ti_homogeneity_analysis` → CSV/JSON/plot paths |
 | Copy | `ui/components.py` — `METRICS_EXPLAINER`, intro markdown |
 
 ---
 
 ## 5. Register / interval fields (H_TI time series)
 
-Per window (when pitched evidence exists): **`register_span_semitones`**, **`register_span_proximity`**, **`register_span_factor`** (same numeric as span proximity), **`pairwise_interval_proximity`**, **`register_pair_distance_factor`** (same numeric as pairwise proximity), **`pairwise_interval_coverage_status`** (`sufficient_pairs` / `insufficient_pairs` / `unpitched_only`), **`register_compactness`**, **`register_proximity`** (alias), **`register_coverage_status`**. When **`include_symbolic_blend_potential`**: **`interval_class_blend_factor`**, **`pairwise_interval_blend_factor`** (legacy alias), **`interval_class_profile`** (stable keys; **`seconds_sevenths`** = mod‑12 {1,2,10,11} bucket, not literal sevenths), **`interval_class_profile_display`**, **`literal_interval_semitone_pair_mass`**, **`chromatic_mod12_pair_mass`**, **`interval_class_evidence_status`**, **`symbolic_blend_potential`**, etc. CSV column order is defined by **`HTI_CSV_COLUMNS`** in `hti.py`.
+Per window (when pitched evidence exists): **`register_span_semitones`**, **`register_span_proximity`**, **`register_span_factor`** (same numeric as span proximity), **`pairwise_interval_proximity`**, **`register_pair_distance_factor`** (same numeric as pairwise proximity), **`pairwise_interval_coverage_status`** (`sufficient_pairs` / `insufficient_pairs` / `unpitched_only`), **`register_compactness`**, **`register_proximity`** (alias), **`register_coverage_status`**. When **`include_symbolic_blend_potential`**: **`interval_class_blend_factor`**, **`pairwise_interval_blend_factor`** (legacy alias), **`interval_class_profile`** (stable keys; **`seconds_sevenths`** = mod‑12 {1,2,10,11} bucket, not literal sevenths), **`interval_class_profile_display`**, **`literal_interval_semitone_pair_mass`**, **`chromatic_mod12_pair_mass`**, **`interval_class_evidence_status`**, **`symbolic_blend_potential`**, etc. CSV column order is defined by **`HTI_CSV_COLUMNS`** in **`hti_export_rows.py`** (re-exported from `hti.py`).
 
 ---
 
@@ -109,6 +115,8 @@ Still in the package for infrastructure and regression coverage (non-exhaustive)
 | `QUICK_REFERENCE.md` | One-page operator guide |
 | `TECHNICAL_MANUAL.md` | Full methodology + §19 bibliography + Appendix D (symbolic vocabularies) |
 | `docs/ARCHITECTURE.md` | System map |
+| `docs/HTI_SYMBOLIC_PIPELINE.md` | Stage → module map (extraction, window, metric) |
+| `docs/PRODUCT_SCOPE.md` | Product vs optional vs legacy tiers |
 | `docs/METRIC_CODE_MAP.md` | Code paths for **H_TI** + legacy/internal |
 | `docs/H_TA_ACOUSTIC_PROXY.md` | Acoustic proxy formula, evidence tags, UI separation |
 | `docs/archive_legacy/` | Superseded or historical docs, including **`report_legacy_multimetric.md`** |

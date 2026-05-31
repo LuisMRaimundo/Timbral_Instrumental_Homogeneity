@@ -1,7 +1,7 @@
 """
 Symbolic Timbral–Instrumental Homogeneity H_TI(t) — orchestration entry point.
 
-Score-derived only (MusicXML / MIDI). This module wires the symbolic pipeline (``timbral.py``)
+Score-derived only (MusicXML / MIDI). This module wires the symbolic pipeline (``symbolic_score_analyzer.py`` / ``symbolic_event_pipeline.py``)
 to per-window features (``hti_window_features.py``), **H_TI_core** (``hti_active_weights.py``),
 and time-series export (``hti_analyze_series.py`` / ``hti_export_rows.py``).
 
@@ -48,12 +48,12 @@ from homogeneity_analyser.analyzers.hti_register_compactness import compute_regi
 from homogeneity_analyser.analyzers.hti_score_lookup import measure_number_at_ql
 from homogeneity_analyser.analyzers.hti_window_features import extract_hti_window_features
 from homogeneity_analyser.analyzers.hti_window_overlap import event_overlap_ql
-from homogeneity_analyser.analyzers.timbral import TimbralHomogeneityAnalyzer
+from homogeneity_analyser.analyzers.symbolic_score_analyzer import SymbolicScoreAnalyzer
 
 TECHNIQUE_MODEL_VERSION = "technique_state_id_v3_dynamic_conditioning"
 
 
-class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
+class SymbolicTIHomogeneityAnalyzer(SymbolicScoreAnalyzer):
     """
     H_TI(t): overlap-mass Herfindahl on instrument / instrumental subfamily (taxonomy family) /
     technique_uniformity_key (instrument-free), plus register proximity; separate macrofamily Herfindahl diagnostic;
@@ -85,8 +85,6 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
         super().__init__(
             score_path=score_path,
             time_step=time_step,
-            timbral_config=None,
-            timbral_model_mode="legacy",
             music21_score=music21_score,
             pitch_interpretation_mode=pitch_interpretation_mode,
             harmonic_pitch_policy=harmonic_pitch_policy,

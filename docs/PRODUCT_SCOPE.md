@@ -7,7 +7,8 @@ This page separates **primary product code** from **optional research layers** a
 | Surface | Role |
 |---------|------|
 | Gradio tab **H_TI** | Default user path |
-| `SymbolicTIHomogeneityAnalyzer` (`analyzers/hti.py`) | Core analyzer |
+| `SymbolicTIHomogeneityAnalyzer` (`analyzers/hti.py`) | Core analyzer (orchestration; helpers in `hti_*` modules) |
+| `symbolic_event_pipeline.py` | Score → symbolic events (shared with H_timbral path) |
 | `services/analysis_service_hti.py` | Service entry for H_TI runs |
 | H_TI JSON `schema_version` **3.0** | Canonical export |
 | `HTI_CSV_COLUMNS` (`hti_export_rows.py`) | Canonical CSV |

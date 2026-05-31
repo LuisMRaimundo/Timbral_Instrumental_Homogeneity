@@ -7,4 +7,4 @@
 | `analysis_service_legacy.py` | H(t), H_timbral **metric**, cluster, fusion, U(t), `run_both_and_combine` |
 | `json_export.py`, `result_assembly.py`, `constants.py`, `param_validation.py` | Exports and validation |
 
-See `docs/ONBOARDING_H_TI.md`.
+See `docs/ONBOARDING_H_TI.md` and **`docs/HTI_SYMBOLIC_PIPELINE.md`** (module map).

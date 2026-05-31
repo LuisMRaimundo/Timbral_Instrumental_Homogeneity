@@ -34,14 +34,16 @@ No source modules, shims, legacy analyzers, or test fixtures removed.
 
 | File | Change |
 |------|--------|
-| `MAINTAINERS.md` | Coverage policy: `callbacks.py` in product path; pointer to this report |
-| `TECHNICAL_MANUAL.md` | Canonical CSV columns → `hti_export_rows.py`; `callbacks.py` = file wiring |
-| `docs/ARCHITECTURE.md` | UI helper modules listed; coverage note refreshed |
-| `CURRENT_CODE_CHARACTERISTICS_REPORT.md` | `hti_export_rows` canonical; ~79% coverage; cleanup log pointer |
-| `FINAL_VERIFICATION_REPORT.md` | Pytest **884**, mypy **97** files; 2026-05-20 supplement |
+| `MAINTAINERS.md` | Coverage policy; module map pointers; **`docs/HTI_SYMBOLIC_PIPELINE.md`** |
+| `TECHNICAL_MANUAL.md` | Canonical CSV columns → `hti_export_rows.py`; Gradio wiring → `callbacks_hti.py` (facade `callbacks.py`) |
+| `docs/ARCHITECTURE.md` | UI + analyzer module split (2026-05-31); coverage note refreshed |
+| `CURRENT_CODE_CHARACTERISTICS_REPORT.md` | Module inventory; `hti_export_rows` canonical; ~79% coverage |
+| `docs/ONBOARDING_H_TI.md` | Symbolic pipeline modules + reading order |
+| `FINAL_VERIFICATION_REPORT.md` | 2026-05-20 supplement; **§12** module refactor (2026-05-31) |
 | `docs/index.md` | Link to this report |
+| `README.md`, `docs/METRIC_CODE_MAP.md`, `docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`, `docs/HTI_SYMBOLIC_PIPELINE.md` | Module paths aligned with split |
 | `src/homogeneity_analyser/analyzers/README.md` | Note re-export from `hti.py` |
-| `docs/archive_legacy/README.md` | Sanitation archive entries |
+| `docs/archive_legacy/README.md` | Sanitation archive entries; pre-refactor path disclaimer |
 
 ---
 
