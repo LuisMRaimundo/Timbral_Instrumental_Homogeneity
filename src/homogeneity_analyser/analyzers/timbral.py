@@ -109,6 +109,10 @@ from homogeneity_analyser.analyzers.technique_state import (
     timbral_state_concentration_from_distribution,
 )
 from homogeneity_analyser.analyzers.timbral_concentration_splits import concentration_bundle_from_timbral_slices
+from homogeneity_analyser.analyzers.timbral_event_build import (
+    build_timbral_score_event,
+    collect_written_pitches_from_note,
+)
 from homogeneity_analyser.analyzers.timbral_sounding_pitch import _note_or_part_transposition
 from homogeneity_analyser.analyzers.timbre_cross_relations import verified_cross_timbral_boost
 from homogeneity_analyser.models.timbral_semantics import (
@@ -499,8 +503,6 @@ class TimbralHomogeneityAnalyzer:
                     ctx = TechniqueStateContext(family=family, instrument=instrument)
                     ctx.dynamic_mark, ctx.hairpin = dm_carry, hp_carry
                 prev_key = key
-                o = float(n.offset)
-                d = float(getattr(n, "quarterLength", 0.0))
                 pits, pitch_meta = interpret_note_sounding_pitch_ps_list(
                     n,
                     part,
@@ -509,23 +511,14 @@ class TimbralHomogeneityAnalyzer:
                     canonical_instrument=str(instrument),
                     harmonic_pitch_policy=self._harmonic_pitch_policy,
                 )
-                from music21 import chord as m21chord
                 from music21 import note as m21note
 
-                written_ps: list[float] = []
                 is_unpitched = isinstance(n, m21note.Unpitched)
-                unpitched_display = ""
-                if pitch_meta:
-                    written_ps = [float(m["effective_written_midi"]) for m in pitch_meta]
-                elif isinstance(n, m21note.Note):
-                    written_ps = [float(n.pitch.ps)]
-                elif isinstance(n, m21chord.Chord):
-                    written_ps = [float(p.ps) for p in n.pitches]
-                elif is_unpitched:
-                    try:
-                        unpitched_display = str(n.displayName())
-                    except (AttributeError, TypeError, ValueError):
-                        unpitched_display = "unpitched"
+                written_ps, unpitched_display = collect_written_pitches_from_note(
+                    n,
+                    pitch_meta=pitch_meta,
+                    is_unpitched=is_unpitched,
+                )
                 if not pits:
                     if is_unpitched:
                         pits = []
@@ -536,98 +529,26 @@ class TimbralHomogeneityAnalyzer:
                 apply_persistent_text(notation_text_context_for_note(n, measure_text="none"), work)
                 st = merge_note_technique_state(work, n, instrument=instrument, family=family)
                 # Note-local text must not advance the timeline ``ctx``; only ``direction`` events do.
-                ts_dict = technique_state_to_dict(st)
-                ts_id = technique_state_id(instrument, family, st)
-                tu_key = compute_technique_uniformity_key(instrument, family, st)
-                _blend_cfg = load_symbolic_blend_conditioning_profile()
-                crz = (
-                    clarinet_register_zone_from_soundings([float(x) for x in pits], _blend_cfg)
-                    if is_clarinet_family(str(family))
-                    else "n/a"
-                )
-                bb = _blend_cfg.get("brass_bright_tendency_instruments") or []
-                bm = _blend_cfg.get("brass_mellow_tendency_instruments") or []
-                _bright_b = {str(x).strip().lower() for x in bb}
-                _mellow_b = {str(x).strip().lower() for x in bm}
-                _inst_l = str(instrument).strip().lower()
-                bsym = "n/a"
-                if is_brass_family(str(family)):
-                    if _inst_l in _bright_b:
-                        bsym = "bright_cylindrical_tendency"
-                    elif _inst_l in _mellow_b:
-                        bsym = "conical_mellow_tendency"
-                    else:
-                        bsym = "brass_unclassified_tendency"
-                exp_lbl = explicit_technique_audit_label(instrument, family, st)
-                exp_det = explicit_technique_detected(instrument, family, st)
-                if is_bowed_orchestral_string(str(instrument)):
-                    tech = legacy_string_technique_from_state(st)
-                else:
-                    tech = string_technique_from_note(n)
-                if is_brass_family(str(family)):
-                    btech = brass_matrix_key_from_technique_state(st)
-                else:
-                    btech = brass_technique_from_note(n, family=family)
-                ftech = str(st.primary) if is_flute_family(str(family)) else flute_technique_from_note(n, family=family)
-                ctech = (
-                    str(st.primary)
-                    if is_clarinet_family(str(family))
-                    else clarinet_technique_from_note(n, family=family)
-                )
-                drtech = (
-                    str(st.primary)
-                    if is_double_reed_family(str(family))
-                    else double_reed_technique_from_note(n, family=family)
-                )
-                saxtech = (
-                    str(st.primary)
-                    if is_saxophone_family(str(family))
-                    else saxophone_technique_from_note(n, family=family)
-                )
-                perctech = percussion_technique_from_note(n, family=family)
                 self._events.append(
-                    {
-                        "offset": o,
-                        "end": o + d,
-                        "onset": o,
-                        "note_end": o + d,
-                        "duration_ql": d,
-                        "overlap_ql": d,
-                        "pitches": pits,
-                        "written_pitches_ps": written_ps,
-                        "pitch_tone_metadata": pitch_meta,
-                        "part_index": int(part_index),
-                        "part_id": str(getattr(part, "id", "") or ""),
-                        "part_name": str(getattr(part, "partName", "") or ""),
-                        "raw_part_name": orch_labels["raw_part_name"],
-                        "section_label": orch_labels["section_label"],
-                        "desk_group": orch_labels["desk_group"],
-                        "part_label_original": orch_labels["part_label_original"],
-                        "is_unpitched": bool(is_unpitched),
-                        "unpitched_display": unpitched_display,
-                        **audit_surf,
-                        "instrument": instrument,
-                        "family": family,
-                        "instrument_source": inst_src,
-                        "technique": tech,
-                        "brass_technique": btech,
-                        "flute_technique": ftech,
-                        "clarinet_technique": ctech,
-                        "double_reed_technique": drtech,
-                        "saxophone_technique": saxtech,
-                        "percussion_technique": perctech,
-                        "technique_state": ts_dict,
-                        "technique_state_id": ts_id,
-                        "technique_uniformity_key": tu_key,
-                        "explicit_technique": exp_lbl,
-                        "explicit_technique_detected": bool(exp_det),
-                        "dynamic_mark": str(ctx.dynamic_mark or ""),
-                        "hairpin": str(ctx.hairpin or "none"),
-                        "salient_articulation": bool(_note_salient_accent(n)),
-                        "harmonic_pitch_policy": str(self._harmonic_pitch_policy),
-                        "clarinet_register_zone": crz,
-                        "brass_symbolic_blend_tendency": bsym,
-                    }
+                    build_timbral_score_event(
+                        n=n,
+                        part_index=part_index,
+                        part=part,
+                        ctx=ctx,
+                        instrument=instrument,
+                        family=family,
+                        inst_src=inst_src,
+                        orch_labels=orch_labels,
+                        pits=pits,
+                        written_ps=written_ps,
+                        pitch_meta=pitch_meta,
+                        is_unpitched=is_unpitched,
+                        unpitched_display=unpitched_display,
+                        audit_surf=audit_surf,
+                        st=st,
+                        harmonic_pitch_policy=str(self._harmonic_pitch_policy),
+                        note_salient_accent=_note_salient_accent(n),
+                    )
                 )
 
     def _active_in_window(self, ev: dict, t_start: float, t_end: float) -> bool:

@@ -1,7 +1,7 @@
 # Current code characteristics report
 
 **Document:** `CURRENT_CODE_CHARACTERISTICS_REPORT.md`  
-**Project:** `homogeneity-analyser` (package `homogeneity_analyser`)  
+**Project:** **Orchomogeneity_Analyser** ([GitHub](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)) — Python package **`homogeneity-analyser`** (import **`homogeneity_analyser`**)  
 **Audience:** Developers and auditors who want a **single inventory** of how the repository behaves **today**, aligned with the **H_TI-first** product.
 
 **Canonical user docs:** `README.md`, `QUICK_REFERENCE.md`, `TECHNICAL_MANUAL.md` (not duplicated here).

@@ -16,9 +16,13 @@ from homogeneity_analyser.utils.output_paths import cleanup_stale_exports
 
 def build_demo() -> gr.Blocks:
     """Single-tab Gradio UI: H_TI(t) plus optional symbolic inspection."""
-    demo = gr.Blocks(title="Symbolic Timbral–Instrumental Homogeneity Analyser")
+    demo = gr.Blocks(title="Orchomogeneity Analyser")
     with demo:
-        gr.Markdown("# Symbolic Timbral–Instrumental Homogeneity Analyser")
+        gr.Markdown("# Orchomogeneity Analyser")
+        gr.Markdown(
+            "Score-derived symbolic timbral–instrumental homogeneity **H_TI** from MusicXML/MXL/MIDI "
+            "(**symbolic notation only** — not audio analysis)."
+        )
         gr.Markdown(
             "**Score-derived H_TI_core(t)** with **notated dynamic conditioning**. "
             "**MusicXML / MIDI only** — **no audio analysis**, no waveform or FFT on recordings, no SPL."

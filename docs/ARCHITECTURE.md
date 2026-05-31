@@ -1,4 +1,4 @@
-# Architecture (Homogeneity Analyser)
+# Architecture (Orchomogeneity Analyser)
 
 This repository is a **Python package** (`homogeneity_analyser`) under a **src layout**. All application logic lives under `src/homogeneity_analyser/`.
 

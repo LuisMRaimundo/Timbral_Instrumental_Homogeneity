@@ -66,6 +66,14 @@ class TestGoldenSingleSustainedPitched:
         }
         assert sum(aw.values()) == pytest.approx(1.0, **_TOL)
 
+    def test_analyze_series_exports_comparability_class(self) -> None:
+        sc = _load("golden_two_violins_unison_c5.musicxml")
+        an = SymbolicTIHomogeneityAnalyzer(music21_score=sc, time_step=1.0)
+        results = an.analyze_hti(4.0, edge_policy="mark_partial_windows")
+        assert "hti_comparability_class" in results
+        assert len(results["hti_comparability_class"]) == len(results["t"])
+        assert results["hti_comparability_class"][2] == "full_4_component"
+
     def test_analyze_series_aliases_and_bounds(self) -> None:
         sc = _load("golden_two_violins_unison_c5.musicxml")
         an = SymbolicTIHomogeneityAnalyzer(music21_score=sc, time_step=1.0)

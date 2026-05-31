@@ -32,12 +32,10 @@ from homogeneity_analyser.analyzers.hti_active_weights import (
     compute_hti_active_components,
 )
 from homogeneity_analyser.analyzers.hti_adaptive_windows import HTI_EDGE_MARK, hti_window_row_geometry
+from homogeneity_analyser.analyzers.hti_analyze_series import HTI_ANALYZE_SERIES_KEYS, enrich_hti_window_optional_layers
+from homogeneity_analyser.analyzers.hti_comparability import classify_hti_comparability_class
 from homogeneity_analyser.analyzers.hti_concentration import finite_share_float as _finite_share_float
 from homogeneity_analyser.analyzers.hti_concentration import herfindahl_from_masses as _herfindahl_from_masses
-from homogeneity_analyser.analyzers.hti_dynamic_conditioning import (
-    attach_dynamic_conditioning_for_window,
-    pick_dynamic_interpretation_label_subfamily_relieved,
-)
 from homogeneity_analyser.analyzers.hti_dynamics import aggregate_notated_dynamics_for_window
 from homogeneity_analyser.analyzers.hti_export_rows import (  # noqa: F401 — public re-exports
     HTI_CSV_COLUMNS,
@@ -62,14 +60,8 @@ from homogeneity_analyser.analyzers.timbral_acoustic_proxy import (
     HTI_ACOUSTIC_PROXY_SERIES_KEYS,
     acoustic_proxy_series_value,
     append_hti_acoustic_proxy_series_row,
-    compute_H_TA_acoustic_contextual,
-    compute_timbral_acoustic_affinity,
     disabled_acoustic_proxy_bundle,
     insufficient_window_acoustic_proxy_bundle,
-)
-from homogeneity_analyser.analyzers.timbral_affinity import (
-    compute_timbral_affinity_bundle_for_window,
-    finalize_timbral_affinity_dynamic,
 )
 
 _EPS = 1e-12
@@ -445,107 +437,7 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
         progress_callback: Callable[[float, str], None] | None = None,
         collect_affinity_pairs: bool = False,
     ) -> dict[str, list[Any]]:
-        series_keys = (
-            "t",
-            "window_start",
-            "window_end",
-            "edge_window",
-            "window_coverage_ratio",
-            "effective_window_overlap_duration",
-            "measure",
-            "pitch_interpretation_mode",
-            "H_TI",
-            "H_TI_core",
-            "H_TI_strict",
-            "H_TI_subfamily_relieved",
-            "same_subfamily_relief_factor",
-            "instrument_effective_uniformity",
-            "instrument_uniformity",
-            "instrumental_subfamily_uniformity",
-            "macrofamily_uniformity",
-            "family_uniformity",
-            "technique_uniformity",
-            "register_proximity",
-            "register_compactness",
-            "register_span_proximity",
-            "register_span_factor",
-            "pairwise_interval_proximity",
-            "register_pair_distance_factor",
-            "pairwise_interval_coverage_status",
-            "n_instruments",
-            "n_families",
-            "n_macrofamilies",
-            "register_span_semitones",
-            "dominant_instrument",
-            "dominant_instruments",
-            "dominant_instrument_tie",
-            "dominant_instrument_share",
-            "dominant_instrument_margin",
-            "dominant_instrumental_subfamily",
-            "dominant_macrofamily",
-            "dominant_macrofamilies",
-            "dominant_macrofamily_tie",
-            "dominant_macrofamily_share",
-            "dominant_macrofamily_margin",
-            "dominant_family",
-            "dominant_families",
-            "dominant_family_tie",
-            "dominant_family_share",
-            "dominant_family_margin",
-            "dominant_timbral_state",
-            "dominant_timbral_states",
-            "dominant_timbral_state_tie",
-            "dominant_timbral_state_share",
-            "dominant_timbral_state_margin",
-            "technique_state_distribution",
-            "instrument_distribution",
-            "family_distribution",
-            "macrofamily_distribution",
-            "technique_coverage_status",
-            "register_coverage_status",
-            "active_weights",
-            "notated_dynamic_level_distribution",
-            "notated_dynamic_coherence",
-            "dominant_dynamic",
-            "dominant_dynamics",
-            "dominant_dynamic_tie",
-            "dominant_dynamic_share",
-            "dominant_dynamic_margin",
-            "dynamic_intensity_ordinal",
-            "dynamic_softness",
-            "dynamic_coverage_status",
-            "crescendo_active",
-            "diminuendo_active",
-            "dynamic_divergence_detected",
-            "soft_blend_potential",
-            "intra_family_convergence_potential",
-            "transparent_blend_potential",
-            "bright_salience_risk",
-            "projection_divergence_risk",
-            "masked_tonal_mass_risk",
-            "same_family_mixed_instrument_mass",
-            "family_heterogeneity",
-            "masking_context_weight",
-            "family_specific_projection_weight",
-            "dynamic_interpretation_label",
-            "dynamic_interpretation_label_subfamily_relieved",
-            "dynamic_evidence_status",
-            "H_TI_affinity_literature_relieved",
-            "timbral_affinity_uniformity",
-            "instrument_affinity_effective_uniformity",
-            "timbral_affinity_profile",
-            "timbral_affinity_relief_factor",
-            "timbral_affinity_dynamic_factor",
-            "timbral_affinity_dynamic_status",
-            "affinity_dynamic_interpretation_label",
-            "H_TI_affinity_dynamic_conditioned",
-            "timbral_affinity_evidence_status",
-            "timbral_affinity_rule_summary",
-            "timbral_affinity_literature_sources",
-            "literature_affinity_unverified_rule_blocked",
-            *HTI_SYMBOLIC_BLEND_SERIES_KEYS,
-            *HTI_ACOUSTIC_PROXY_SERIES_KEYS,
-        )
+        series_keys = HTI_ANALYZE_SERIES_KEYS
         results: dict[str, list[Any]] = {k: [] for k in series_keys}
         pair_accum: list[dict[str, Any]] = []
         acoustic_pair_accum: list[dict[str, Any]] = []
@@ -591,76 +483,23 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
             h = h_strict
             aff_full: dict[str, Any] = {}
             acoustic_full: dict[str, Any] = {}
+            contrib: list[tuple[dict[str, Any], float]] = []
             if feats is not None:
-                contrib_pre = list(feats.get("__contrib__", []))
-                aff_base = compute_timbral_affinity_bundle_for_window(
-                    contrib_pre,
+                aff_full, acoustic_full, contrib, lbl_r = enrich_hti_window_optional_layers(
+                    self,
                     feats,
-                    profile=str(getattr(self, "timbral_affinity_profile", "conservative")),
-                    relief_factor=float(getattr(self, "timbral_affinity_relief_factor", 0.0)),
-                    instrument_uniformity=float(feats["instrument_uniformity"]),
-                    compute_h_ti=self.compute_H_TI,
-                    feats_for_h_ti=feats,
+                    h_strict=float(h_strict),
+                    h_relaxed=float(h_relaxed),
+                    ieff=float(ieff),
                     w_instr=w_instr,
                     w_fam=w_fam,
                     w_tech=w_tech,
                     w_reg=w_reg,
-                    collect_pairs=collect_affinity_pairs,
-                )
-                contrib = list(feats.pop("__contrib__", []))
-                inst_mass = dict(feats.pop("__inst_mass__", {}))
-                fam_mass = dict(feats.pop("__fam_mass__", {}))
-                macro_mass = dict(feats.pop("__macro_mass__", {}))
-                reg_pitches = list(feats.pop("__register_pitches__", []))
-                span_semi_priv = feats.pop("__span_semi__", float("nan"))
-                span_semi_use = float(span_semi_priv) if isinstance(span_semi_priv, int | float) else float("nan")
-                attach_dynamic_conditioning_for_window(
-                    feats,
-                    float(h_strict),
-                    contrib,
-                    inst_mass,
-                    fam_mass,
-                    macro_mass,
-                    reg_pitches,
-                    span_semi_use,
-                )
-                aff_full = finalize_timbral_affinity_dynamic(
-                    aff_base,
-                    feats,
-                    dynamic_affinity_enabled=bool(getattr(self, "dynamic_affinity_enabled", True)),
-                )
-                if bool(getattr(self, "include_acoustic_proxy", False)):
-                    acoustic_full = compute_timbral_acoustic_affinity(
-                        contrib_pre,
-                        feats,
-                        profile=str(getattr(self, "acoustic_proxy_profile", "conservative")),
-                        kernel_weights=getattr(self, "acoustic_proxy_kernel_weights", None),
-                        include_interval_class=bool(
-                            getattr(self, "acoustic_proxy_include_interval_class", False)
-                        ),
-                        collect_pairs=bool(getattr(self, "acoustic_proxy_pairwise_export", False))
-                        or collect_affinity_pairs,
-                        min_evidence_policy=str(
-                            getattr(self, "acoustic_proxy_min_evidence_policy", "omit_missing_components")
-                        ),
-                    )
-                    h_ctx = compute_H_TA_acoustic_contextual(acoustic_full, feats)
-                    acoustic_full["H_TA_acoustic_contextual"] = h_ctx
-                prs = aff_full.pop("_pair_rows", [])
-                if collect_affinity_pairs:
-                    mstr = int(mnum) if mnum is not None else ""
-                    for pr in prs:
-                        pair_accum.append({**pr, "t_quarterLength": float(t), "measure": mstr})
-                if acoustic_full:
-                    aprs = acoustic_full.pop("_pair_rows", [])
-                    if bool(getattr(self, "acoustic_proxy_pairwise_export", False)) or collect_affinity_pairs:
-                        mstr_a = int(mnum) if mnum is not None else ""
-                        for pr in aprs:
-                            acoustic_pair_accum.append(
-                                {**pr, "t_quarterLength": float(t), "measure": mstr_a}
-                            )
-                lbl_r = pick_dynamic_interpretation_label_subfamily_relieved(
-                    feats, float(h_relaxed), float(ieff), contrib=contrib
+                    collect_affinity_pairs=collect_affinity_pairs,
+                    t=float(t),
+                    mnum=mnum,
+                    pair_accum=pair_accum,
+                    acoustic_pair_accum=acoustic_pair_accum,
                 )
             else:
                 lbl_r = "insufficient_dynamic_evidence"
@@ -673,6 +512,7 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
             results["measure"].append(int(mnum) if mnum is not None else "")
             results["pitch_interpretation_mode"].append(mode_label)
             results["H_TI"].append(h)
+            cmp_class = classify_hti_comparability_class(feats=feats, active_weights=aw)
             nanf = float("nan")
             if feats is None:
                 results["H_TI_core"].append(float("nan"))
@@ -743,6 +583,8 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
                         results[k].append("none")
                     elif k == "active_weights":
                         results[k].append(aw)
+                    elif k == "hti_comparability_class":
+                        results[k].append(cmp_class)
                     elif k == "dominant_timbral_state" or k == "dominant_dynamic":
                         results[k].append(None)
                     elif k in (
@@ -850,6 +692,7 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
                 results["technique_coverage_status"].append(str(feats["technique_coverage_status"]))
                 results["register_coverage_status"].append(str(feats["register_coverage_status"]))
                 results["active_weights"].append(aw)
+                results["hti_comparability_class"].append(cmp_class)
                 results["notated_dynamic_level_distribution"].append(dict(feats["notated_dynamic_level_distribution"]))
                 results["notated_dynamic_coherence"].append(float(feats["notated_dynamic_coherence"]))
                 results["dominant_dynamic"].append(feats.get("dominant_dynamic"))

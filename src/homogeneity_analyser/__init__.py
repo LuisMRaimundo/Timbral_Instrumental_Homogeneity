@@ -1,3 +1,3 @@
-"""Symbolic homogeneity H(t), part-name H_timbral(t), and register uniformity U(t)."""
+"""Orchomogeneity — H_TI score-derived symbolic timbral–instrumental homogeneity analyser."""
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"

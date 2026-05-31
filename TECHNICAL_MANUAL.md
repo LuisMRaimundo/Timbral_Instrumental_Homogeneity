@@ -1,4 +1,4 @@
-# Technical Manual — Symbolic Timbral–Instrumental Homogeneity Analyser
+# Technical Manual — Orchomogeneity Analyser
 
 This manual describes the **score-centred** pipeline: **$H_{\mathrm{TI},\mathrm{core}}(t)$** (structural symbolic homogeneity) and **notated dynamic conditioning** (interpretive layer). The headline export series **H_TI(t)** is numerically identical to **$H_{\mathrm{TI},\mathrm{core}}(t)$** (column **`H_TI`** / **`H_TI_core`**). Inputs are **MusicXML / MXL / MIDI** semantics only. The software does **not** load audio (**not measured audio**), perform **FFT** on recordings, estimate **SPL**, or claim **measured acoustic or perceptual timbral fusion**.
 
@@ -188,7 +188,8 @@ When you run **H_TI**, the pipeline (high level): builds **notation events**; fo
 | **dynamic_evidence_status** | Strength of rule evidence | **`strong`** / **`moderate`** / **`insufficient`**. |
 | **dominant_instruments** (plural) | Tied top instrument(s) | Prefer plural + **`dominant_instrument_tie`** over **`dominant_instrument`** alone. |
 | **dominant_families** / **dominant_macrofamilies** | Same pattern | Use **`*_tie`** flags when ties exist. |
-| **edge_window** | Boundary flag | **true** → nominal window clipped; interpret cautiously. |
+| **edge_window** | Boundary flag | **true** → nominal window clipped; interpret cautiously. Plots may mark these points (diamond) or exclude them from the line (`exclude_edge_windows`). |
+| **hti_comparability_class** | Formula fingerprint | Which components entered the renormalised **H_TI_core** mean: `full_4_component`, `no_technique`, `no_register`, `instrument_family_only`, `no_active_events`, `partial_other`. |
 | **window_coverage_ratio** | Clipped overlap / nominal width | Low values near edges → partial coverage. |
 
 ### T.12 Reading dynamics responsibly
@@ -658,7 +659,7 @@ One **`dynamic_interpretation_label`** per window, chosen in strict priority ord
 
 ## 9) CSV output
 
-Columns follow `homogeneity_analyser.analyzers.hti_export_rows.HTI_CSV_COLUMNS` (also importable from `analyzers.hti` for compatibility) (time, measure, **`pitch_interpretation_mode`**, **H_TI**, **H_TI_core**, uniformities, technique coverage, **register_proximity** (= **register_compactness**), **register_span_proximity**, **register_span_factor**, **pairwise_interval_proximity**, **register_pair_distance_factor**, **pairwise_interval_coverage_status**, **register_span_semitones**, **register_coverage_status**, dynamic fields, interpretive scalars, **`dynamic_interpretation_label`**, **`dynamic_evidence_status`**, optional interval-class / symbolic-blend columns when **`include_symbolic_blend_potential`** is enabled, optional acoustic-proxy columns when **`include_acoustic_proxy`** is enabled (including **`timbral_acoustic_affinity_evidence_status`**), JSON-encoded dict columns for distributions / `active_weights`).
+Columns follow `homogeneity_analyser.analyzers.hti_export_rows.HTI_CSV_COLUMNS` (also importable from `analyzers.hti` for compatibility) (time, measure, **`pitch_interpretation_mode`**, **H_TI**, **H_TI_core**, **`hti_comparability_class`**, uniformities, technique coverage, **register_proximity** (= **register_compactness**), **register_span_proximity**, **register_span_factor**, **pairwise_interval_proximity**, **register_pair_distance_factor**, **pairwise_interval_coverage_status**, **register_span_semitones**, **register_coverage_status**, dynamic fields, interpretive scalars, **`dynamic_interpretation_label`**, **`dynamic_evidence_status`**, optional interval-class / symbolic-blend columns when **`include_symbolic_blend_potential`** is enabled, optional acoustic-proxy columns when **`include_acoustic_proxy`** is enabled (including **`timbral_acoustic_affinity_evidence_status`**), JSON-encoded dict columns for distributions / `active_weights`).
 
 **Register vs interval-class (orthogonal):** e.g. **C4–D4** can show **high** **register_compactness** yet **moderate** **interval_class_blend_factor** (bucket **`seconds_sevenths`** — mod‑12 second class only; check **`literal_interval_semitone_pair_mass`** for literal `"2"` semitones); **C4–C5** is typically **less** register-compact but **high** octave-class favourability; **C4–G4** is **fifth-favourable**; **C4–F♯4** is **tritone-unfavourable** in the symbolic mapping. These are **score-reading conventions**, not perceptual proof. Full key/display semantics: **`docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`**.
 

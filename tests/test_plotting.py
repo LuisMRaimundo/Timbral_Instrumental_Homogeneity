@@ -104,12 +104,42 @@ def test_make_hti_figure_plotly_hover_includes_edge_when_series_present():
         "H_TI": [0.55, 0.6],
         "edge_window": [False, True],
         "window_coverage_ratio": [1.0, 0.4],
+        "hti_comparability_class": ["full_4_component", "full_4_component"],
     }
     fig_p = make_hti_figure_plotly(payload)
     tr = fig_p.data[0]
     assert tr.hovertemplate is not None
     assert "edge_window" in tr.hovertemplate
+    assert "hti_comparability_class" in tr.hovertemplate
     assert tr.customdata is not None
+    assert len(fig_p.data) == 2
+
+
+def test_make_hti_figure_excludes_edge_windows_when_requested():
+    payload = {
+        "t": [0.0, 2.0, 4.0],
+        "H_TI": [0.5, 0.6, 0.7],
+        "edge_window": [True, False, True],
+        "window_coverage_ratio": [0.5, 1.0, 0.5],
+    }
+    fig_m = make_hti_figure(payload, exclude_edge_windows=True)
+    y = fig_m.axes[0].lines[0].get_ydata()
+    assert np.isnan(y[0])
+    assert y[1] == pytest.approx(0.6)
+    assert np.isnan(y[2])
+    plt.close(fig_m)
+
+
+def test_make_hti_figure_marks_edge_windows_mpl():
+    payload = {
+        "t": [0.0, 2.0],
+        "H_TI": [0.55, 0.6],
+        "edge_window": [True, False],
+        "window_coverage_ratio": [0.4, 1.0],
+    }
+    fig_m = make_hti_figure(payload, mark_edge_windows=True)
+    assert len(fig_m.axes[0].collections) >= 1
+    plt.close(fig_m)
 
 
 def test_make_register_figure_mpl_and_plotly():

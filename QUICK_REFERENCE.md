@@ -1,8 +1,10 @@
-# Quick Reference — Symbolic Timbral–Instrumental Homogeneity Analyser
+# Orchomogeneity Analyser — Quick Reference
+
+**Repository:** [Orchomogeneity_Analyser](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)
 
 ## What this software does
 
-Computes $H_{\mathrm{TI,core}}(t)$ from **MusicXML / MXL / MIDI**: a **symbolic** timbral–instrumental homogeneity curve in sliding windows, plus **notated dynamic conditioning** (ordinal written dynamics, coherence, interpretive scalars, and a single **`dynamic_interpretation_label`** per window). The export column **`H_TI`** is the same scalar as **H_TI(t)**.
+Computes $H_{\mathrm{TI,core}}(t)$ from **MusicXML / MXL / MIDI** **symbolic notation**: a timbral–instrumental homogeneity curve in sliding windows, plus **notated dynamic conditioning** (ordinal written dynamics, coherence, interpretive scalars, and a single **`dynamic_interpretation_label`** per window). The export column **`H_TI`** is the same scalar as **H_TI(t)**.
 
 ## What it does **not** do
 
@@ -79,9 +81,13 @@ Nested JSON block: **`dynamic_conditioning`** (H_TI bundle `schema_version` **3.
 
 Singular **`dominant_*`** columns remain for compatibility; for ties read **`dominant_*s`** and **`dominant_*_tie`** alongside the singular field.
 
+## Comparability (`hti_comparability_class`)
+
+Each window exports **`hti_comparability_class`**: which components entered the renormalised geometric mean for **`H_TI_core`**. Values: `full_4_component`, `no_technique`, `no_register`, `instrument_family_only`, `no_active_events`, `partial_other`. **Do not compare `H_TI_core` across windows with different classes** without stating the effective formula change. Cross-check **`active_weights`**, **`technique_coverage_status`**, and **`register_coverage_status`**.
+
 ## CSV columns
 
-See `homogeneity_analyser.analyzers.hti.HTI_CSV_COLUMNS` in source — includes uniformities, technique coverage, **`register_compactness`**, **`register_span_proximity`** / **`register_span_factor`**, **`pairwise_interval_proximity`** / **`register_pair_distance_factor`**, optional symbolic-blend columns when enabled (**`interval_class_blend_factor`**, **`interval_class_profile`**, **`interval_class_profile_display`**, **`literal_interval_semitone_pair_mass`**, **`chromatic_mod12_pair_mass`**, **`symbolic_blend_potential`**, …), window geometry (**`window_start`**, **`window_end`**, **`edge_window`**, **`window_coverage_ratio`**), all dynamic / interpretive fields, JSON-encoded **`notated_dynamic_level_distribution`**, **`active_weights`**, etc.
+See `homogeneity_analyser.analyzers.hti_export_rows.HTI_CSV_COLUMNS` — includes **`hti_comparability_class`**, uniformities, technique coverage, **`register_compactness`**, **`register_span_proximity`** / **`register_span_factor`**, **`pairwise_interval_proximity`** / **`register_pair_distance_factor`**, optional symbolic-blend columns when enabled (**`interval_class_blend_factor`**, **`interval_class_profile`**, **`interval_class_profile_display`**, **`literal_interval_semitone_pair_mass`**, **`chromatic_mod12_pair_mass`**, **`symbolic_blend_potential`**, …), window geometry (**`window_start`**, **`window_end`**, **`edge_window`**, **`window_coverage_ratio`**), all dynamic / interpretive fields, JSON-encoded **`notated_dynamic_level_distribution`**, **`active_weights`**, etc.
 
 ## Symbolic inspection (Loaded XML inspection)
 

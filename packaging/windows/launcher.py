@@ -62,7 +62,7 @@ def main() -> None:
 
     cleanup_stale_exports()
     url = f"http://{host}:{port}/"
-    print(f"Homogeneity Analyser: binding {url} (browser will open if supported)")
+    print(f"Orchomogeneity Analyser: binding {url} (browser will open if supported)")
     build_demo().launch(
         **gradio_launch_kwargs(
             server_name=host,

@@ -1,4 +1,4 @@
-# Maintainer guide — Homogeneity Analyser
+# Maintainer guide — Orchomogeneity Analyser
 
 Practical map for developers changing exports, weights, UI copy, or documentation. This project favours **small, test-backed edits** over large refactors.
 

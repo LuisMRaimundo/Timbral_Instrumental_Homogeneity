@@ -1,4 +1,4 @@
-# Homogeneity Analyser — documentation
+# Orchomogeneity Analyser — documentation
 
 Welcome. This site mirrors the repository Markdown (no mathematical rewrites).
 

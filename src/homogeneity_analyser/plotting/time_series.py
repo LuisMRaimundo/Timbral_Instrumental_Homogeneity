@@ -15,6 +15,93 @@ from homogeneity_analyser.plotting.common import (
 )
 
 
+def _hti_edge_window_mask(results_hti: dict, n: int) -> np.ndarray | None:
+    ew_raw = results_hti.get("edge_window")
+    if not isinstance(ew_raw, list | tuple) or len(ew_raw) != n:
+        return None
+    return np.array([bool(x) for x in ew_raw], dtype=bool)
+
+
+def _hti_plot_y_values(h: np.ndarray, edge_mask: np.ndarray | None, *, exclude_edge_windows: bool) -> np.ndarray:
+    if not exclude_edge_windows or edge_mask is None or not edge_mask.any():
+        return h
+    out = h.astype(float, copy=True)
+    out[edge_mask] = np.nan
+    return out
+
+
+def _hti_hover_customdata(results_hti: dict, n: int) -> tuple[np.ndarray | None, str | None]:
+    ew_raw = results_hti.get("edge_window")
+    cov_raw = results_hti.get("window_coverage_ratio")
+    cmp_raw = results_hti.get("hti_comparability_class")
+    if not (
+        isinstance(ew_raw, list | tuple)
+        and len(ew_raw) == n
+        and isinstance(cov_raw, list | tuple)
+        and len(cov_raw) == n
+    ):
+        return None, None
+    cd0 = [bool(x) for x in ew_raw]
+    cd1 = []
+    for x in cov_raw:
+        try:
+            fv = float(x)
+        except (TypeError, ValueError):
+            cd1.append(float("nan"))
+        else:
+            cd1.append(fv if np.isfinite(fv) else float("nan"))
+    cd2 = []
+    if isinstance(cmp_raw, list | tuple) and len(cmp_raw) == n:
+        cd2 = [str(x) for x in cmp_raw]
+    else:
+        cd2 = [""] * n
+    customdata = np.column_stack([cd0, cd1, cd2])
+    hovertemplate = (
+        "t=%{x:.4f}<br>H_TI=%{y:.4f}<br>edge_window=%{customdata[0]}"
+        "<br>window_coverage_ratio=%{customdata[1]:.4f}"
+        "<br>hti_comparability_class=%{customdata[2]}<extra></extra>"
+    )
+    return customdata, hovertemplate
+
+
+def _hti_add_edge_window_markers_mpl(
+    ax,
+    t: np.ndarray,
+    h: np.ndarray,
+    edge_mask: np.ndarray | None,
+    *,
+    mark_edge_windows: bool,
+) -> None:
+    if not mark_edge_windows or edge_mask is None or not edge_mask.any():
+        return
+    ax.scatter(
+        t[edge_mask],
+        h[edge_mask],
+        marker="D",
+        s=42,
+        facecolors="#dc2626",
+        edgecolors="#7f1d1d",
+        linewidths=0.8,
+        zorder=5,
+        label="Edge window (partial coverage)",
+    )
+
+
+def _hti_add_edge_window_markers_plotly(fig, t: np.ndarray, h: np.ndarray, edge_mask: np.ndarray | None) -> None:
+    if edge_mask is None or not edge_mask.any():
+        return
+    fig.add_trace(
+        go.Scatter(
+            x=t[edge_mask],
+            y=h[edge_mask],
+            mode="markers",
+            name="Edge window (partial coverage)",
+            marker=dict(symbol="diamond", size=9, color="#dc2626", line=dict(width=1, color="#7f1d1d")),
+            hoverinfo="skip",
+        )
+    )
+
+
 def make_homogeneity_figure(results, title="Homogeneity H(t)"):
     t = np.array(results["t"], dtype=float)
     H = np.array(results["H"], dtype=float)
@@ -53,11 +140,20 @@ def make_timbral_figure_plotly(results_t, title="Part-name homogeneity H_timbral
     return fig
 
 
-def make_hti_figure(results_hti, title="Symbolic timbral–instrumental homogeneity H_TI(t)"):
+def make_hti_figure(
+    results_hti,
+    title="Symbolic timbral–instrumental homogeneity H_TI(t)",
+    *,
+    mark_edge_windows: bool = True,
+    exclude_edge_windows: bool = False,
+):
     t = np.array(results_hti["t"], dtype=float)
     h = np.array(results_hti["H_TI"], dtype=float)
+    edge_mask = _hti_edge_window_mask(results_hti, len(t))
+    h_plot = _hti_plot_y_values(h, edge_mask, exclude_edge_windows=exclude_edge_windows)
     fig, ax = plt.subplots(facecolor=MPL_FIGURE_KW["facecolor"])
-    ax.plot(t, h, color=MPL_COLORS["timbral"], label="H_TI (strict / primary)", **MPL_LINE_KW)
+    ax.plot(t, h_plot, color=MPL_COLORS["timbral"], label="H_TI (strict / primary)", **MPL_LINE_KW)
+    _hti_add_edge_window_markers_mpl(ax, t, h, edge_mask, mark_edge_windows=mark_edge_windows)
     sfr0 = 0.0
     sfr_raw = results_hti.get("same_subfamily_relief_factor")
     if isinstance(sfr_raw, list | tuple) and len(sfr_raw) > 0:
@@ -101,49 +197,41 @@ def make_hti_figure(results_hti, title="Symbolic timbral–instrumental homogene
                     label="H_TI (literature affinity relieved)",
                 )
     apply_mpl_style(ax, "H_TI [0–1]", title)
-    if len(ax.lines) > 1:
+    if len(ax.lines) > 1 or len(ax.collections) > 0:
         ax.legend(loc="lower right", fontsize=9, framealpha=0.92)
     fig.tight_layout(pad=2.0)
     return fig
 
 
-def make_hti_figure_plotly(results_hti, title="Symbolic timbral–instrumental homogeneity H_TI(t)"):
+def make_hti_figure_plotly(
+    results_hti,
+    title="Symbolic timbral–instrumental homogeneity H_TI(t)",
+    *,
+    mark_edge_windows: bool = True,
+    exclude_edge_windows: bool = False,
+):
     t = np.array(results_hti["t"], dtype=float)
     h = np.array(results_hti["H_TI"], dtype=float)
+    edge_mask = _hti_edge_window_mask(results_hti, len(t))
+    h_plot = _hti_plot_y_values(h, edge_mask, exclude_edge_windows=exclude_edge_windows)
     fig = go.Figure()
     primary_kw: dict = {}
-    ew_raw = results_hti.get("edge_window")
-    cov_raw = results_hti.get("window_coverage_ratio")
-    if (
-        isinstance(ew_raw, list | tuple)
-        and len(ew_raw) == len(t)
-        and isinstance(cov_raw, list | tuple)
-        and len(cov_raw) == len(t)
-    ):
-        cd0 = [bool(x) for x in ew_raw]
-        cd1 = []
-        for x in cov_raw:
-            try:
-                fv = float(x)
-            except (TypeError, ValueError):
-                cd1.append(float("nan"))
-            else:
-                cd1.append(fv if np.isfinite(fv) else float("nan"))
-        primary_kw["customdata"] = np.column_stack([cd0, cd1])
-        primary_kw["hovertemplate"] = (
-            "t=%{x:.4f}<br>H_TI=%{y:.4f}<br>edge_window=%{customdata[0]}"
-            "<br>window_coverage_ratio=%{customdata[1]:.4f}<extra></extra>"
-        )
+    customdata, hovertemplate = _hti_hover_customdata(results_hti, len(t))
+    if customdata is not None and hovertemplate is not None:
+        primary_kw["customdata"] = customdata
+        primary_kw["hovertemplate"] = hovertemplate
     fig.add_trace(
         go.Scatter(
             x=t,
-            y=h,
+            y=h_plot,
             mode="lines",
             name="H_TI (strict / primary)",
             line=dict(color=MPL_COLORS["timbral"], width=2.2),
             **primary_kw,
         )
     )
+    if mark_edge_windows:
+        _hti_add_edge_window_markers_plotly(fig, t, h, edge_mask)
     sfr0 = 0.0
     sfr_raw = results_hti.get("same_subfamily_relief_factor")
     if isinstance(sfr_raw, list | tuple) and len(sfr_raw) > 0:

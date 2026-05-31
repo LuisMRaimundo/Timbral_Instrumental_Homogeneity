@@ -34,7 +34,7 @@ def test_hti_csv_row_dict_json_encodes_distributions() -> None:
 
 
 def test_hti_core_columns_present_in_csv_registry() -> None:
-    for k in ("H_TI", "H_TI_core", "H_TI_strict"):
+    for k in ("H_TI", "H_TI_core", "H_TI_strict", "hti_comparability_class"):
         assert k in HTI_CSV_COLUMNS
 
 

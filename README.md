@@ -1,8 +1,10 @@
-# Orchomogeneity
+# Orchomogeneity Analyser
 
-**Orchomogeneity** is an H-TI analyser for timbral–instrumental homogeneity analysis in MusicXML/MXL/MIDI orchestral scores.
+**Repository:** [Orchomogeneity_Analyser](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)
 
-Python package **`homogeneity-analyser`** and **Gradio** app computing **H_TI** / **H_TI_core** — score-derived, symbolic homogeneity from notation (not audio analysis).
+**Orchomogeneity** is an H-TI analyser for timbral–instrumental homogeneity analysis in MusicXML/MXL/MIDI orchestral scores — **symbolic notation only** (not audio analysis).
+
+Python package **`homogeneity-analyser`** (import **`homogeneity_analyser`**) and **Gradio** app computing **H_TI** / **H_TI_core** — score-derived homogeneity from notation.
 
 ---
 
@@ -147,8 +149,8 @@ The key **`seconds_sevenths`** groups mod‑12 classes {1, 2, 10, 11} only; a pa
 
 ## Outputs
 
-- **Plot** — **`H_TI_core`** / $H_{\mathrm{TI},\mathrm{core}}(t)$ (same as **`H_TI`** / $H_{\mathrm{TI}}(t)$ curve).
-- **CSV** — per-window diagnostics (see `HTI_CSV_COLUMNS` in `analyzers/hti_export_rows.py`; re-exported from `hti.py`), including **`window_start`**, **`window_end`**, **`edge_window`**, **`window_coverage_ratio`** when adaptive or edge marking is used (manual mode still exports the same geometry columns).
+- **Plot** — **`H_TI_core`** / $H_{\mathrm{TI},\mathrm{core}}(t)$ (same as **`H_TI`** / $H_{\mathrm{TI}}(t)$ curve). Edge windows can be **marked** (diamond markers) or **excluded** from the plotted line via plot helpers (`mark_edge_windows`, `exclude_edge_windows`).
+- **CSV** — per-window diagnostics (see `HTI_CSV_COLUMNS` in `analyzers/hti_export_rows.py`; re-exported from `hti.py`), including **`hti_comparability_class`** (effective H_TI_core formula fingerprint), **`window_start`**, **`window_end`**, **`edge_window`**, **`window_coverage_ratio`** when adaptive or edge marking is used (manual mode still exports the same geometry columns).
 - **JSON** — `schema_version` **3.0** (H_TI bundle), `time_series`, nested `dynamic_conditioning`, optional **timbral affinity** fields (`H_TI_affinity_literature_relieved`, …), optional **`H_TA_acoustic_proxy`** / **`timbral_acoustic_affinity`** (and related evidence columns) when `include_acoustic_proxy`, optional **interval-class / symbolic blend-potential** diagnostics when `include_symbolic_blend_potential` is enabled (`interval_class_profile`, `interval_class_profile_display`, `literal_interval_semitone_pair_mass`, `chromatic_mod12_pair_mass`, … — see **`docs/SYMBOLIC_INTERVAL_CLASS_LAYER.md`**), root **`symbolic_homogeneity_scope_disclaimer`**, `warnings`. Combined/legacy research JSON remains **`1.8`** (internal/batch only).
 - **Symbolic inspection** (optional Gradio accordion *Symbolic inspection (Loaded XML inspection)*) — three tables (**instrument inventory**, **event audit**, **vertical sonorities**) with UTF-8 CSV downloads (`instrument_inventory.csv`, `event_audit.csv`, `vertical_sonorities.csv`). Tables refresh when the upload, **pitch interpretation mode**, or **harmonic pitch policy** changes; **no H_TI run is required**.
 
@@ -159,6 +161,16 @@ The Symbolic inspection report shows what the parser actually found in the uploa
 ---
 
 ## Interpretation (reading the curves)
+
+**Always read `H_TI_core` together with `hti_comparability_class`, `active_weights`, `technique_coverage_status`, `register_coverage_status`, and (near boundaries) `edge_window` / `window_coverage_ratio`.** Two windows can share the same metric name but use different renormalised component sets.
+
+| `hti_comparability_class` | Meaning |
+|---------------------------|---------|
+| `full_4_component` | instrument + family + technique + register |
+| `no_technique` | technique omitted (unavailable / ambiguous) |
+| `no_register` | register omitted (unpitched-only window) |
+| `instrument_family_only` | only instrument + family |
+| `no_active_events` | empty window |
 
 | Signal | Plain-language reading |
 |--------|-------------------------|
