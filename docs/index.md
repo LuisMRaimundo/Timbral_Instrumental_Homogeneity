@@ -5,6 +5,7 @@ Welcome. This site mirrors the repository Markdown (no mathematical rewrites).
 Use the navigation on the left, or start from:
 
 - [README](project_readme.md) — project overview and scope
+- [Product scope](PRODUCT_SCOPE.md) — Tier 1 H_TI vs optional layers vs legacy
 - [Quick reference](project_quick_reference.md) — operator-facing summary
 - [Technical manual](project_technical_manual.md) — methodology, math, CSV/JSON, appendices
 - [H_TA acoustic proxy](H_TA_ACOUSTIC_PROXY.md) — optional timbral-acoustic affinity layer

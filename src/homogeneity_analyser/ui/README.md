@@ -2,7 +2,11 @@
 
 | Module | Role |
 |--------|------|
-| `callbacks.py` | Gradio entry points (`run_hti_app`, `run_app`, `run_timbral_app`, …) — orchestration only |
+| `callbacks.py` | Facade — re-exports entry points for Gradio wiring |
+| `callbacks_hti.py` | **Product** H_TI path (`run_hti_app`) |
+| `callbacks_legacy.py` | Legacy multimetric paths (H, H_timbral, U, combined JSON 1.8) |
+| `callbacks_inspection.py` | Loaded XML score audit (`run_loaded_xml_inspection`) |
+| `callback_helpers.py` | Plotly/matplotlib static export, timbral parse-error tuple |
 | `hti_ui_params.py` | H_TI parameter dict + CSV rows + plot title |
 | `legacy_ui_params.py` | Legacy H(t) homogeneity parameters + CSV arrays |
 | `timbral_ui_params.py` | Legacy H_timbral parameters + parse-error copy |
@@ -12,4 +16,4 @@
 
 Analysis remains in `services/` and `analyzers/`. Legacy **analyzers** live under `homogeneity_analyser.legacy` (see repo `LEGACY.md`).
 
-**Not extracted (TODO):** `run_loaded_xml_inspection` and Plotly/matplotlib save paths stay in `callbacks.py` because they depend on plotting backends and Gradio return types.
+**Tests:** smoke tests patch submodules (`callbacks_hti`, `callbacks_legacy`); `write_temp_csv` is covered via `_write_temp_csv` in `tests/test_ui_audit_csv.py`.

@@ -20,6 +20,9 @@ from unittest.mock import MagicMock
 import gradio as gr
 
 import homogeneity_analyser.ui.callbacks as cb
+import homogeneity_analyser.ui.callbacks_hti as cb_hti
+import homogeneity_analyser.ui.callbacks_legacy as cb_legacy
+from homogeneity_analyser.ui.timbral_ui_params import timbral_config_from_optional
 
 
 def test_callbacks_entry_points_exist() -> None:
@@ -51,7 +54,7 @@ def test_callbacks_entry_points_exist() -> None:
 
 
 def test_timbral_config_shim_on_callbacks_module() -> None:
-
+    assert cb._timbral_config_from_optional is timbral_config_from_optional
     assert cb._timbral_config_from_optional is cb.timbral_config_from_optional
 
 
@@ -80,17 +83,17 @@ def test_run_hti_app_golden_fixture(monkeypatch: pytest.MonkeyPatch, tmp_path: P
 
     fixture = Path(__file__).resolve().parent / "fixtures" / "musicxml" / "golden_two_violins_unison_c5.musicxml"
 
-    monkeypatch.setattr(cb, "validate_uploaded_score", lambda _f: str(fixture))
+    monkeypatch.setattr(cb_hti, "validate_uploaded_score", lambda _f: str(fixture))
 
-    monkeypatch.setattr(cb, "new_export_path", lambda stem, ext: str(tmp_path / f"{stem}out{ext}"))
+    monkeypatch.setattr(cb_hti, "new_export_path", lambda stem, ext: str(tmp_path / f"{stem}out{ext}"))
 
-    monkeypatch.setattr(cb.plt, "close", lambda *_a, **_k: None)
+    monkeypatch.setattr(cb_hti.plt, "close", lambda *_a, **_k: None)
 
     fig_mock = MagicMock()
 
     fig_mock.savefig = MagicMock()
 
-    monkeypatch.setattr(cb, "make_hti_figure", lambda *_a, **_k: fig_mock)
+    monkeypatch.setattr(cb_hti, "make_hti_figure", lambda *_a, **_k: fig_mock)
 
     out = cb.run_hti_app(progress=MagicMock(), file_obj=str(fixture), interactive_plot=False)
 
@@ -118,11 +121,11 @@ def test_run_app_mocked_homogeneity(monkeypatch: pytest.MonkeyPatch, tmp_path: P
 
     )
 
-    monkeypatch.setattr(cb, "validate_uploaded_score", lambda _f: str(score))
+    monkeypatch.setattr(cb_legacy, "validate_uploaded_score", lambda _f: str(score))
 
     monkeypatch.setattr(
 
-        cb,
+        cb_legacy,
 
         "run_homogeneity_analysis",
 
@@ -138,17 +141,17 @@ def test_run_app_mocked_homogeneity(monkeypatch: pytest.MonkeyPatch, tmp_path: P
 
     )
 
-    monkeypatch.setattr(cb, "make_homogeneity_figure", lambda *_a, **_k: MagicMock())
+    monkeypatch.setattr(cb_legacy, "make_homogeneity_figure", lambda *_a, **_k: MagicMock())
 
-    monkeypatch.setattr(cb, "make_gauge_placeholder", lambda: MagicMock())
+    monkeypatch.setattr(cb_legacy, "make_gauge_placeholder", lambda: MagicMock())
 
-    monkeypatch.setattr(cb, "new_export_path", lambda stem, ext: str(tmp_path / f"{stem}x{ext}"))
+    monkeypatch.setattr(cb_legacy, "new_export_path", lambda stem, ext: str(tmp_path / f"{stem}x{ext}"))
 
-    monkeypatch.setattr(cb.plt, "close", lambda *_a, **_k: None)
+    monkeypatch.setattr(cb_legacy.plt, "close", lambda *_a, **_k: None)
 
-    monkeypatch.setattr(cb, "build_homogeneity_export", lambda *_a, **_k: {})
+    monkeypatch.setattr(cb_legacy, "build_homogeneity_export", lambda *_a, **_k: {})
 
-    monkeypatch.setattr(cb, "write_json_export", lambda *_a, **_k: None)
+    monkeypatch.setattr(cb_legacy, "write_json_export", lambda *_a, **_k: None)
 
     out = cb.run_app(file_obj=str(score), interactive_plot=False, single_aggregate=False)
 

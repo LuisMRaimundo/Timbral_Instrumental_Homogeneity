@@ -110,13 +110,14 @@ No `H_TI_core` or export-schema changes.
 
 ## 11. Remaining debt (intentional)
 
-| Item | Notes |
-|------|--------|
-| `ui/callbacks.py` | Gradio orchestration, plot backends, `run_loaded_xml_inspection` |
-| `analyzers/hti.py` | Large analyzer body (helpers already split) |
-| `docs/archive_legacy/*` | Historical schema **2.9** / old pytest counts preserved |
-| `docs/H_TIMBRAL_*.md` | Internal design corpus (excluded from MkDocs nav) |
-| Test overlap | `test_write_temp_csv_*` in formatting vs audit tests (different import surfaces) |
+| Item | Status (2026-05-31) |
+|------|---------------------|
+| `ui/callbacks.py` | **Resolved** — split into `callbacks_hti`, `callbacks_legacy`, `callbacks_inspection`, `callback_helpers`; facade only |
+| `analyzers/hti.py` | **Reduced** — window loop delegates row append to `hti_analyze_series.append_hti_analyze_window_row` |
+| `docs/archive_legacy/*` | Unchanged — historical schema **2.9** preserved |
+| `docs/H_TIMBRAL_*.md` | **Indexed** — `docs/H_TIMBRAL_DESIGN_INDEX.md` + MkDocs **Internal design** nav |
+| Test overlap | **Resolved** — single `write_temp_csv` test in `test_ui_audit_csv.py` |
+| Optional vs legacy clarity | **Added** — `docs/PRODUCT_SCOPE.md`, `LEGACY.md` optional-layer table, MkDocs nav tiers |
 
 ---
 

@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import math
 
-from homogeneity_analyser.analyzers.hti import (
-    _hti_pitch_occurrences_for_symbolic_layers,
-    compute_register_compactness_fields,
-)
+from homogeneity_analyser.analyzers.hti import compute_register_compactness_fields
+from homogeneity_analyser.analyzers.hti_analyze_series import hti_pitch_occurrences_for_symbolic_layers
 from homogeneity_analyser.analyzers.symbolic_blend_layers import (
     compute_interval_class_blend_factor,
     load_symbolic_blend_conditioning_profile,
@@ -62,7 +60,7 @@ def test_unpitched_percussion_empty_pitch_list_no_crash() -> None:
         "pitches": [],
         "technique_uniformity_key": "ordinary_default_uniform",
     }
-    po = _hti_pitch_occurrences_for_symbolic_layers([(ev, 1.0)])
+    po = hti_pitch_occurrences_for_symbolic_layers([(ev, 1.0)])
     assert po == []
     out = compute_interval_class_blend_factor([p for p, _ in po], None)
     assert math.isnan(float(out["interval_class_blend_factor"]))

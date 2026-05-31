@@ -28,3 +28,25 @@ Coverage: legacy modules are **omitted** from the product-path coverage gate; se
 **Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md` — how taxonomy/register/families relate to `timbral.py` vs `legacy/`.
 
 **Services:** multimetric runs live in `services/analysis_service_legacy.py`; H_TI in `services/analysis_service_hti.py` (facade: `analysis_service.py`).
+
+## Optional H_TI layers (not legacy, but off by default)
+
+These ship in the **H_TI analyzer** but are **not** part of the default Gradio product surface:
+
+| Layer | Default | Enable |
+|-------|---------|--------|
+| Timbral affinity relief | on (configurable factors) | analyzer kwargs / UI advanced |
+| Symbolic blend / interval-class columns | **off** | `include_symbolic_blend_potential=True` |
+| H_TA acoustic proxy | **off** | `include_acoustic_proxy=True` |
+
+See `docs/PRODUCT_SCOPE.md` (Tier 2). Wrong use — e.g. comparing runs with proxy enabled vs disabled — is a **methodology** mistake, not a legacy API issue.
+
+## UI split (2026-05)
+
+| Module | Role |
+|--------|------|
+| `ui/callbacks.py` | Facade re-exports |
+| `ui/callbacks_hti.py` | H_TI product path |
+| `ui/callbacks_legacy.py` | Multimetric + JSON 1.8 |
+| `ui/callbacks_inspection.py` | Loaded XML audit |
+| `ui/callback_helpers.py` | Plot save, float parse shims |

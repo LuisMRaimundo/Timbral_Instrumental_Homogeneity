@@ -45,14 +45,22 @@ extra_javascript:
 
 nav:
   - Home: index.md
+  - Product scope: PRODUCT_SCOPE.md
+  - Onboarding (H_TI): ONBOARDING_H_TI.md
   - README: project_readme.md
   - Quick reference: project_quick_reference.md
   - Technical manual: project_technical_manual.md
   - Current code characteristics: project_current_code_characteristics.md
-  - H_TA acoustic proxy: H_TA_ACOUSTIC_PROXY.md
-  - Symbolic interval-class layer: SYMBOLIC_INTERVAL_CLASS_LAYER.md
-  - Metric code map: METRIC_CODE_MAP.md
   - Architecture: ARCHITECTURE.md
-  - String harmonic interval reference: STRING_HARMONIC_INTERVAL_REFERENCE.md
-  - Timbral affinity literature audit: TIMBRAL_AFFINITY_LITERATURE_AUDIT.md
-  - Quick reference (symbolic names): QUICK_REFERENCE_SYMBOLIC_NAMES.md
+  - Metric code map: METRIC_CODE_MAP.md
+  - Optional layers:
+      - H_TA acoustic proxy: H_TA_ACOUSTIC_PROXY.md
+      - Symbolic interval-class layer: SYMBOLIC_INTERVAL_CLASS_LAYER.md
+  - Reference:
+      - String harmonic interval reference: STRING_HARMONIC_INTERVAL_REFERENCE.md
+      - Timbral affinity literature audit: TIMBRAL_AFFINITY_LITERATURE_AUDIT.md
+      - Quick reference (symbolic names): QUICK_REFERENCE_SYMBOLIC_NAMES.md
+  - Internal design:
+      - H_TIMBRAL corpus index: H_TIMBRAL_DESIGN_INDEX.md
+  - Maintenance:
+      - Cleanup report: CLEANUP_REPORT.md
