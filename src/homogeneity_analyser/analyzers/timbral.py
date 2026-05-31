@@ -23,7 +23,6 @@ obtain per-window ``H_timbral_diagnostics`` (same scalar ``H_timbral``; see
 
 from __future__ import annotations
 
-import copy
 import math
 from collections import defaultdict
 from collections.abc import Callable, Mapping
@@ -46,27 +45,19 @@ from homogeneity_analyser.analyzers.brass_pairwise_timbral import (
     is_brass_family,
     pairwise_brass_homogeneity,
 )
-from homogeneity_analyser.analyzers.brass_technique import (
-    brass_matrix_key_from_technique_state,
-    brass_technique_from_note,
-)
 from homogeneity_analyser.analyzers.clarinet_pairwise_timbral import (
     is_clarinet_family,
     pairwise_clarinet_homogeneity,
 )
-from homogeneity_analyser.analyzers.clarinet_technique import clarinet_technique_from_note
 from homogeneity_analyser.analyzers.double_reed_pairwise_timbral import (
     is_double_reed_family,
     pairwise_double_reed_homogeneity,
 )
-from homogeneity_analyser.analyzers.double_reed_technique import double_reed_technique_from_note
 from homogeneity_analyser.analyzers.flute_pairwise_timbral import (
     is_flute_family,
     pairwise_flute_homogeneity,
 )
-from homogeneity_analyser.analyzers.flute_technique import flute_technique_from_note
 from homogeneity_analyser.analyzers.harmonic_pitch import normalize_harmonic_pitch_policy
-from homogeneity_analyser.analyzers.notation_context import notation_text_context_for_note
 from homogeneity_analyser.analyzers.parsing_bridge import parse_score
 from homogeneity_analyser.analyzers.percussion_ontology import PitchStatus, get_percussion_meta
 from homogeneity_analyser.analyzers.percussion_pairwise_timbral import (
@@ -74,46 +65,21 @@ from homogeneity_analyser.analyzers.percussion_pairwise_timbral import (
     pairwise_percussion_homogeneity,
     unpitched_percussion_register_proxy,
 )
-from homogeneity_analyser.analyzers.percussion_technique import percussion_technique_from_note
-from homogeneity_analyser.analyzers.pitch_interpretation import (
-    interpret_note_sounding_pitch_ps_list,
-    normalize_pitch_interpretation_mode,
-)
+from homogeneity_analyser.analyzers.pitch_interpretation import normalize_pitch_interpretation_mode
 from homogeneity_analyser.analyzers.saxophone_pairwise_timbral import (
     is_saxophone_family,
     pairwise_saxophone_homogeneity,
 )
-from homogeneity_analyser.analyzers.saxophone_technique import saxophone_technique_from_note
 from homogeneity_analyser.analyzers.string_pairwise_timbral import (
     is_bowed_orchestral_string,
     pairwise_string_homogeneity,
 )
-from homogeneity_analyser.analyzers.string_technique import string_technique_from_note
-from homogeneity_analyser.analyzers.symbolic_blend_layers import (
-    clarinet_register_zone_from_soundings,
-    load_symbolic_blend_conditioning_profile,
-)
+from homogeneity_analyser.analyzers.symbolic_event_pipeline import build_symbolic_score_events
 from homogeneity_analyser.analyzers.technique_state import (
-    TechniqueStateContext,
-    apply_persistent_text,
-    compute_technique_uniformity_key,
-    direction_element_text,
     dominant_timbral_state,
-    explicit_technique_audit_label,
-    explicit_technique_detected,
-    iter_timbral_elements,
-    legacy_string_technique_from_state,
-    merge_note_technique_state,
-    technique_state_id,
-    technique_state_to_dict,
     timbral_state_concentration_from_distribution,
 )
 from homogeneity_analyser.analyzers.timbral_concentration_splits import concentration_bundle_from_timbral_slices
-from homogeneity_analyser.analyzers.timbral_event_build import (
-    build_timbral_score_event,
-    collect_written_pitches_from_note,
-)
-from homogeneity_analyser.analyzers.timbral_sounding_pitch import _note_or_part_transposition
 from homogeneity_analyser.analyzers.timbre_cross_relations import verified_cross_timbral_boost
 from homogeneity_analyser.models.timbral_semantics import (
     TimbralModelMode,
@@ -121,23 +87,8 @@ from homogeneity_analyser.models.timbral_semantics import (
     timbral_model_metadata_for_diagnostics,
 )
 from homogeneity_analyser.taxonomy.instrument_taxonomy import (
-    FAMILY_OTHER,
     get_timbral_config,
-    resolve_instrument_taxonomy,
 )
-
-
-def _note_salient_accent(n: Any) -> bool:
-    """True when the note carries a salient accent-class articulation (symbolic, not SPL)."""
-    from music21 import articulations
-
-    for a in getattr(n, "articulations", None) or []:
-        if isinstance(a, articulations.Accent | articulations.StrongAccent):
-            return True
-        marc = getattr(articulations, "Marcato", None)
-        if marc is not None and isinstance(a, marc):
-            return True
-    return False
 
 
 def _numeric_feature_or(features: Mapping[str, Any], key: str, fallback: float) -> float:
@@ -308,45 +259,6 @@ def _timbral_overlap_mass_distributions(features: dict[str, Any]) -> tuple[dict[
     return inst_out, fam_out
 
 
-def _raw_instrument_name_from_m21(ins: Any) -> str:
-    """Best-effort display name from a music21 ``Instrument`` instance."""
-    if ins is None:
-        return ""
-    try:
-        best = getattr(ins, "bestName", None)
-        nm = best() if callable(best) else getattr(ins, "instrumentName", "")
-        name = str(nm or "").strip()
-        if name:
-            return name
-    except (AttributeError, TypeError, ValueError):
-        pass
-    return ""
-
-
-def _local_m21_instrument_for_note(note: Any) -> Any:
-    """
-    Return the music21 ``Instrument`` considered active at ``note`` (doublings / inserts),
-    or ``None`` if only a generic empty shell is present and no class context exists.
-    """
-    try:
-        gf = getattr(note, "getInstrument", None)
-        if callable(gf):
-            ins = gf()
-            if ins is not None:
-                if ins.__class__.__name__ != "Instrument":
-                    return ins
-                if _raw_instrument_name_from_m21(ins):
-                    return ins
-    except (AttributeError, TypeError, ValueError):
-        pass
-    try:
-        from music21 import instrument as m21inst
-
-        return note.getContextByClass(m21inst.Instrument)
-    except (AttributeError, TypeError, ValueError):
-        return None
-
-
 class TimbralHomogeneityAnalyzer:
     """
     Part-name / orchestration homogeneity (H_timbral), not acoustic timbre.
@@ -427,129 +339,12 @@ class TimbralHomogeneityAnalyzer:
         """Notation events built for H_timbral / H_TI (read-only reference)."""
         return self._events
 
-    def _part_instrument_fallback(self, part: Any) -> tuple[str, str]:
-        """
-        Part-level instrument string when no note-local name resolves, plus source tag.
-
-        Returns ``(raw_name, "part_context" | "part_name_fallback" | "unknown")``.
-        """
-        try:
-            instrs = part.getInstruments()
-            if instrs:
-                i0 = instrs[0]
-                best = getattr(i0, "bestName", None)
-                nm = best() if callable(best) else getattr(i0, "instrumentName", "")
-                name = str(nm or "").strip()
-                if name:
-                    return name, "part_context"
-        except (AttributeError, TypeError, ValueError, IndexError):
-            pass
-        raw = getattr(part, "partName", None) or getattr(part, "id", None) or "unknown"
-        if raw == "unknown":
-            return "unknown", "unknown"
-        return str(raw), "part_name_fallback"
-
-    def _effective_instrument_for_note(self, n: Any, part: Any) -> tuple[str, str, str, dict[str, str]]:
-        """
-        Resolve taxonomy ``(canonical_instrument, family, instrument_source, orchestration_labels)``.
-
-        ``instrument_source``: ``note_context`` | ``part_context`` | ``part_name_fallback`` | ``unknown``.
-        ``orchestration_labels`` maps ``part_label_original``, ``raw_part_name``, ``section_label``, ``desk_group``.
-        """
-        fb_raw, fb_src = self._part_instrument_fallback(part)
-        fb_canon, fb_fam, fb_meta = resolve_instrument_taxonomy(str(fb_raw))
-
-        local_ins = _local_m21_instrument_for_note(n)
-        raw_local = _raw_instrument_name_from_m21(local_ins) if local_ins is not None else ""
-
-        if raw_local:
-            canon, fam, loc_meta = resolve_instrument_taxonomy(str(raw_local))
-            if (canon, fam) != (fb_canon, fb_fam):
-                return canon, fam, "note_context", loc_meta
-            if str(fb_meta.get("desk_group") or "") or str(fb_meta.get("section_label") or ""):
-                return canon, fam, fb_src, fb_meta
-            return canon, fam, fb_src, loc_meta
-
-        canon, fam = fb_canon, fb_fam
-        if fb_src == "unknown" or (canon == "unknown" and fam == FAMILY_OTHER):
-            return canon, fam, "unknown", fb_meta
-        return canon, fam, fb_src, fb_meta
-
-    def _build_events_with_instruments(self):
-        from homogeneity_analyser.services.score_audit import note_symbolic_audit_surface
-
-        for part_index, part in enumerate(self.score.parts):
-            fb_raw, _fb_src = self._part_instrument_fallback(part)
-            part_default_canon, part_default_fam, _part_orch = resolve_instrument_taxonomy(str(fb_raw))
-            ctx = TechniqueStateContext(family=part_default_fam, instrument=part_default_canon)
-            prev_key: tuple[str, str] | None = None
-            for _off, _prio, kind, el in iter_timbral_elements(part):
-                if kind == "direction":
-                    from music21 import dynamics as m21dynamics
-
-                    if isinstance(el, m21dynamics.Crescendo):
-                        ctx.hairpin = "crescendo"
-                        continue
-                    if isinstance(el, m21dynamics.Diminuendo):
-                        ctx.hairpin = "diminuendo"
-                        continue
-                    apply_persistent_text(direction_element_text(el), ctx)
-                    continue
-                n = el
-                instrument, family, inst_src, orch_labels = self._effective_instrument_for_note(n, part)
-                key = (str(instrument), str(family))
-                if prev_key is not None and key != prev_key:
-                    dm_carry, hp_carry = ctx.dynamic_mark, ctx.hairpin
-                    ctx = TechniqueStateContext(family=family, instrument=instrument)
-                    ctx.dynamic_mark, ctx.hairpin = dm_carry, hp_carry
-                prev_key = key
-                pits, pitch_meta = interpret_note_sounding_pitch_ps_list(
-                    n,
-                    part,
-                    self._pitch_interpretation_mode,
-                    trans_resolver=_note_or_part_transposition,
-                    canonical_instrument=str(instrument),
-                    harmonic_pitch_policy=self._harmonic_pitch_policy,
-                )
-                from music21 import note as m21note
-
-                is_unpitched = isinstance(n, m21note.Unpitched)
-                written_ps, unpitched_display = collect_written_pitches_from_note(
-                    n,
-                    pitch_meta=pitch_meta,
-                    is_unpitched=is_unpitched,
-                )
-                if not pits:
-                    if is_unpitched:
-                        pits = []
-                    else:
-                        continue
-                audit_surf = note_symbolic_audit_surface(n)
-                work = copy.copy(ctx)
-                apply_persistent_text(notation_text_context_for_note(n, measure_text="none"), work)
-                st = merge_note_technique_state(work, n, instrument=instrument, family=family)
-                # Note-local text must not advance the timeline ``ctx``; only ``direction`` events do.
-                self._events.append(
-                    build_timbral_score_event(
-                        n=n,
-                        part_index=part_index,
-                        part=part,
-                        ctx=ctx,
-                        instrument=instrument,
-                        family=family,
-                        inst_src=inst_src,
-                        orch_labels=orch_labels,
-                        pits=pits,
-                        written_ps=written_ps,
-                        pitch_meta=pitch_meta,
-                        is_unpitched=is_unpitched,
-                        unpitched_display=unpitched_display,
-                        audit_surf=audit_surf,
-                        st=st,
-                        harmonic_pitch_policy=str(self._harmonic_pitch_policy),
-                        note_salient_accent=_note_salient_accent(n),
-                    )
-                )
+    def _build_events_with_instruments(self) -> None:
+        self._events = build_symbolic_score_events(
+            self.score,
+            pitch_interpretation_mode=self._pitch_interpretation_mode,
+            harmonic_pitch_policy=self._harmonic_pitch_policy,
+        )
 
     def _active_in_window(self, ev: dict, t_start: float, t_end: float) -> bool:
         return ev["offset"] < t_end and ev["end"] > t_start

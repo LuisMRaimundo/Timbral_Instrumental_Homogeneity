@@ -44,15 +44,16 @@ flowchart LR
 | Concern | Module |
 |---------|--------|
 | Parse MusicXML/MIDI | `parsing_bridge.py` |
-| Walk score, build `_events` | `timbral.py` (`TimbralHomogeneityAnalyzer._build_events_with_instruments`) |
-| Assemble one event dict | `timbral_event_build.py` |
-| Instrument / family names | `taxonomy/instrument_taxonomy.py` + `hti_taxonomy.py` |
-| Sounding vs written pitch, transposition | `pitch_interpretation.py`, `timbral_sounding_pitch.py` |
-| Harmonic / natural pitch policy | `harmonic_pitch.py` |
+| Walk score, assemble event list | `symbolic_event_pipeline.py` — `build_symbolic_score_events` |
+| Instrument / family names | `symbolic_instrument_resolve.py` + `taxonomy/instrument_taxonomy.py` |
+| Sounding vs written pitch, transposition | `symbolic_pitch_resolve.py`, `pitch_interpretation.py`, `timbral_sounding_pitch.py` |
+| Harmonic / natural pitch policy | `harmonic_pitch.py` (via pitch resolve) |
 | Technique state per family | `technique_state.py`, `*_technique.py`, `notation_context.py` |
+| Assemble one event dict | `timbral_event_build.py` |
 | Percussion pitched/unpitched | `percussion_ontology.py` |
+| H_timbral metric on events (legacy) | `timbral.py` — `extract_timbral_features`, `analyze_timbral` |
 
-**Contract:** `SymbolicTIHomogeneityAnalyzer` **subclasses** `TimbralHomogeneityAnalyzer` and inherits the event list unchanged.
+**Contract:** `SymbolicTIHomogeneityAnalyzer` **subclasses** `TimbralHomogeneityAnalyzer` and inherits the event list from `build_symbolic_score_events` (via `timbral.py`).
 
 ## Stage 2 — Window overlap
 

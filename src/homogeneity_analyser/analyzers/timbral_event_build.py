@@ -34,6 +34,19 @@ from homogeneity_analyser.analyzers.technique_state import (
 )
 
 
+def note_salient_accent(n: Any) -> bool:
+    """True when the note carries a salient accent-class articulation (symbolic, not SPL)."""
+    from music21 import articulations
+
+    for a in getattr(n, "articulations", None) or []:
+        if isinstance(a, articulations.Accent | articulations.StrongAccent):
+            return True
+        marc = getattr(articulations, "Marcato", None)
+        if marc is not None and isinstance(a, marc):
+            return True
+    return False
+
+
 def collect_written_pitches_from_note(
     n: Any,
     *,
