@@ -53,7 +53,7 @@ flowchart LR
 | Technique state per family | `technique_state.py`, `*_technique.py`, `notation_context.py` |
 | Assemble one event dict | `timbral_event_build.py` — `build_symbolic_score_event` |
 | Percussion pitched/unpitched | `percussion_ontology.py` |
-| H_timbral metric on events (legacy) | `timbral.py` — `extract_timbral_features`, `analyze_timbral` |
+| H_timbral metric on events (legacy) | `timbral.py` (facade) — `timbral_window_features.py`, `timbral_window_metric.py` |
 
 **Contract:** `SymbolicTIHomogeneityAnalyzer` and `TimbralHomogeneityAnalyzer` both inherit `SymbolicScoreAnalyzer`, which calls `build_symbolic_score_events`. H_TI does **not** subclass `timbral.py`.
 

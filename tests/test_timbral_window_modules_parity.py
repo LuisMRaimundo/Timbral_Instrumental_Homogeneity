@@ -10,6 +10,10 @@ from music21 import articulations, instrument, meter, note, stream
 
 from homogeneity_analyser.analyzers.timbral import TimbralHomogeneityAnalyzer
 from homogeneity_analyser.analyzers.timbral_window_features import extract_timbral_window_features
+from homogeneity_analyser.analyzers.timbral_window_metric import (
+    compute_timbral_window_decomposition,
+    compute_timbral_window_metric,
+)
 
 
 def _assert_timbral_features_equal(a: dict | None, b: dict | None) -> None:
@@ -119,3 +123,35 @@ def test_extract_timbral_window_features_matches_analyzer_method(
         is_event_active_in_window=an._active_in_window,
     )
     _assert_timbral_features_equal(via_method, via_module)
+
+
+@pytest.mark.parametrize(
+    ("score_fn", "center", "window"),
+    [
+        (_string_unison_score, 2.0, 4.0),
+        (_woodwind_brass_mix_score, 2.0, 4.0),
+        (_unpitched_percussion_score, 2.0, 4.0),
+        (_explicit_technique_score, 2.0, 4.0),
+    ],
+)
+def test_timbral_window_metric_matches_analyzer_methods(
+    score_fn: Callable[[], stream.Score],
+    center: float,
+    window: float,
+) -> None:
+    an = TimbralHomogeneityAnalyzer(music21_score=score_fn(), time_step=0.25)
+    feats = an.extract_timbral_features(center, window)
+    h_method = an.compute_H_timbral(feats)
+    h_module = compute_timbral_window_metric(
+        feats,
+        timbral_config=an._timbral_config,
+        timbral_model_mode=an._timbral_model_mode,
+    )
+    assert h_method == pytest.approx(h_module, abs=1e-12)
+    _, d_method = an.compute_H_timbral_decomposition(feats)
+    _, d_module = compute_timbral_window_decomposition(
+        feats,
+        timbral_config=an._timbral_config,
+        timbral_model_mode=an._timbral_model_mode,
+    )
+    assert d_method == d_module

@@ -42,7 +42,11 @@
 
 | `symbolic_pitch_resolve.py` | Sounding + written pitch per note |
 
-| `timbral.py` | H_timbral legacy metric only (subclasses `SymbolicScoreAnalyzer`) |
+| `timbral.py` | H_timbral legacy facade (subclasses `SymbolicScoreAnalyzer`) |
+
+| `timbral_window_features.py` | Per-window feature dict for H_timbral |
+
+| `timbral_window_metric.py` | H_timbral scalar + diagnostics from features |
 
 | `timbral_event_build.py` | `build_symbolic_score_event` + accent helper |
 

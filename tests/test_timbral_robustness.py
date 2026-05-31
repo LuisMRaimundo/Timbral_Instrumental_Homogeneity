@@ -133,13 +133,13 @@ def test_combine_family_blend_symmetric_under_mass_swap() -> None:
     a = mk_feats(2.0, 4.0)
     b = mk_feats(4.0, 2.0)
     with (
-        patch("homogeneity_analyser.analyzers.timbral.pairwise_string_homogeneity", return_value=0.25),
-        patch("homogeneity_analyser.analyzers.timbral.pairwise_brass_homogeneity", return_value=0.85),
+        patch("homogeneity_analyser.analyzers.timbral_window_metric.pairwise_string_homogeneity", return_value=0.25),
+        patch("homogeneity_analyser.analyzers.timbral_window_metric.pairwise_brass_homogeneity", return_value=0.85),
     ):
         ha = _combine_family_pairwise_homogeneity(legacy, a)
     with (
-        patch("homogeneity_analyser.analyzers.timbral.pairwise_string_homogeneity", return_value=0.85),
-        patch("homogeneity_analyser.analyzers.timbral.pairwise_brass_homogeneity", return_value=0.25),
+        patch("homogeneity_analyser.analyzers.timbral_window_metric.pairwise_string_homogeneity", return_value=0.85),
+        patch("homogeneity_analyser.analyzers.timbral_window_metric.pairwise_brass_homogeneity", return_value=0.25),
     ):
         hb = _combine_family_pairwise_homogeneity(legacy, b)
     assert abs(ha - hb) < 1e-9
