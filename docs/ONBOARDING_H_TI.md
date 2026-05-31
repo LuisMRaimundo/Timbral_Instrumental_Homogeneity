@@ -15,6 +15,23 @@ Short map for developers who want **families, instrument typology, and register 
 
 See **`docs/PRODUCT_SCOPE.md`** (Tier 1 vs optional vs legacy) and **`docs/HTI_SYMBOLIC_PIPELINE.md`** (full stage → module map).
 
+## Architecture contract (source of truth)
+
+Both product and legacy timbral analyzers share **events only** via `SymbolicScoreAnalyzer`. **H_TI does not import or subclass `timbral.py`.**
+
+```python
+# symbolic_score_analyzer.py — score load + build_symbolic_score_events
+class SymbolicScoreAnalyzer: ...
+
+# hti.py — H_TI product orchestration
+class SymbolicTIHomogeneityAnalyzer(SymbolicScoreAnalyzer): ...
+
+# timbral.py — H_timbral legacy metric only
+class TimbralHomogeneityAnalyzer(SymbolicScoreAnalyzer): ...
+```
+
+Enforced in CI by `tests/test_architecture_contract.py` and `tests/test_symbolic_event_pipeline.py`.
+
 ## Reading order (H_TI only)
 
 1. `README.md` and `QUICK_REFERENCE.md` — scope and exports (**schema 3.0**)
