@@ -6,8 +6,9 @@ Analysis service facade — backward-compatible imports.
 | ``analysis_service_hti`` | **H_TI** product — ``run_symbolic_ti_homogeneity_analysis`` |
 | ``analysis_service_legacy`` | Multimetric / combined JSON **1.8** (H(t), H_timbral metric, cluster, fusion, U(t)) |
 
-The symbolic **event pipeline** (taxonomy, families, pitches) lives in ``analyzers/timbral.py`` and is
-shared by H_TI; it is not the same as the legacy **metrics** package under ``homogeneity_analyser.legacy/``.
+The symbolic **event pipeline** (score → events, taxonomy, pitches) lives in
+``analyzers/symbolic_score_analyzer.py`` and ``analyzers/symbolic_event_pipeline.py``;
+``timbral.py`` hosts only the legacy **H_timbral** metric on the same events.
 """
 
 from __future__ import annotations

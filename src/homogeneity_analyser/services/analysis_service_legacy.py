@@ -1,7 +1,7 @@
 """
 Legacy multimetric orchestration (H(t), H_timbral metric, H_cluster, fusion, U(t), combined JSON 1.8).
 
-Uses the same symbolic score pipeline as H_TI (``analyzers/timbral.py`` — event/taxonomy base class),
+Uses the same symbolic score pipeline as H_TI (``SymbolicScoreAnalyzer`` / ``symbolic_event_pipeline``),
 but runs **separate metrics** from ``homogeneity_analyser.legacy``.
 Not required for ``run_symbolic_ti_homogeneity_analysis``.
 

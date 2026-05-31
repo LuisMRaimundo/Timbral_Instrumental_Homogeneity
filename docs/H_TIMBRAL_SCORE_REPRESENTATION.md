@@ -20,7 +20,7 @@ using ``note.getInstrument()`` when music21 exposes a typed instrument at that s
 MIDI pitch as a tessitura proxy. Using written pitch on transposing staves would skew
 those comparisons.
 
-**Scope:** applied only on the timbral event-building path inside ``analyzers/timbral.py``.
+**Scope:** applied on the shared symbolic event path (`symbolic_event_pipeline.py` / `symbolic_pitch_resolve.py`).
 ``parse_score`` / ``io/score_loader`` still returns the unmodified music21 score object.
 
 ## Technique text: note-local + same-measure directions

@@ -25,7 +25,7 @@ Orchestration: `services/analysis_service.py`, `services/json_export.py` (`schem
 
 Coverage: legacy modules are **omitted** from the product-path coverage gate; see `tests/test_legacy_package.py`.
 
-**Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md` — how taxonomy/register/families relate to `timbral.py` vs `legacy/`.
+**Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md` — how taxonomy/register/families relate to `symbolic_score_analyzer.py` vs `legacy/`.
 
 **Services:** multimetric runs live in `services/analysis_service_legacy.py`; H_TI in `services/analysis_service_hti.py` (facade: `analysis_service.py`).
 

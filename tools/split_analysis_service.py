@@ -17,7 +17,7 @@ hti_lines = lines[hti_start:]
 legacy_doc = (
     '"""\n'
     "Legacy multimetric orchestration (H(t), H_timbral metric, H_cluster, fusion, U(t), combined JSON 1.8).\n\n"
-    "Uses the same symbolic score pipeline as H_TI (``analyzers/timbral.py`` — event/taxonomy base class),\n"
+    "Uses the same symbolic score pipeline as H_TI (``SymbolicScoreAnalyzer`` / ``symbolic_event_pipeline``),\n"
     "but runs **separate metrics** from ``homogeneity_analyser.legacy``. "
     "Not required for ``run_symbolic_ti_homogeneity_analysis``.\n\n"
     "Import via ``homogeneity_analyser.services.analysis_service`` (facade) for backward compatibility.\n"
@@ -26,7 +26,7 @@ legacy_doc = (
 hti_doc = (
     '"""\n'
     "H_TI product orchestration — ``run_symbolic_ti_homogeneity_analysis`` only.\n\n"
-    "Built on ``SymbolicTIHomogeneityAnalyzer`` (extends the symbolic event pipeline in ``timbral.py``).\n"
+    "Built on ``SymbolicTIHomogeneityAnalyzer`` (subclasses ``SymbolicScoreAnalyzer``).\n"
     "Taxonomy, families, and register compactness logic live in ``analyzers/hti.py`` and helpers.\n\n"
     "Import via ``homogeneity_analyser.services.analysis_service`` (facade) for backward compatibility.\n"
     '"""\n\n'

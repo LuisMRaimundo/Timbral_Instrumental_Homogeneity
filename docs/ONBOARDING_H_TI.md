@@ -10,7 +10,7 @@ Short map for developers who want **families, instrument typology, and register 
 | **H_TI product** | `hti.py` (orchestration), `hti_window_features.py`, `hti_register_compactness.py`, `hti_active_weights.py`, `hti_analyze_series.py`, `services/analysis_service_hti.py`, `ui/callbacks_hti.py` | **Yes** |
 | **Legacy metrics** | `homogeneity_analyser/legacy/`, `services/analysis_service_legacy.py`, `timbral.py` (**H_timbral** number only), JSON **1.8** combined exports | **Optional** — batch/tests/history only |
 
-**`timbral.py` is not “legacy trash”.** It delegates event building to **`symbolic_event_pipeline.py`** and still hosts the **H_timbral** pairwise metric for multimetric runs.  
+**`timbral.py` is not “legacy trash”.** It subclasses ``SymbolicScoreAnalyzer`` and implements the **H_timbral** pairwise metric for multimetric runs. Event building lives in ``symbolic_event_pipeline.py``.  
 **`legacy/` is “old metrics”** (H(t), H_cluster, fusion, U(t)), not a second taxonomy.
 
 See **`docs/PRODUCT_SCOPE.md`** (Tier 1 vs optional vs legacy) and **`docs/HTI_SYMBOLIC_PIPELINE.md`** (full stage → module map).

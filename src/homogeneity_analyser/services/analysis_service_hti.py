@@ -1,7 +1,7 @@
 """
 H_TI product orchestration — ``run_symbolic_ti_homogeneity_analysis`` only.
 
-Built on ``SymbolicTIHomogeneityAnalyzer`` (extends the symbolic event pipeline in ``timbral.py``).
+Built on ``SymbolicTIHomogeneityAnalyzer`` (subclasses ``SymbolicScoreAnalyzer`` / ``symbolic_event_pipeline``).
 Taxonomy, families, and register compactness logic live in ``analyzers/hti.py`` and helpers.
 
 Import via ``homogeneity_analyser.services.analysis_service`` (facade) for backward compatibility.
