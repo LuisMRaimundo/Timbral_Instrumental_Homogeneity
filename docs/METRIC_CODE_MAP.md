@@ -31,8 +31,9 @@
 
 | Field / concept | Primary implementation | Reading contract |
 |-------------------|------------------------|------------------|
-| **H_TI_core** | `SymbolicTIHomogeneityAnalyzer.compute_H_TI` in `analyzers/hti.py` | **Score-based symbolic** timbral–instrumental homogeneity; **not** measured acoustic or perceptual fusion. |
-| **register_compactness** | `compute_register_compactness_fields` in `hti.py` | **Pitch-space proximity / dispersion** (span + pairwise **semitone-distance** factors). **Does not** encode mod‑12 interval-class “consonance”. |
+| **H_TI_core** | `compute_hti_active_components` in `analyzers/hti_active_weights.py`; orchestration in `analyzers/hti.py` | **Score-based symbolic** timbral–instrumental homogeneity; **not** measured acoustic or perceptual fusion. |
+| **Per-window features** | `extract_hti_window_features` in `analyzers/hti_window_features.py` | Overlap masses, Herfindahls, register, dynamics — see **`docs/HTI_SYMBOLIC_PIPELINE.md`**. |
+| **register_compactness** | `compute_register_compactness_fields` in `analyzers/hti_register_compactness.py` (re-exported from `hti.py`) | **Pitch-space proximity / dispersion** (span + pairwise **semitone-distance** factors). **Does not** encode mod‑12 interval-class “consonance”. |
 | **register_span_factor** | Same value as **`register_span_proximity`** in exports | Explicit alias: **span-based** registral compactness **component**. |
 | **register_pair_distance_factor** | Same value as **`pairwise_interval_proximity`** in exports | Explicit alias: **pairwise semitone-distance** compactness **component**. |
 | **interval_class_blend_factor** | `compute_interval_class_blend_factor` / `compute_pairwise_interval_blend_factor` in `analyzers/symbolic_blend_layers.py` | **Symbolic interval-class favourability** (optional); orthogonal to **register_compactness** and **H_TI_core**. |

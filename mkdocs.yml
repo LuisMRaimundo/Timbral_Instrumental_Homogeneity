@@ -52,6 +52,7 @@ nav:
   - Technical manual: project_technical_manual.md
   - Current code characteristics: project_current_code_characteristics.md
   - Architecture: ARCHITECTURE.md
+  - H_TI symbolic pipeline: HTI_SYMBOLIC_PIPELINE.md
   - Metric code map: METRIC_CODE_MAP.md
   - Optional layers:
       - H_TA acoustic proxy: H_TA_ACOUSTIC_PROXY.md

@@ -12,6 +12,7 @@ Use the navigation on the left, or start from:
 - [Symbolic interval-class layer](SYMBOLIC_INTERVAL_CLASS_LAYER.md) — optional interval-class exports, **`seconds_sevenths`** semantics, literal vs mod‑12 profiles
 - [Metric code map](METRIC_CODE_MAP.md) — implementation entry points
 - [Architecture](ARCHITECTURE.md) — package layout
+- [H_TI symbolic pipeline](HTI_SYMBOLIC_PIPELINE.md) — stage → module map (extraction, window, metric)
 - [Onboarding (H_TI path)](ONBOARDING_H_TI.md) — symbolic pipeline vs legacy metrics
 - [Cleanup report](CLEANUP_REPORT.md) — repository hygiene log (no metric changes)
 

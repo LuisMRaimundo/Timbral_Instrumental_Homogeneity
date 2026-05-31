@@ -113,7 +113,7 @@ No `H_TI_core` or export-schema changes.
 | Item | Status (2026-05-31) |
 |------|---------------------|
 | `ui/callbacks.py` | **Resolved** — split into `callbacks_hti`, `callbacks_legacy`, `callbacks_inspection`, `callback_helpers`; facade only |
-| `analyzers/hti.py` | **Reduced** — window loop delegates row append to `hti_analyze_series.append_hti_analyze_window_row` |
+| `analyzers/hti.py` | **Reduced** — orchestration only; features in `hti_window_features.py`, register in `hti_register_compactness.py` |
 | `docs/archive_legacy/*` | Unchanged — historical schema **2.9** preserved |
 | `docs/H_TIMBRAL_*.md` | **Indexed** — `docs/H_TIMBRAL_DESIGN_INDEX.md` + MkDocs **Internal design** nav |
 | Test overlap | **Resolved** — single `write_temp_csv` test in `test_ui_audit_csv.py` |

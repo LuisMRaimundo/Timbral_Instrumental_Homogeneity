@@ -10,8 +10,7 @@ from homogeneity_analyser.analyzers.hti_dynamic_conditioning import (
     attach_dynamic_conditioning_for_window,
     pick_dynamic_interpretation_label_subfamily_relieved,
 )
-from homogeneity_analyser.analyzers.percussion_ontology import PitchStatus, get_percussion_meta
-from homogeneity_analyser.analyzers.percussion_pairwise_timbral import is_percussion_family
+from homogeneity_analyser.analyzers.hti_register_compactness import collect_pitched_occurrences_from_contrib
 from homogeneity_analyser.analyzers.symbolic_blend_layers import (
     HTI_SYMBOLIC_BLEND_CSV_JSON_DICT_KEYS,
     HTI_SYMBOLIC_BLEND_SERIES_KEYS,
@@ -235,21 +234,7 @@ def hti_pitch_occurrences_for_symbolic_layers(
     contrib: list[tuple[dict[str, Any], float]],
 ) -> list[tuple[float, float]]:
     """Pitched (midi, overlap_mass) pairs for optional interval-class diagnostics."""
-    pitch_occurrences: list[tuple[float, float]] = []
-    for e, ol in contrib:
-        fam = str(e.get("family") or "")
-        inst_e = str(e.get("instrument") or "")
-        ol_f = float(ol)
-        for p in e.get("pitches") or []:
-            try:
-                pf = float(p)
-            except (TypeError, ValueError):
-                continue
-            skip_reg = is_percussion_family(fam) and (
-                get_percussion_meta(inst_e).pitch_status == PitchStatus.UNPITCHED
-            )
-            if not skip_reg:
-                pitch_occurrences.append((pf, ol_f))
+    _span_pitches, pitch_occurrences = collect_pitched_occurrences_from_contrib(contrib)
     return pitch_occurrences
 
 

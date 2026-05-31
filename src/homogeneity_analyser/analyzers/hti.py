@@ -1,21 +1,21 @@
 """
-Symbolic Timbral–Instrumental Homogeneity H_TI(t).
+Symbolic Timbral–Instrumental Homogeneity H_TI(t) — orchestration entry point.
 
-Score-derived only (MusicXML / MIDI): canonical instrument, instrumental subfamily (taxonomy
-``family``), macrofamily, technique_uniformity_key, written dynamics (ordinal, not SPL), and
-sounding-pitch **register compactness** (span + pairwise intervals). Not audio analysis.
+Score-derived only (MusicXML / MIDI). This module wires the symbolic pipeline (``timbral.py``)
+to per-window features (``hti_window_features.py``), **H_TI_core** (``hti_active_weights.py``),
+and time-series export (``hti_analyze_series.py`` / ``hti_export_rows.py``).
+
+See ``docs/HTI_SYMBOLIC_PIPELINE.md`` for stage → module map.
 """
 
 from __future__ import annotations
 
 import math
-from collections import defaultdict
 from collections.abc import Callable
 from typing import Any
 
 import numpy as np
 
-from homogeneity_analyser.analyzers.dominant_distribution import dominant_with_ties
 from homogeneity_analyser.analyzers.hti_active_weights import (
     DEFAULT_W_FAM as _DEFAULT_W_FAM,
 )
@@ -39,121 +39,18 @@ from homogeneity_analyser.analyzers.hti_analyze_series import (
 )
 from homogeneity_analyser.analyzers.hti_comparability import classify_hti_comparability_class
 from homogeneity_analyser.analyzers.hti_concentration import herfindahl_from_masses as _herfindahl_from_masses
-from homogeneity_analyser.analyzers.hti_dynamics import aggregate_notated_dynamics_for_window
 from homogeneity_analyser.analyzers.hti_export_rows import (  # noqa: F401 — public re-exports
     HTI_CSV_COLUMNS,
     HTI_EXPORT_TIME_SERIES_KEYS,
     hti_csv_row_dict,
 )
-from homogeneity_analyser.analyzers.hti_taxonomy import macrofamily_from_instrumental_subfamily
-from homogeneity_analyser.analyzers.hti_technique_coverage import resolve_technique_uniformity_and_coverage
-from homogeneity_analyser.analyzers.percussion_ontology import PitchStatus, get_percussion_meta
-from homogeneity_analyser.analyzers.percussion_pairwise_timbral import is_percussion_family
-from homogeneity_analyser.analyzers.technique_state import compute_technique_uniformity_key_from_event
+from homogeneity_analyser.analyzers.hti_register_compactness import compute_register_compactness_fields
+from homogeneity_analyser.analyzers.hti_score_lookup import measure_number_at_ql
+from homogeneity_analyser.analyzers.hti_window_features import extract_hti_window_features
+from homogeneity_analyser.analyzers.hti_window_overlap import event_overlap_ql
 from homogeneity_analyser.analyzers.timbral import TimbralHomogeneityAnalyzer
 
-_EPS = 1e-12
-
-
 TECHNIQUE_MODEL_VERSION = "technique_state_id_v3_dynamic_conditioning"
-
-
-def compute_register_compactness_fields(
-    pitch_occurrences: list[tuple[float, float]],
-    register_ref_semitones: float,
-) -> dict[str, Any]:
-    """
-    Register **compactness** diagnostics from pitched MIDI/ps occurrences.
-
-    Each entry is ``(midi_pitch, overlap_mass)`` for one chord tone / sounding pitch
-    (same overlap mass as the parent event for each listed pitch). Unpitched percussion
-    must be excluded **before** calling.
-
-    Returns ``register_span_proximity`` (outer span only), overlap-weighted mean
-    ``pairwise_interval_proximity`` over unordered pairs, ``register_compactness`` as
-    ``sqrt(max(ε, span) * max(ε, pairwise))``, and ``register_proximity`` equal to
-    ``register_compactness`` (the value that enters **H_TI_core**'s weighted geometric mean).
-
-    Explicit aliases (same numerics; **not** interval-class fusion): ``register_span_factor``
-    equals ``register_span_proximity``; ``register_pair_distance_factor`` equals
-    ``pairwise_interval_proximity`` (semitone-distance / ref attenuation only).
-    """
-    ref = float(register_ref_semitones)
-    if not math.isfinite(ref) or ref <= 0.0:
-        ref = 7.0
-    if not pitch_occurrences:
-        nan = float("nan")
-        return {
-            "register_span_semitones": nan,
-            "register_span_proximity": nan,
-            "register_span_factor": nan,
-            "pairwise_interval_proximity": nan,
-            "register_pair_distance_factor": nan,
-            "pairwise_interval_coverage_status": "unpitched_only",
-            "register_compactness": nan,
-            "register_proximity": nan,
-            "register_coverage_status": "unpitched_only",
-        }
-
-    mids = [float(p) for p, _w in pitch_occurrences]
-    arr = np.asarray(mids, dtype=float)
-    span_semi = float(np.ptp(arr)) if arr.size > 1 else 0.0
-    register_span_proximity = 1.0 / (1.0 + span_semi / ref)
-
-    n = len(pitch_occurrences)
-    if n < 2:
-        pairwise_interval_proximity = 1.0
-        pairwise_interval_coverage_status = "insufficient_pairs"
-    else:
-        num = 0.0
-        den = 0.0
-        for i in range(n):
-            pi, wi = float(pitch_occurrences[i][0]), float(pitch_occurrences[i][1])
-            wi = max(0.0, wi)
-            for j in range(i + 1, n):
-                pj, wj = float(pitch_occurrences[j][0]), float(pitch_occurrences[j][1])
-                wj = max(0.0, wj)
-                d = abs(pi - pj)
-                prox = 1.0 / (1.0 + d / ref)
-                wij = wi * wj
-                num += wij * prox
-                den += wij
-        pairwise_interval_proximity = float(num / den) if den > 1e-15 else 1.0
-        pairwise_interval_coverage_status = "sufficient_pairs"
-
-    rp_span = max(float(register_span_proximity), _EPS)
-    rp_pair = max(float(pairwise_interval_proximity), _EPS)
-    register_compactness = float(np.clip(math.sqrt(rp_span * rp_pair), 0.0, 1.0))
-    rsp = float(register_span_proximity)
-    pip = float(pairwise_interval_proximity)
-    return {
-        "register_span_semitones": span_semi,
-        "register_span_proximity": rsp,
-        "register_span_factor": rsp,
-        "pairwise_interval_proximity": pip,
-        "register_pair_distance_factor": pip,
-        "pairwise_interval_coverage_status": pairwise_interval_coverage_status,
-        "register_compactness": register_compactness,
-        "register_proximity": register_compactness,
-        "register_coverage_status": "pitched",
-    }
-
-
-def _measure_number_at_ql(score: Any, t: float) -> int | None:
-    try:
-        from music21 import stream as m21stream
-
-        for part in score.parts:
-            for m in part.getElementsByClass(m21stream.Measure):
-                off = float(m.offset)
-                dur = float(m.duration.quarterLength) if m.duration is not None else 0.0
-                if off <= t < off + dur + 1e-9:
-                    mn = getattr(m, "measureNumber", None)
-                    if mn is not None and int(mn) not in (0,):
-                        return int(mn)
-        return None
-    except (AttributeError, TypeError, ValueError):
-        return None
 
 
 class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
@@ -215,158 +112,16 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
         ).strip()
 
     def _event_overlap_ql(self, e: dict[str, Any], t_start: float, t_end: float) -> float:
-        o = float(e["offset"])
-        end = float(e["end"])
-        return max(0.0, min(end, t_end) - max(o, t_start))
+        return event_overlap_ql(e, t_start, t_end)
 
     def extract_hti_window(self, window_center: float, window_size: float) -> dict[str, Any] | None:
-        t_start = window_center - window_size / 2.0
-        t_end = window_center + window_size / 2.0
-        active = [e for e in self._events if self._active_in_window(e, t_start, t_end)]
-        if not active:
-            return None
-
-        contrib: list[tuple[dict[str, Any], float]] = []
-        for e in active:
-            ol = self._event_overlap_ql(e, t_start, t_end)
-            if ol > 0.0:
-                contrib.append((e, float(ol)))
-
-        if not contrib:
-            return None
-
-        inst_mass: dict[str, float] = defaultdict(float)
-        fam_mass: dict[str, float] = defaultdict(float)
-        macro_mass: dict[str, float] = defaultdict(float)
-        tech_mass: dict[str, float] = defaultdict(float)
-        register_span_pitches: list[float] = []
-        pitch_occurrences: list[tuple[float, float]] = []
-
-        for e, ol in contrib:
-            inst = str(e.get("instrument") or "unknown")
-            fam = str(e.get("family") or "unknown")
-            inst_mass[inst] += ol
-            fam_mass[fam] += ol
-            macro_mass[macrofamily_from_instrumental_subfamily(fam)] += ol
-            tuk = compute_technique_uniformity_key_from_event(e)
-            if tuk:
-                tech_mass[tuk] += ol
-            inst_e = inst
-            ol_f = float(ol)
-            for p in e.get("pitches") or []:
-                try:
-                    pf = float(p)
-                except (TypeError, ValueError):
-                    continue
-                skip_reg = is_percussion_family(fam) and (
-                    get_percussion_meta(inst_e).pitch_status == PitchStatus.UNPITCHED
-                )
-                if not skip_reg:
-                    register_span_pitches.append(pf)
-                    pitch_occurrences.append((pf, ol_f))
-
-        tot_inst = float(sum(inst_mass.values()))
-        if tot_inst <= 1e-15:
-            return None
-
-        instrument_uniformity = _herfindahl_from_masses(dict(inst_mass))
-        instrumental_subfamily_uniformity = _herfindahl_from_masses(dict(fam_mass))
-        macrofamily_uniformity = _herfindahl_from_masses(dict(macro_mass))
-
-        technique_uniformity, technique_coverage_status = resolve_technique_uniformity_and_coverage(
-            dict(tech_mass), contrib
+        return extract_hti_window_features(
+            self._events,
+            window_center=window_center,
+            window_size=window_size,
+            register_ref_semitones=self._register_ref_semitones,
+            is_event_active_in_window=self._active_in_window,
         )
-
-        ref = self._register_ref_semitones
-        if not math.isfinite(ref) or ref <= 0.0:
-            ref = 7.0
-        reg_bundle = compute_register_compactness_fields(pitch_occurrences, ref)
-        span_semi = float(reg_bundle["register_span_semitones"])
-        register_span_proximity = float(reg_bundle["register_span_proximity"])
-        register_span_factor = float(reg_bundle.get("register_span_factor", register_span_proximity))
-        pairwise_interval_proximity = float(reg_bundle["pairwise_interval_proximity"])
-        register_pair_distance_factor = float(
-            reg_bundle.get("register_pair_distance_factor", pairwise_interval_proximity)
-        )
-        pairwise_interval_coverage_status = str(reg_bundle["pairwise_interval_coverage_status"])
-        register_compactness = float(reg_bundle["register_compactness"])
-        register_proximity = float(reg_bundle["register_proximity"])
-        register_coverage_status = str(reg_bundle["register_coverage_status"])
-
-        inst_share = {k: float(v) / tot_inst for k, v in inst_mass.items()}
-        fam_tot = float(sum(fam_mass.values())) or 1.0
-        fam_share = {k: float(v) / fam_tot for k, v in fam_mass.items()}
-        macro_tot = float(sum(macro_mass.values())) or 1.0
-        macro_share = {k: float(v) / macro_tot for k, v in macro_mass.items()}
-        tech_tot = float(sum(tech_mass.values())) or 1.0
-        tech_share = {k: float(v) / tech_tot for k, v in tech_mass.items()} if tech_mass else {}
-
-        d_inst = dominant_with_ties(dict(inst_share))
-        d_fam = dominant_with_ties(dict(fam_share))
-        d_macro = dominant_with_ties(dict(macro_share))
-        d_tech = dominant_with_ties(dict(tech_share)) if tech_share else dominant_with_ties({})
-        dom_inst = str(d_inst["dominant_primary"] or "")
-        dom_fam = str(d_fam["dominant_primary"] or "")
-        dom_macro = str(d_macro["dominant_primary"] or "")
-        dom_ts = d_tech["dominant_primary"]
-
-        ev_only = [e for e, _ol in contrib]
-        dyn = aggregate_notated_dynamics_for_window(ev_only, self._event_overlap_ql, t_start, t_end)
-
-        feats: dict[str, Any] = {
-            "instrument_uniformity": instrument_uniformity,
-            "instrumental_subfamily_uniformity": instrumental_subfamily_uniformity,
-            "family_uniformity": instrumental_subfamily_uniformity,
-            "macrofamily_uniformity": macrofamily_uniformity,
-            "technique_uniformity": technique_uniformity,
-            "register_proximity": register_proximity,
-            "register_compactness": register_compactness,
-            "register_span_proximity": register_span_proximity,
-            "register_span_factor": register_span_factor,
-            "pairwise_interval_proximity": pairwise_interval_proximity,
-            "register_pair_distance_factor": register_pair_distance_factor,
-            "pairwise_interval_coverage_status": pairwise_interval_coverage_status,
-            "register_span_semitones": span_semi,
-            "register_coverage_status": register_coverage_status,
-            "technique_coverage_status": technique_coverage_status,
-            "n_instruments": len(inst_mass),
-            "n_families": len(fam_mass),
-            "n_macrofamilies": len(macro_mass),
-            "dominant_instrument": dom_inst,
-            "dominant_instruments": list(d_inst["dominant_all"]),
-            "dominant_instrument_tie": bool(d_inst["tie"]),
-            "dominant_instrument_share": d_inst["max_share"],
-            "dominant_instrument_margin": d_inst["margin_to_second"],
-            "dominant_instrumental_subfamily": dom_fam,
-            "dominant_macrofamily": dom_macro,
-            "dominant_macrofamilies": list(d_macro["dominant_all"]),
-            "dominant_macrofamily_tie": bool(d_macro["tie"]),
-            "dominant_macrofamily_share": d_macro["max_share"],
-            "dominant_macrofamily_margin": d_macro["margin_to_second"],
-            "dominant_family": dom_fam,
-            "dominant_families": list(d_fam["dominant_all"]),
-            "dominant_family_tie": bool(d_fam["tie"]),
-            "dominant_family_share": d_fam["max_share"],
-            "dominant_family_margin": d_fam["margin_to_second"],
-            "dominant_timbral_state": dom_ts,
-            "dominant_timbral_states": list(d_tech["dominant_all"]),
-            "dominant_timbral_state_tie": bool(d_tech["tie"]),
-            "dominant_timbral_state_share": d_tech["max_share"],
-            "dominant_timbral_state_margin": d_tech["margin_to_second"],
-            "instrument_distribution": dict(inst_share),
-            "instrumental_subfamily_distribution": dict(fam_share),
-            "family_distribution": dict(fam_share),
-            "macrofamily_distribution": dict(macro_share),
-            "technique_state_distribution": dict(tech_share),
-            **dyn,
-            "__contrib__": contrib,
-            "__inst_mass__": dict(inst_mass),
-            "__fam_mass__": dict(fam_mass),
-            "__macro_mass__": dict(macro_mass),
-            "__register_pitches__": list(register_span_pitches),
-            "__span_semi__": float(span_semi) if math.isfinite(float(span_semi)) else float("nan"),
-        }
-        return feats
 
     def compute_H_TI(
         self,
@@ -415,7 +170,7 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
         r_relief = float(np.clip(float(getattr(self, "same_subfamily_relief_factor", 0.0)), 0.0, 1.0))
         for i, t in enumerate(centers):
             geom = hti_window_row_geometry(float(t), float(window_size), float(excerpt_start_ql), ee, ep)
-            mnum = _measure_number_at_ql(self.score, float(t))
+            mnum = measure_number_at_ql(self.score, float(t))
             feats = self.extract_hti_window(float(t), window_size)
             ieff = float("nan")
             h_relaxed = float("nan")
@@ -469,9 +224,6 @@ class SymbolicTIHomogeneityAnalyzer(TimbralHomogeneityAnalyzer):
                 )
             else:
                 lbl_r = "insufficient_dynamic_evidence"
-                aff_full = {}
-                acoustic_full = {}
-                contrib = []
             cmp_class = classify_hti_comparability_class(feats=feats, active_weights=aw)
             append_hti_analyze_window_row(
                 results,
