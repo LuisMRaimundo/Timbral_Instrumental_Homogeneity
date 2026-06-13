@@ -15,13 +15,13 @@ This repository is a **Python package** (`homogeneity_analyser`) under a **src l
 | Plotting | `homogeneity_analyser/plotting/` | Matplotlib / Plotly figures (`time_series.py`, `summaries.py`, `common.py`) |
 | UI | `homogeneity_analyser/ui/` | Gradio app (`gradio_app.py`); **`callbacks.py`** = facade re-exporting **`callbacks_hti.py`** (product), **`callbacks_legacy.py`**, **`callbacks_inspection.py`**, **`callback_helpers.py`**; parameter helpers: **`hti_ui_params.py`**, **`legacy_ui_params.py`**, **`timbral_ui_params.py`**, **`legacy_multimetric_ui_params.py`**, **`callback_result_formatting.py`** (`ui/README.md`); **`validation.py`**, **`components.py`** |
 | Utils | `homogeneity_analyser/utils/` | Export path helpers (`output_paths.py`) |
-| Tests | `tests/` | Pytest + unittest-style modules; **no** `sys.path` hacks — install package first |
+| Tests | `tests/` | Pytest + unittest-style modules; **no** `sys.path` hacks — install package first. Requires **`iav`** (Interval-Homogeneity-Analyser) for `cardinality` tests. |
 | Validation | `validation/` | Scripted checks against annotated fixtures |
 
 ## Entry points
 
 - **CLI / module:** `python -m homogeneity_analyser` or console script `homogeneity-analyser` (after `pip install -e .`).
-- **Development:** `pip install -e ".[dev]"` then `pytest`, `ruff check`, `ruff format --check`, `mypy`.
+- **Development:** `pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"` then `pip install -e ".[dev]"`, then `pytest`, optional `ruff check .`, `mypy`.
 
 ## Static typing (mypy)
 
@@ -29,7 +29,7 @@ The rest of the package is type-checked. **`analyzers/homogeneity.py` is exclude
 
 ## Tests and coverage
 
-CI enforces a **minimum total line coverage** (`fail_under = 77` in `pyproject.toml`; `legacy/*` omitted). Headless tests exercise **analyzers**, **services**, **io**, **models**, **taxonomy**, **utils**, **`plotting/*`**, **`ui/*_ui_params.py`**, **`ui/validation.py`**, and **`gradio_app` wiring**: `tests/test_gradio_wiring.py` builds **`build_demo()`** (five handlers: window visibility, **H_TI** run with **31** inputs including optional symbolic-blend and acoustic-proxy flags, three symbolic-inspection **change** handlers). UI boundary modules (`callbacks.py` facade, **`callbacks_hti.py`**, smoke tests) are in the product path.
+CI enforces a **minimum total line coverage** (`fail_under = 77` in `pyproject.toml`; `legacy/*` omitted). **CircleCI** runs the full suite on Python 3.10 and 3.11; **GitHub Actions** runs `pytest -m "not legacy"`. Both install **`iav`** before the editable package. Typical full suite: **975** tests (~80% coverage on `homogeneity_analyser`).
 
 ## Scientific scope (unchanged)
 

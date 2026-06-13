@@ -186,26 +186,32 @@ The Symbolic inspection report shows what the parser actually found in the uploa
 ## Installation and running
 
 ```bash
+pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
 pip install -e ".[dev]"
 python -m homogeneity_analyser
 # or, after install:
 homogeneity-analyser
 ```
 
+**Runtime dependency:** `homogeneity_analyser.cardinality` imports **`iav.vertical_cardinality`** from [Interval-Homogeneity-Analyser](https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser). CI installs it automatically; local editable installs need the step above (or an editable install of that repository).
+
 ---
 
 ## Development / tests
 
+**CI:** [CircleCI](https://app.circleci.com/pipelines/github/LuisMRaimundo/Orchomogeneity_Analyser) runs **`tests-3.10`** and **`tests-3.11`**; [GitHub Actions](.github/workflows/tests.yml) runs **`pytest -m "not legacy"`**. Both install **`iav`** before `pip install -e ".[dev]"`. CircleCI **ruff** is temporarily disabled pending a lint-cleanup PR.
+
 ```bash
-ruff check src tests
-ruff format --check src tests
-pytest -m "not legacy"   # H_TI / product path (day-to-day)
-pytest                   # full suite including multimetric JSON 1.8
-pytest --cov=homogeneity_analyser --cov-report=term-missing  # product-path gate: fail_under 77 (see pyproject.toml)
+pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
+pip install -e ".[dev]"
+pytest tests -q                  # full suite (~975 tests)
+pytest -m "not legacy" -q      # H_TI / product path (day-to-day)
+pytest --cov=homogeneity_analyser --cov-report=term-missing   # gate fail_under 77 (pyproject.toml)
+ruff check .                   # optional local lint
+mypy src/homogeneity_analyser  # optional; see pyproject.toml
+```
 
 **Onboarding (H_TI only):** `docs/ONBOARDING_H_TI.md`, **`docs/PRODUCT_SCOPE.md`**, **`docs/HTI_SYMBOLIC_PIPELINE.md`**. Golden `H_TI_core`: `tests/test_hti_core_golden_outputs.py`. Legacy map: **`LEGACY.md`**. Analyzer layout: `analyzers/README.md`.
-mypy  # optional; see pyproject.toml for scope
-```
 
 ---
 

@@ -1,5 +1,7 @@
 # Final verification report — H_TA_acoustic_proxy audit
 
+**Supplement (2026-06-10):** Docs/CI alignment — **`iav`** runtime dependency documented; CircleCI + GitHub Actions install paths; test count **975 passed** (includes symbolic high-risk and musicological plausibility contract layers). CircleCI **ruff** job temporarily removed.
+
 **Supplement (2026-05-31):** Orchomogeneity_Analyser branding alignment; **`hti_comparability_class`** export; edge-window plot markers / `exclude_edge_windows`; modular refactor (`hti_comparability.py`, `hti_analyze_series.py`, `timbral_event_build.py`); exporter taxonomy aliases; `__version__` **2.0.0**. No change to **H_TI_core** numerics on golden fixtures.
 
 **Supplement (2026-05-20):** Controlled cleanup — archived root `SANITATION_*.md` → `docs/archive_legacy/`; added **`docs/CLEANUP_REPORT.md`**; refreshed export-path docs (`hti_export_rows` canonical). No `H_TI_core` or public CSV/JSON schema change. Latest full pytest: **884 passed**.
@@ -16,7 +18,7 @@
 
 | Suite | Command | Result |
 |-------|---------|--------|
-| **Full pytest** | `python -m pytest tests/ -q` | **884 passed**, 3 skipped, 14 warnings (~31 s with coverage) |
+| **Full pytest** | `python -m pytest tests/ -q` | **975 passed**, 3 skipped, 14 warnings (~20 s typical) |
 | **Proxy + H_TI guard** | `test_timbral_acoustic_proxy_*.py`, `test_hti_refinement.py`, `test_json_export.py`, `test_documentation_consistency.py` | Included in full run; all passed |
 | **New numerical guard** | `test_analyze_hti_core_hti_strict_unchanged_when_acoustic_proxy_toggled` | **Passed** — compares full `analyze_hti` series with `equal_nan=True` |
 
@@ -116,7 +118,7 @@ No active document presents **`H_TA`** as a loudness meter, masking measurement,
 |-------|--------|
 | Unit: `test_hti_core_unchanged_when_acoustic_proxy_enabled` | `compute_H_TI` independent of proxy flag |
 | Integration: `test_analyze_hti_core_hti_strict_unchanged_when_acoustic_proxy_toggled` | Full `analyze_hti` — `H_TI_core`, `H_TI`, `H_TI_strict` **identical** (proxy off vs on); `H_TA_acoustic_proxy` finite only when on |
-| Full regression suite | **884 passed** — no unexplained numeric failures |
+| Full regression suite | **975 passed** (2026-06-10) — no unexplained numeric failures |
 
 **Conclusion:** No numerical regression in **`H_TI_core`** / **`H_TI`** / **`H_TI_strict`** from enabling the acoustic proxy.
 
@@ -148,7 +150,7 @@ No active document presents **`H_TA`** as a loudness meter, masking measurement,
 
 | Criterion | Status |
 |-----------|--------|
-| Full pytest | **884 passed** |
+| Full pytest | **975 passed** (2026-06-10 refresh) |
 | Ruff full repo | **Clean** (documented per-file ignores) |
 | Mypy | **Clean** |
 | Schema 3.0 docs | **Consistent** (active set) |
