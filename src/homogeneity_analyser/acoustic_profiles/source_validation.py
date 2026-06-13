@@ -63,6 +63,8 @@ def _local_private_filename_ok(value: str, evidence_type: str) -> bool:
         return value == "" or _local_private_filename_ok(value, "musical_instrument_acoustics")
     if value.strip() == "":
         return False
+    if "/" in value or "\\" in value:
+        return False
     if Path(value).name != value:
         return False
     if ".." in value or value.startswith(("/", "\\")):
