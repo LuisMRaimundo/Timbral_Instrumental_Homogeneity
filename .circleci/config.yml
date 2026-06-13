@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Repository safety check
           command: |
-            python - <<'PY'
+            python - \<<'PY'
             from pathlib import Path
 
             required = [
