@@ -702,7 +702,7 @@ The **H_TI** parameter column in `ui/gradio_app.py` exposes three **orthogonal**
 
 | Identifier | Typical meaning | Authoritative symbol (Python) |
 |------------|-----------------|-------------------------------|
-| **Python package version** | setuptools / wheel release | `homogeneity_analyser.__version__` (**1.0.0** in `__init__.py`) |
+| **Python package version** | setuptools / wheel release | `homogeneity_analyser.__version__` (**2.0.0** in `__init__.py`; same as `pyproject.toml` and `CITATION.cff`) |
 | **H_TI JSON `schema_version`** | Breaking / additive evolution of the **H_TI** export shape | **`"3.0"`** (`HTI_EXPORT_SCHEMA_VERSION`) |
 | **Combined / legacy JSON `schema_version`** | Older multi-metric bundles | **`"1.8"`** (`JSON_EXPORT_SCHEMA_VERSION` in `json_export.py`) |
 | **Top-level JSON `model_version`** | Export wrapper / bundle semantics | `JSON_EXPORT_MODEL_VERSION` (**`"1.0"`**) |
