@@ -11,7 +11,7 @@ if (-not (Test-Path $BuildScript)) {
     throw "Missing build script: $BuildScript"
 }
 
-Write-Host 'Orchomogeneity — PyInstaller build (maintainer)' -ForegroundColor Cyan
+Write-Host 'Timbral_Instrumental_Homogeneity — PyInstaller build (maintainer)' -ForegroundColor Cyan
 Write-Host "Repository: $RepoRoot"
 Write-Host 'Prerequisites: pip install -e . ; pip install pyinstaller'
 Write-Host ''

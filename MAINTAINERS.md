@@ -1,4 +1,4 @@
-# Maintainer guide — Orchomogeneity Analyser
+# Maintainer guide — Timbral_Instrumental_Homogeneity
 
 Practical map for developers changing exports, weights, UI copy, or documentation. This project favours **small, test-backed edits** over large refactors.
 

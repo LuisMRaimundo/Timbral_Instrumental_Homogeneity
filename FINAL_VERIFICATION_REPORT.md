@@ -2,14 +2,14 @@
 
 **Supplement (2026-06-10):** Docs/CI alignment — **`iav`** runtime dependency documented; CircleCI + GitHub Actions install paths; test count **975 passed** (includes symbolic high-risk and musicological plausibility contract layers). CircleCI **ruff** job temporarily removed.
 
-**Supplement (2026-05-31):** Orchomogeneity_Analyser branding alignment; **`hti_comparability_class`** export; edge-window plot markers / `exclude_edge_windows`; modular refactor (`hti_comparability.py`, `hti_analyze_series.py`, `timbral_event_build.py`); exporter taxonomy aliases; `__version__` **2.0.0**. No change to **H_TI_core** numerics on golden fixtures.
+**Supplement (2026-05-31):** Timbral_Instrumental_Homogeneity branding alignment; **`hti_comparability_class`** export; edge-window plot markers / `exclude_edge_windows`; modular refactor (`hti_comparability.py`, `hti_analyze_series.py`, `timbral_event_build.py`); exporter taxonomy aliases; `__version__` **2.0.0**. No change to **H_TI_core** numerics on golden fixtures.
 
 **Supplement (2026-05-20):** Controlled cleanup — archived root `SANITATION_*.md` → `docs/archive_legacy/`; added **`docs/CLEANUP_REPORT.md`**; refreshed export-path docs (`hti_export_rows` canonical). No `H_TI_core` or public CSV/JSON schema change. Latest full pytest: **884 passed**.
 
 **Supplement (2026-05-19):** Golden `H_TI_core` tests; `hti_*` helper modules; UI split — `ui/hti_ui_params.py`, `legacy_ui_params.py`, `timbral_ui_params.py`, `legacy_multimetric_ui_params.py`, `callback_result_formatting.py` with matching `test_*_ui_params.py` / extended `test_ui_callbacks_smoke.py`. No numerical or CSV/JSON schema change. Coverage gate **`fail_under = 77`**.
 
 **Date:** 2026-05-19 (verification body); counts refreshed 2026-05-20  
-**Repository:** `Orchomogeneity_Analyser` (GitHub: https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)  
+**Repository:** `Timbral_Instrumental_Homogeneity` (GitHub: https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity)  
 **Code authority:** `src/homogeneity_analyser/` only
 
 ---

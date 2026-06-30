@@ -1,10 +1,10 @@
-# Orchomogeneity Analyser
+# Timbral_Instrumental_Homogeneity
 
-**Repository:** [Orchomogeneity_Analyser](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)
+**Repository:** [Timbral_Instrumental_Homogeneity](https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity)
 
-**Orchomogeneity** is an H-TI analyser for timbral–instrumental homogeneity analysis in MusicXML/MXL/MIDI orchestral scores — **symbolic notation only** (not audio analysis).
+**Timbral_Instrumental_Homogeneity** is an H-TI analyser for timbral–instrumental homogeneity analysis in MusicXML/MXL/MIDI orchestral scores — **symbolic notation only** (not audio analysis).
 
-Python package **`homogeneity-analyser`** (import **`homogeneity_analyser`**) and **Gradio** app computing **H_TI** / **H_TI_core** — score-derived homogeneity from notation.
+Python package **`timbral-instrumental-homogeneity`** (legacy console: `homogeneity-analyser`; import **`homogeneity_analyser`**) and **Gradio** app computing **H_TI** / **H_TI_core** — score-derived homogeneity from notation.
 
 ---
 
@@ -14,7 +14,7 @@ Python package **`homogeneity-analyser`** (import **`homogeneity_analyser`**) an
 |----------|--------|
 | **No Python** (Windows 10/11) | Double-click [`instalers/windows/INSTALL.bat`](instalers/windows/INSTALL.bat) |
 | **No Python** (macOS / Linux) | See [`instalers/README.md`](instalers/README.md) → `install-easy.sh` |
-| **Developers** | `pip install -r requirements.txt` then `homogeneity-analyser` (or `pip install -e .`) |
+| **Developers** | `pip install -r requirements.txt` then `timbral-instrumental-homogeneity` (legacy: `homogeneity-analyser`; or `pip install -e .`) |
 
 First end-user install may take **10–25 minutes** (Internet required).
 
@@ -31,11 +31,11 @@ First end-user install may take **10–25 minutes** (Internet required).
 
 ## Installers (optional)
 
-**Repository:** https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
+**Repository:** https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity
 
 End users without Python: see [`instalers/`](instalers/) — especially on Windows, double-click **`instalers/windows/INSTALL.bat`** (installs Python 3.11, downloads this repo, installs libraries, creates shortcuts).
 
-Reference installer layout (same pattern as [SoundSpectrAnalyse](https://github.com/LuisMRaimundo/SoundSpectrAnalyse)):
+Reference installer layout (same pattern as [Spectral_Analyser](https://github.com/LuisMRaimundo/Spectral_Analyser)):
 
 | Folder | Standard install | Portable build (PyInstaller) |
 |--------|------------------|------------------------------|
@@ -43,7 +43,7 @@ Reference installer layout (same pattern as [SoundSpectrAnalyse](https://github.
 | `instalers/mac/` | `install-easy.sh` | `build-all.sh` |
 | `instalers/linux/` | `install-easy.sh` | `build-all.sh` |
 
-Built `.exe` / `.app` / `.dmg` / `.tar.gz` files are **not** in git — use [GitHub Releases](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/releases) if you distribute frozen builds.
+Built `.exe` / `.app` / `.dmg` / `.tar.gz` files are **not** in git — use [GitHub Releases](https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity/releases) if you distribute frozen builds.
 
 Maintainer builds: [`packaging/windows/`](packaging/windows/).
 
@@ -190,7 +190,7 @@ pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.
 pip install -e ".[dev]"
 python -m homogeneity_analyser
 # or, after install:
-homogeneity-analyser
+timbral-instrumental-homogeneity
 ```
 
 **Runtime dependency:** `homogeneity_analyser.cardinality` imports **`iav.vertical_cardinality`** from [Interval-Homogeneity-Analyser](https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser). CI installs it automatically; local editable installs need the step above (or an editable install of that repository).
@@ -199,7 +199,7 @@ homogeneity-analyser
 
 ## Development / tests
 
-**CI:** [CircleCI](https://app.circleci.com/pipelines/github/LuisMRaimundo/Orchomogeneity_Analyser) runs **`tests-3.10`** and **`tests-3.11`**; [GitHub Actions](.github/workflows/tests.yml) runs **`pytest -m "not legacy"`**. Both install **`iav`** before `pip install -e ".[dev]"`. CircleCI **ruff** is temporarily disabled pending a lint-cleanup PR.
+**CI:** [CircleCI](https://app.circleci.com/pipelines/github/LuisMRaimundo/Timbral_Instrumental_Homogeneity) runs **`tests-3.10`** and **`tests-3.11`**; [GitHub Actions](.github/workflows/tests.yml) runs **`pytest -m "not legacy"`**. Both install **`iav`** before `pip install -e ".[dev]"`. CircleCI **ruff** is temporarily disabled pending a lint-cleanup PR.
 
 ```bash
 pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"

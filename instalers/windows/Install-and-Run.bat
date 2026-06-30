@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions
-title Orchomogeneity
+title Timbral_Instrumental_Homogeneity
 
 cd /d "%~dp0..\.." || (
   echo ERROR: Cannot find project root.
@@ -14,7 +14,7 @@ set "SETUP=%ROOT%\instalers\windows\setup.ps1"
 set "LOG=%ROOT%\instalers\runtime\windows\install.log"
 
 echo.
-echo  Orchomogeneity Analyser (cloned repo)
+echo  Timbral_Instrumental_Homogeneity (cloned repo)
 echo  =====================================
 echo.
 echo  For ZIP-only users, use INSTALL.bat instead.

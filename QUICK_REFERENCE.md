@@ -1,6 +1,6 @@
-# Orchomogeneity Analyser — Quick Reference
+# Timbral_Instrumental_Homogeneity — Quick Reference
 
-**Repository:** [Orchomogeneity_Analyser](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)
+**Repository:** [Timbral_Instrumental_Homogeneity](https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity)
 
 ## What this software does
 

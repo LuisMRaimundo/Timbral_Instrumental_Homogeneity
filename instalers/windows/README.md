@@ -1,14 +1,14 @@
-# Windows installers — Orchomogeneity
+# Windows installers — Timbral_Instrumental_Homogeneity
 
 ## End users (recommended)
 
-1. Download a **fresh** ZIP from [GitHub](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser) (**Code -> Download ZIP**).
+1. Download a **fresh** ZIP from [GitHub](https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity) (**Code -> Download ZIP**).
 2. Extract and open **`instalers\windows`**.
 3. Double-click **`INSTALL.bat`** or **`START-HERE.bat`**.
 4. Wait until the window reports **SUCCESS** or **Done** (first run: **10-25 minutes**).
-5. Start the app from **Desktop** or **Start menu -> Orchomogeneity**.
+5. Start the app from **Desktop** or **Start menu -> Timbral_Instrumental_Homogeneity**.
 
-Install location: `%LOCALAPPDATA%\Programs\Orchomogeneity\`  
+Install location: `%LOCALAPPDATA%\Programs\Timbral_Instrumental_Homogeneity\`  
 Log file: `install.log` in that folder.
 
 **No `.exe` is required** for normal install. Do not use `>>>` in batch files (breaks CMD).

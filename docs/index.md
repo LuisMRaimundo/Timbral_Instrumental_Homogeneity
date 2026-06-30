@@ -1,4 +1,4 @@
-# Orchomogeneity Analyser — documentation
+# Timbral_Instrumental_Homogeneity — documentation
 
 Welcome. This site mirrors the repository Markdown (no mathematical rewrites).
 

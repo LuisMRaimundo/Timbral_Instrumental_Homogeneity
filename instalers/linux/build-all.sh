@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-echo "Orchomogeneity — PyInstaller build (Linux, maintainer)"
+echo "Timbral_Instrumental_Homogeneity — PyInstaller build (Linux, maintainer)"
 if ! command -v pyinstaller >/dev/null 2>&1; then
   echo "Install: pip install pyinstaller && pip install -e ."
   exit 1

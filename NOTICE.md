@@ -1,4 +1,4 @@
-# Notice — Orchomogeneity Analyser
+# Notice — Timbral_Instrumental_Homogeneity
 
 Copyright © Luís Raimundo and contributors. All rights reserved.
 
@@ -10,7 +10,7 @@ Academic and research use may be permitted under separate agreement or instituti
 
 ## Third-party components
 
-Runtime dependencies (e.g. Python packages listed in `pyproject.toml`) are subject to their respective licences. This notice governs the **Orchomogeneity** application source and branding only.
+Runtime dependencies (e.g. Python packages listed in `pyproject.toml`) are subject to their respective licences. This notice governs the **Timbral_Instrumental_Homogeneity** application source and branding only.
 
 ## Contact
 

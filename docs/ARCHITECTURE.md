@@ -1,4 +1,4 @@
-# Architecture (Orchomogeneity Analyser)
+# Architecture (Timbral_Instrumental_Homogeneity)
 
 This repository is a **Python package** (`homogeneity_analyser`) under a **src layout**. All application logic lives under `src/homogeneity_analyser/`.
 
@@ -20,7 +20,7 @@ This repository is a **Python package** (`homogeneity_analyser`) under a **src l
 
 ## Entry points
 
-- **CLI / module:** `python -m homogeneity_analyser` or console script `homogeneity-analyser` (after `pip install -e .`).
+- **CLI / module:** `python -m homogeneity_analyser` or console script `timbral-instrumental-homogeneity` (legacy: `homogeneity-analyser`; after `pip install -e .`).
 - **Development:** `pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"` then `pip install -e ".[dev]"`, then `pytest`, optional `ruff check .`, `mypy`.
 
 ## Static typing (mypy)

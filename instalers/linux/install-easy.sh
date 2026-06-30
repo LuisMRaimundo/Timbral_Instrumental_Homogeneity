@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# One-click setup for Linux. Repo: https://github.com/LuisMRaimundo/Orchomogeneity_Analyser
+# One-click setup for Linux. Repo: https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity
 set -euo pipefail
 
-INSTALL_ROOT="${HOME}/.local/share/Orchomogeneity"
+INSTALL_ROOT="${HOME}/.local/share/Timbral_Instrumental_Homogeneity"
 APP_DIR="${INSTALL_ROOT}/app"
 VENV_DIR="${INSTALL_ROOT}/venv"
-GITHUB_ZIP="https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/archive/refs/heads/main.zip"
-ZIP_FOLDER="Orchomogeneity_Analyser-main"
+GITHUB_ZIP="https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity/archive/refs/heads/main.zip"
+ZIP_FOLDER="Timbral_Instrumental_Homogeneity-main"
 
-echo "=== Orchomogeneity — Installer (Linux) ==="
+echo "=== Timbral_Instrumental_Homogeneity — Installer (Linux) ==="
 
 find_python() {
   for c in python3.11 python3.10 python3; do
@@ -45,18 +45,18 @@ echo "Installing Python packages (10–25 min first time)…"
 "${VENV_DIR}/bin/pip" install --upgrade pip wheel
 "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements-install.txt"
 
-LAUNCHER="${INSTALL_ROOT}/launch-orchomogeneity.sh"
+LAUNCHER="${INSTALL_ROOT}/launch-timbral-instrumental-homogeneity.sh"
 cat > "${LAUNCHER}" <<EOF
 #!/usr/bin/env bash
 cd "${APP_DIR}"
-exec "${VENV_DIR}/bin/homogeneity-analyser"
+exec "${VENV_DIR}/bin/timbral-instrumental-homogeneity"
 EOF
 chmod +x "${LAUNCHER}"
 
 DESKTOP_DIR="${HOME}/Desktop"
 if [[ -d "${DESKTOP_DIR}" ]]; then
-  cp "${LAUNCHER}" "${DESKTOP_DIR}/Orchomogeneity.sh"
-  chmod +x "${DESKTOP_DIR}/Orchomogeneity.sh"
+  cp "${LAUNCHER}" "${DESKTOP_DIR}/Timbral_Instrumental_Homogeneity.sh"
+  chmod +x "${DESKTOP_DIR}/Timbral_Instrumental_Homogeneity.sh"
 fi
 
 echo "Done. Run: ${LAUNCHER}"

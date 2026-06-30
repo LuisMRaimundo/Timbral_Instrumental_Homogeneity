@@ -1,3 +1,3 @@
-"""Orchomogeneity — H_TI score-derived symbolic timbral–instrumental homogeneity analyser."""
+"""Timbral_Instrumental_Homogeneity — H_TI score-derived symbolic timbral–instrumental homogeneity analyser."""
 
 __version__ = "2.0.0"

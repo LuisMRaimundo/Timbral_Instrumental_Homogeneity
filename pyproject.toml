@@ -3,9 +3,9 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "homogeneity-analyser"
+name = "timbral-instrumental-homogeneity"
 version = "2.0.0"
-description = "Orchomogeneity — H-TI score-derived symbolic timbral–instrumental homogeneity analyser (MusicXML/MXL/MIDI; not audio analysis)."
+description = "Timbral_Instrumental_Homogeneity — H-TI score-derived symbolic timbral–instrumental homogeneity analyser (MusicXML/MXL/MIDI; not audio analysis)."
 keywords = [
     "musicology",
     "orchestration",
@@ -42,6 +42,7 @@ dev = [
 ]
 
 [project.scripts]
+timbral-instrumental-homogeneity = "homogeneity_analyser.ui.gradio_app:main"
 homogeneity-analyser = "homogeneity_analyser.ui.gradio_app:main"
 
 [tool.setuptools.packages.find]

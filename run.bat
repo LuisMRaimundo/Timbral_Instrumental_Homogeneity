@@ -10,7 +10,7 @@ if not exist "pyproject.toml" (
 
 set "PYTHONPATH=%CD%\src"
 if not defined HOMOGENEITY_CACHE_DIR (
-    set "HOMOGENEITY_CACHE_DIR=%LOCALAPPDATA%\Orchomogeneity\exports"
+    set "HOMOGENEITY_CACHE_DIR=%LOCALAPPDATA%\Timbral_Instrumental_Homogeneity\exports"
 )
 if not exist "%HOMOGENEITY_CACHE_DIR%" mkdir "%HOMOGENEITY_CACHE_DIR%" 2>nul
 

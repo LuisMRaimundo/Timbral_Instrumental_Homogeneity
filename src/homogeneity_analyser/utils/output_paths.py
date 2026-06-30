@@ -30,7 +30,7 @@ def gradio_allowed_paths() -> list[str]:
     Directories Gradio may read/write for File/Download outputs.
 
     Required when ``HOMOGENEITY_CACHE_DIR`` points outside cwd and system temp
-    (e.g. ``%LOCALAPPDATA%\\Orchomogeneity\\exports`` from ``run.bat``).
+    (e.g. ``%LOCALAPPDATA%\\Timbral_Instrumental_Homogeneity\\exports`` from ``run.bat``).
     """
     seen: set[str] = set()
     out: list[str] = []
@@ -38,7 +38,7 @@ def gradio_allowed_paths() -> list[str]:
         export_directory(),
         Path.cwd(),
         Path(tempfile.gettempdir()),
-        Path(os.environ.get("LOCALAPPDATA", "")) / "Orchomogeneity" / "exports",
+        Path(os.environ.get("LOCALAPPDATA", "")) / "Timbral_Instrumental_Homogeneity" / "exports",
         Path(os.environ.get("LOCALAPPDATA", "")) / "HomogeneityAnalyser" / "exports",
     ):
         s = str(raw)

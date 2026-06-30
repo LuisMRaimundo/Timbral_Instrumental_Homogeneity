@@ -1,4 +1,4 @@
-# macOS installers — Orchomogeneity
+# macOS installers — Timbral_Instrumental_Homogeneity
 
 ## End users
 
@@ -8,7 +8,7 @@
    chmod +x install-easy.sh
    ./install-easy.sh
    ```
-3. Launch **Orchomogeneity** from `~/Desktop/Orchomogeneity.command` or `~/Applications/Orchomogeneity/Launch-Orchomogeneity.command`.
+3. Launch **Timbral_Instrumental_Homogeneity** from `~/Desktop/Timbral_Instrumental_Homogeneity.command` or `~/Applications/Timbral_Instrumental_Homogeneity/Launch-Timbral_Instrumental_Homogeneity.command`.
 
 First run needs **Internet** and may take **10–25 minutes**.
 

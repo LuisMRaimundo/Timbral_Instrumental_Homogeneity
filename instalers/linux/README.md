@@ -1,4 +1,4 @@
-# Linux installers — Orchomogeneity
+# Linux installers — Timbral_Instrumental_Homogeneity
 
 ## End users
 
@@ -8,7 +8,7 @@ chmod +x install-easy.sh
 ./install-easy.sh
 ```
 
-Then run `~/.local/share/Orchomogeneity/launch-orchomogeneity.sh` or `~/Desktop/Orchomogeneity.sh`.
+Then run `~/.local/share/Timbral_Instrumental_Homogeneity/launch-timbral-instrumental-homogeneity.sh` or `~/Desktop/Timbral_Instrumental_Homogeneity.sh`.
 
 Requires **Python 3.10 or 3.11** and **unzip** / **curl** (usually preinstalled).
 

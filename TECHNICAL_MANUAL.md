@@ -1,4 +1,4 @@
-# Technical Manual — Orchomogeneity Analyser
+# Technical Manual — Timbral_Instrumental_Homogeneity
 
 This manual describes the **score-centred** pipeline: **$H_{\mathrm{TI},\mathrm{core}}(t)$** (structural symbolic homogeneity) and **notated dynamic conditioning** (interpretive layer). The headline export series **H_TI(t)** is numerically identical to **$H_{\mathrm{TI},\mathrm{core}}(t)$** (column **`H_TI`** / **`H_TI_core`**). Inputs are **MusicXML / MXL / MIDI** semantics only. The software does **not** load audio (**not measured audio**), perform **FFT** on recordings, estimate **SPL**, or claim **measured acoustic or perceptual timbral fusion**.
 

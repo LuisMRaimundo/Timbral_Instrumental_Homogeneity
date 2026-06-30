@@ -1,4 +1,4 @@
-"""Paths and download URLs for Orchomogeneity autonomous installers."""
+"""Paths and download URLs for Timbral_Instrumental_Homogeneity autonomous installers."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ STAMP_FILE = RUNTIME_DIR / ".install_ok"
 
 GRADIO_HOST = "127.0.0.1"
 GRADIO_PORT_START = 7860
-GITHUB_REPO = "https://github.com/LuisMRaimundo/Orchomogeneity_Analyser"
-GITHUB_ZIP = "https://github.com/LuisMRaimundo/Orchomogeneity_Analyser/archive/refs/heads/main.zip"
+GITHUB_REPO = "https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity"
+GITHUB_ZIP = "https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity/archive/refs/heads/main.zip"
 
 
 def platform_key() -> str:

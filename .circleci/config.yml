@@ -1,101 +1,201 @@
-version: 2.1
-
-jobs:
-  tests:
-    parameters:
-      python-version:
-        type: string
-
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-
-    working_directory: ~/project
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-            - v2-orchomogeneity-pip-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
-            - v2-orchomogeneity-pip-<< parameters.python-version >>-
-
-      - run:
-          name: Upgrade packaging tools
-          command: |
-            python -m pip install --upgrade pip setuptools wheel
-
-      - run:
-          name: Install iav dependency (Interval-Homogeneity-Analyser)
-          command: |
-            python -m pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
-
-      - run:
-          name: Install package with dev dependencies
-          command: |
-            python -m pip install -e ".[dev]"
-
-      - save_cache:
-          key: v2-orchomogeneity-pip-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
-          paths:
-            - ~/.cache/pip
-
-      - run:
-          name: Repository safety check
-          command: |
-            python - \<<'PY'
-            from pathlib import Path
-
-            required = [
-                "pyproject.toml",
-                "src/homogeneity_analyser",
-                "tests",
-            ]
-
-            missing = [p for p in required if not Path(p).exists()]
-            if missing:
-                raise SystemExit(f"Missing required repository paths: {missing}")
-
-            forbidden = [
-                "SoundSpectrAnalyse",
-                "proc_audio.py",
-                "compile_metrics.py",
-                "density.py",
-            ]
-
-            present_forbidden = [p for p in forbidden if Path(p).exists()]
-            if present_forbidden:
-                raise SystemExit(
-                    "This does not look like Orchomogeneity_Analyser. "
-                    f"Unexpected SoundSpectrAnalyse artefacts found: {present_forbidden}"
-                )
-
-            print("Repository safety check passed.")
-            PY
-
-      - run:
-          name: Run tests
-          command: |
-            python -m pytest tests -q
-
-      - run:
-          name: Run coverage
-          command: |
-            python -m pytest tests -q --cov=homogeneity_analyser --cov-report=term-missing
-
-      - store_test_results:
-          path: test-results
-
-      - store_artifacts:
-          path: htmlcov
-          destination: htmlcov
-
-workflows:
-  validate:
-    jobs:
-      - tests:
-          matrix:
-            parameters:
-              python-version:
-                - "3.10"
-                - "3.11"
-
+version: 2.1
+
+
+
+jobs:
+
+  tests:
+
+    parameters:
+
+      python-version:
+
+        type: string
+
+
+
+    docker:
+
+      - image: cimg/python:<< parameters.python-version >>
+
+
+
+    working_directory: ~/project
+
+
+
+    steps:
+
+      - checkout
+
+
+
+      - restore_cache:
+
+          keys:
+
+            - v2-timbral-instrumental-homogeneity-pip-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+
+            - v2-timbral-instrumental-homogeneity-pip-<< parameters.python-version >>-
+
+
+
+      - run:
+
+          name: Upgrade packaging tools
+
+          command: |
+
+            python -m pip install --upgrade pip setuptools wheel
+
+
+
+      - run:
+
+          name: Install iav dependency (Interval-Homogeneity-Analyser)
+
+          command: |
+
+            python -m pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
+
+
+
+      - run:
+
+          name: Install package with dev dependencies
+
+          command: |
+
+            python -m pip install -e ".[dev]"
+
+
+
+      - save_cache:
+
+          key: v2-timbral-instrumental-homogeneity-pip-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+
+          paths:
+
+            - ~/.cache/pip
+
+
+
+      - run:
+
+          name: Repository safety check
+
+          command: |
+
+            python - \<<'PY'
+
+            from pathlib import Path
+
+
+
+            required = [
+
+                "pyproject.toml",
+
+                "src/homogeneity_analyser",
+
+                "tests",
+
+            ]
+
+
+
+            missing = [p for p in required if not Path(p).exists()]
+
+            if missing:
+
+                raise SystemExit(f"Missing required repository paths: {missing}")
+
+
+
+            forbidden = [
+
+                "Spectral_Analyser",
+
+                "proc_audio.py",
+
+                "compile_metrics.py",
+
+                "density.py",
+
+            ]
+
+
+
+            present_forbidden = [p for p in forbidden if Path(p).exists()]
+
+            if present_forbidden:
+
+                raise SystemExit(
+
+                    "This does not look like Timbral_Instrumental_Homogeneity. "
+
+                    f"Unexpected Spectral_Analyser artefacts found: {present_forbidden}"
+
+                )
+
+
+
+            print("Repository safety check passed.")
+
+            PY
+
+
+
+      - run:
+
+          name: Run tests
+
+          command: |
+
+            python -m pytest tests -q
+
+
+
+      - run:
+
+          name: Run coverage
+
+          command: |
+
+            python -m pytest tests -q --cov=homogeneity_analyser --cov-report=term-missing
+
+
+
+      - store_test_results:
+
+          path: test-results
+
+
+
+      - store_artifacts:
+
+          path: htmlcov
+
+          destination: htmlcov
+
+
+
+workflows:
+
+  validate:
+
+    jobs:
+
+      - tests:
+
+          matrix:
+
+            parameters:
+
+              python-version:
+
+                - "3.10"
+
+                - "3.11"
+
+

@@ -1,7 +1,7 @@
 # Current code characteristics report
 
 **Document:** `CURRENT_CODE_CHARACTERISTICS_REPORT.md`  
-**Project:** **Orchomogeneity_Analyser** ([GitHub](https://github.com/LuisMRaimundo/Orchomogeneity_Analyser)) — Python package **`homogeneity-analyser`** (import **`homogeneity_analyser`**)  
+**Project:** **Timbral_Instrumental_Homogeneity** ([GitHub](https://github.com/LuisMRaimundo/Timbral_Instrumental_Homogeneity)) — Python package **`timbral-instrumental-homogeneity`** (legacy: `homogeneity-analyser`; import **`homogeneity_analyser`**)  
 **Audience:** Developers and auditors who want a **single inventory** of how the repository behaves **today**, aligned with the **H_TI-first** product.
 
 **Canonical user docs:** `README.md`, `QUICK_REFERENCE.md`, `TECHNICAL_MANUAL.md` (not duplicated here).
@@ -55,7 +55,7 @@
 
 | Item | Detail |
 |------|--------|
-| Entry | `homogeneity-analyser` → `homogeneity_analyser.ui.gradio_app:main`; `python -m homogeneity_analyser` |
+| Entry | `timbral-instrumental-homogeneity` → `homogeneity_analyser.ui.gradio_app:main` (legacy: `homogeneity-analyser`); `python -m homogeneity_analyser` |
 | Layout | `ui/gradio_app.py` — **H_TI_core** plot; timbral-affinity relief controls; accordion **Optional symbolic interval-class / blend-potential diagnostics**; accordion **Acoustic-aligned symbolic timbral-affinity proxy**; accordion **Symbolic inspection** |
 | Run path | `ui/callbacks_hti.py` — **`run_hti_app`** (facade: `callbacks.run_hti_app`) → `run_symbolic_ti_homogeneity_analysis` → CSV/JSON/plot paths |
 | Copy | `ui/components.py` — `METRICS_EXPLAINER`, intro markdown |

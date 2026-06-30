@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# Shared helpers for Orchomogeneity Windows one-click install
+# Shared helpers for Timbral_Instrumental_Homogeneity Windows one-click install
 
 function Write-InstallLog {
     param([string]$Message, [string]$Level = 'INFO')
@@ -27,7 +27,7 @@ function Test-PythonVersionOk {
         $out = & $PythonExe -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>$null
         if ($out -match '^3\.(\d+)$') {
             $minor = [int]$Matches[1]
-            $cfg = $script:OrchomogeneityConfig
+            $cfg = $script:TimbralInstrumentalHomogeneityConfig
             return ($minor -ge $cfg.PythonMinMinor -and $minor -le $cfg.PythonMaxMinor)
         }
     } catch { }
@@ -126,7 +126,7 @@ function Test-PythonInstallerExitOk {
 }
 
 function Install-Python311 {
-    $cfg = $script:OrchomogeneityConfig
+    $cfg = $script:TimbralInstrumentalHomogeneityConfig
     Write-InstallLog "Python 3.10-3.11 not found. Installing Python $($cfg.PythonVersion)..."
 
     try {
@@ -202,7 +202,7 @@ function Initialize-AppSource {
         [string]$DestAppDir,
         [switch]$ForceRefresh
     )
-    $cfg = $script:OrchomogeneityConfig
+    $cfg = $script:TimbralInstrumentalHomogeneityConfig
     $marker = Join-Path $DestAppDir 'pyproject.toml'
     if ((Test-Path $marker) -and -not $ForceRefresh) {
         Write-InstallLog "Application source already present: $DestAppDir"
@@ -220,7 +220,7 @@ function Initialize-AppSource {
     if (Test-Path $DestAppDir) {
         Remove-Item -LiteralPath $DestAppDir -Recurse -Force
     }
-    $tmp = Join-Path $env:TEMP ("orchomogeneity-src-" + [guid]::NewGuid().ToString('N'))
+    $tmp = Join-Path $env:TEMP ("timbral-instrumental-homogeneity-src-" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     $zipPath = Join-Path $tmp 'repo.zip'
     Write-InstallLog "Downloading from $($cfg.GitHubRepoUrl)..."
@@ -262,7 +262,7 @@ function Initialize-PythonVenv {
     if ($LASTEXITCODE -ne 0) { throw 'pip install -r requirements-install.txt failed.' }
     $pyproject = Join-Path $AppDir 'pyproject.toml'
     if (Test-Path $pyproject) {
-        Write-InstallLog 'Installing Orchomogeneity package (editable)...'
+        Write-InstallLog 'Installing Timbral_Instrumental_Homogeneity package (editable)...'
         & $venvPy -m pip install -e $AppDir
         if ($LASTEXITCODE -ne 0) { Write-InstallLog 'pip install -e failed; app may still run.' 'WARN' }
     }
@@ -283,8 +283,8 @@ function Register-Shortcuts {
         [string]$AppDir,
         [string]$VenvDir
     )
-    $cfg = $script:OrchomogeneityConfig
-    $launchBat = Join-Path $InstallRoot 'Launch-Orchomogeneity.bat'
+    $cfg = $script:TimbralInstrumentalHomogeneityConfig
+    $launchBat = Join-Path $InstallRoot 'Launch-Timbral_Instrumental_Homogeneity.bat'
     $exe = Join-Path $VenvDir "Scripts\$($cfg.LaunchScript).exe"
     if (-not (Test-Path $exe)) {
         $exe = Join-Path $VenvDir 'Scripts\python.exe'
@@ -316,7 +316,7 @@ if errorlevel 1 pause
         $sc = $wsh.CreateShortcut($lnk)
         $sc.TargetPath = $launchBat
         $sc.WorkingDirectory = $InstallRoot
-        $sc.Description = 'Orchomogeneity H-TI analyser (Gradio)'
+        $sc.Description = 'Timbral_Instrumental_Homogeneity H-TI analyser (Gradio)'
         $sc.Save()
     }
     Write-InstallLog 'Shortcuts created (Desktop and Start menu).'

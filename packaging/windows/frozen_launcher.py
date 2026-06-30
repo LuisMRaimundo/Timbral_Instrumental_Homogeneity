@@ -58,7 +58,7 @@ def main() -> None:
     preferred = int((os.environ.get("GRADIO_SERVER_PORT") or "7860").strip() or "7860")
     port = _resolve_listen_port(host, preferred)
     os.environ["GRADIO_SERVER_PORT"] = str(port)
-    print(f"Orchomogeneity Analyser (frozen): http://{host}:{port}/ (browser will open if supported)")
+    print(f"Timbral_Instrumental_Homogeneity (frozen): http://{host}:{port}/ (browser will open if supported)")
     # Same Blocks entry as dev: ``python -m homogeneity_analyser`` → ``build_demo()`` (H_TI + Symbolic inspection).
     build_demo().launch(
         **gradio_launch_kwargs(
