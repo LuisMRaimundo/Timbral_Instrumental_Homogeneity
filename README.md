@@ -186,14 +186,14 @@ The Symbolic inspection report shows what the parser actually found in the uploa
 ## Installation and running
 
 ```bash
-pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
+pip install "git+https://github.com/LuisMRaimundo/Interval_Homogeneity.git"
 pip install -e ".[dev]"
 python -m homogeneity_analyser
 # or, after install:
 timbral-instrumental-homogeneity
 ```
 
-**Runtime dependency:** `homogeneity_analyser.cardinality` imports **`iav.vertical_cardinality`** from [Interval-Homogeneity-Analyser](https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser). CI installs it automatically; local editable installs need the step above (or an editable install of that repository).
+**Runtime dependency:** `homogeneity_analyser.cardinality` imports **`iav.vertical_cardinality`** from [Interval_Homogeneity](https://github.com/LuisMRaimundo/Interval_Homogeneity). CI installs it automatically; local editable installs need the step above (or an editable install of that repository).
 
 ---
 
@@ -202,7 +202,7 @@ timbral-instrumental-homogeneity
 **CI:** [CircleCI](https://app.circleci.com/pipelines/github/LuisMRaimundo/Timbral_Instrumental_Homogeneity) runs **`tests-3.10`** and **`tests-3.11`**; [GitHub Actions](.github/workflows/tests.yml) runs **`pytest -m "not legacy"`**. Both install **`iav`** before `pip install -e ".[dev]"`. CircleCI **ruff** is temporarily disabled pending a lint-cleanup PR.
 
 ```bash
-pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
+pip install "git+https://github.com/LuisMRaimundo/Interval_Homogeneity.git"
 pip install -e ".[dev]"
 pytest tests -q                  # full suite (~975 tests)
 pytest -m "not legacy" -q      # H_TI / product path (day-to-day)
