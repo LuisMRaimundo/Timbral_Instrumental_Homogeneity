@@ -6,13 +6,13 @@ This folder contains **draft** assets for a **one-click Windows installer** for 
 |------|---------|
 | `launcher.py` | **Dev launcher** (Python on PATH): binds **127.0.0.1** only, first free port from **7860**, `inbrowser=True`. Run: `python packaging/windows/launcher.py` with `PYTHONPATH=src` (see file docstring). |
 | `frozen_launcher.py` | PyInstaller entry: cache dir, **`127.0.0.1`** bind, **7860** if free else next free port, then `build_demo().launch(...)` (same **H_TI** + **Symbolic inspection** UI as `python -m homogeneity_analyser`). |
-| `homogeneity_analyser_win.spec` | PyInstaller **onedir** spec (`HomogeneityAnalyser.exe` + `HomogeneityAnalyser` folder). |
+| `homogeneity_analyser_win.spec` | PyInstaller **onedir** spec (`TimbralInstrumentalHomogeneity.exe` + `TimbralInstrumentalHomogeneity` folder). |
 | `build_windows.ps1` | **PyInstaller only** (no Inno): calls `build_pyinstaller.ps1 -Run` (optional `-Clean`). |
 | `build_pyinstaller.ps1` | Invokes PyInstaller from the **repository root** (use `-Run`; default is checks only). |
-| `build_inno.ps1` | Runs **Inno Setup 6** `ISCC.exe` against `HomogeneityAnalyser.iss` (use `-Run`). |
-| `HomogeneityAnalyser.iss` | **Draft** installer script — edit version, publisher, license, and `[Run]` before release. |
+| `build_inno.ps1` | Runs **Inno Setup 6** `ISCC.exe` against `TimbralInstrumentalHomogeneity.iss` (use `-Run`). |
+| `TimbralInstrumentalHomogeneity.iss` | **Draft** installer script — edit version, publisher, license, and `[Run]` before release. |
 | `smoke_test_frozen.ps1` | Starts the frozen exe (working directory = exe folder), expects **HTTP 200** and H_TI markers in the HTML shell. |
-| `StartHomogeneityAnalyser.cmd` | Optional double-click helper; copy next to `HomogeneityAnalyser.exe` in the onedir output. |
+| `StartTimbralInstrumentalHomogeneity.cmd` | Optional double-click helper; copy next to `TimbralInstrumentalHomogeneity.exe` in the onedir output. |
 
 ---
 
@@ -42,7 +42,7 @@ From the **repository root**:
 
 ```powershell
 .\packaging\windows\build_windows.ps1              # PyInstaller onedir only (same as build_pyinstaller.ps1 -Run)
-.\packaging\windows\build_windows.ps1 -Clean     # wipe dist\HomogeneityAnalyser + build\pyinstaller first
+.\packaging\windows\build_windows.ps1 -Clean     # wipe dist\TimbralInstrumentalHomogeneity + build\pyinstaller first
 
 .\packaging\windows\build_pyinstaller.ps1          # dry run: checks paths
 .\packaging\windows\build_pyinstaller.ps1 -Run     # build
@@ -53,11 +53,11 @@ If PyInstaller errors on **`enum34`**, remove it from the build Python: `python 
 
 **Outputs:**
 
-- **Build cache / intermediate (gitignored):** `dist\HomogeneityAnalyser\` — PyInstaller `COLLECT` onedir (used as input to Inno).
-- **Distribution drop (ship to end users):** `Homogeneity_analiser_install\` at the repository root:
-  - After **`build_pyinstaller.ps1 -Run`:** `Homogeneity_analiser_install\portable\` is refreshed (mirror of the onedir app + short `README_PORTABLE.txt`). No `__pycache__`, tests, or sources are copied there.
-  - After **`build_inno.ps1 -Run`:** `Homogeneity_analiser_install\HomogeneityAnalyserSetup.exe` (installer).
-  - **`Homogeneity_analiser_install\README_INSTALLATION.txt`** — non-technical instructions (tracked in git; edit there for distributors).
+- **Build cache / intermediate (gitignored):** `dist\TimbralInstrumentalHomogeneity\` — PyInstaller `COLLECT` onedir (used as input to Inno).
+- **Distribution drop (ship to end users):** `Homogeneity_analyser_install\` at the repository root:
+  - After **`build_pyinstaller.ps1 -Run`:** `Homogeneity_analyser_install\portable\` is refreshed (mirror of the onedir app + short `README_PORTABLE.txt`). No `__pycache__`, tests, or sources are copied there.
+  - After **`build_inno.ps1 -Run`:** `Homogeneity_analyser_install\TimbralInstrumentalHomogeneitySetup.exe` (installer).
+  - **`Homogeneity_analyser_install\README_INSTALLATION.txt`** — non-technical instructions (tracked in git; edit there for distributors).
 
 ### First-build troubleshooting
 
@@ -77,7 +77,7 @@ After a successful onedir build:
 .\packaging\windows\smoke_test_frozen.ps1
 ```
 
-Optional: `-ExePath "D:\path\to\HomogeneityAnalyser.exe"` and `-Port 7860`.
+Optional: `-ExePath "D:\path\to\TimbralInstrumentalHomogeneity.exe"` and `-Port 7860`.
 
 The script launches the exe, polls `http://127.0.0.1:<port>/`, then **terminates** the process. Adjust `TimeoutSeconds` if cold start is slow on low-end machines.
 
@@ -85,32 +85,32 @@ The script launches the exe, polls `http://127.0.0.1:<port>/`, then **terminates
 
 ## Build the installer (Inno Setup)
 
-1. Ensure `dist\HomogeneityAnalyser\` exists (PyInstaller step).
-2. Edit `HomogeneityAnalyser.iss`: `AppVersion`, `AppPublisher`, `AppId` (generate a **unique** GUID for your product line), license text / `LicenseFile` if required.
+1. Ensure `dist\TimbralInstrumentalHomogeneity\` exists (PyInstaller step).
+2. Edit `TimbralInstrumentalHomogeneity.iss`: `AppVersion`, `AppPublisher`, `AppId` (generate a **unique** GUID for your product line), license text / `LicenseFile` if required.
 3. Compile:
 
    ```powershell
    .\packaging\windows\build_inno.ps1 -Run
    ```
 
-**Output:** `Homogeneity_analiser_install\HomogeneityAnalyserSetup.exe` (same folder as the user-facing README; not under `dist\`).
+**Output:** `Homogeneity_analyser_install\TimbralInstrumentalHomogeneitySetup.exe` (same folder as the user-facing README; not under `dist\`).
 
 ---
 
 ## End-user experience (target)
 
 1. Run the installer (per-user install uses `PrivilegesRequired=lowest` in the draft `.iss`).
-2. Start **Homogeneity Analyser** from the Start Menu shortcut (or run `HomogeneityAnalyser.exe` in the install folder).
+2. Start **Timbral Instrumental Homogeneity** from the Start Menu shortcut (or run `TimbralInstrumentalHomogeneity.exe` in the install folder).
 3. A **console window** stays open while the server runs (PyInstaller `console=True` in the spec — switch to `console=False` + `debug=False` only after verifying no silent failures).
 4. Open the URL printed by Gradio (default **http://127.0.0.1:7860**). Allow through **Windows Firewall** if prompted for local network (loopback usually unaffected).
 
-Exports (CSV/PNG/JSON) go to `%LOCALAPPDATA%\HomogeneityAnalyser\exports` unless the user sets `HOMOGENEITY_CACHE_DIR`.
+Exports (CSV/PNG/JSON) go to `%LOCALAPPDATA%\TimbralInstrumentalHomogeneity\exports` unless the user sets `HOMOGENEITY_CACHE_DIR`.
 
 ---
 
 ## Code signing & release hygiene (not automated here)
 
-- Sign `HomogeneityAnalyser.exe` and the installer with an **Authenticode** certificate to reduce SmartScreen warnings.
+- Sign `TimbralInstrumentalHomogeneity.exe` and the installer with an **Authenticode** certificate to reduce SmartScreen warnings.
 - Run **smoke_test_frozen.ps1** on a **clean VM** without Python before publishing.
 - Keep installer **version** in sync with `pyproject.toml` `[project] version`.
 

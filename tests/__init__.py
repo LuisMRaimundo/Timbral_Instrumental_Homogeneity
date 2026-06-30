@@ -1,1 +1,1 @@
-# Tests for Homogeneity Analyser
+# Tests for Timbral Instrumental Homogeneity

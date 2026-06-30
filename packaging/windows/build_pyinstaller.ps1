@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Build the onedir PyInstaller bundle (Homogeneity Analyser).
+    Build the onedir PyInstaller bundle (Timbral Instrumental Homogeneity).
 
 .DESCRIPTION
     Run from the repository root with a dev venv that has the project + pyinstaller installed:
@@ -14,11 +14,11 @@
     If set, invokes pyinstaller with the bundled spec.
 
 .PARAMETER Clean
-    If set with -Run, removes build/pyinstaller and dist/HomogeneityAnalyser under repo root first.
+    If set with -Run, removes build/pyinstaller and dist/TimbralInstrumentalHomogeneity under repo root first.
 
 .NOTES
     After a successful build, refreshes:
-      Homogeneity_analiser_install\portable\
+      Homogeneity_analyser_install\portable\
     with the onedir application only (no tests, caches, or repo sources).
     PyInstaller intermediates remain under build\ and dist\ (gitignored).
 #>
@@ -29,7 +29,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path (Join-Path $PSScriptRoot "..") "..")
-$InstallRoot = Join-Path $RepoRoot "Homogeneity_analiser_install"
+$InstallRoot = Join-Path $RepoRoot "Homogeneity_analyser_install"
 Set-Location $RepoRoot
 
 $Spec = Join-Path $RepoRoot "packaging\windows\homogeneity_analyser_win.spec"
@@ -48,7 +48,7 @@ if (-not $pyi) {
 }
 
 $buildDir = Join-Path $RepoRoot "build\pyinstaller"
-$distDir = Join-Path $RepoRoot "dist\HomogeneityAnalyser"
+$distDir = Join-Path $RepoRoot "dist\TimbralInstrumentalHomogeneity"
 
 if ($Clean -and $Run) {
     if (Test-Path $buildDir) { Remove-Item -Recurse -Force $buildDir }
@@ -64,7 +64,7 @@ if (-not $Run) {
 if ($LASTEXITCODE -ne 0) { throw "pyinstaller failed with exit $LASTEXITCODE" }
 
 Write-Host "Output (onedir): $distDir"
-Write-Host "Executable: $(Join-Path $distDir 'HomogeneityAnalyser.exe')"
+Write-Host "Executable: $(Join-Path $distDir 'TimbralInstrumentalHomogeneity.exe')"
 
 # --- Distribution drop folder (user-facing only; not build cache) ---
 New-Item -ItemType Directory -Force $InstallRoot | Out-Null
@@ -83,4 +83,4 @@ if ($rc -ge 8) {
 Remove-Item -Force $robolog -ErrorAction SilentlyContinue
 Copy-Item -Force (Join-Path $PSScriptRoot "portable_README_FOR_DIST.txt") (Join-Path $portableOut "README_PORTABLE.txt")
 Write-Host "Portable bundle: $portableOut"
-Write-Host "Installer output (run build_inno.ps1 -Run): $(Join-Path $InstallRoot 'HomogeneityAnalyserSetup.exe')"
+Write-Host "Installer output (run build_inno.ps1 -Run): $(Join-Path $InstallRoot 'TimbralInstrumentalHomogeneitySetup.exe')"

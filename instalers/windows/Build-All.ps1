@@ -25,4 +25,4 @@ finally {
 }
 
 Write-Host ''
-Write-Host 'Distribute dist\HomogeneityAnalyser\ via GitHub Releases (not git).' -ForegroundColor Yellow
+Write-Host 'Distribute dist\TimbralInstrumentalHomogeneity\ via GitHub Releases (not git).' -ForegroundColor Yellow

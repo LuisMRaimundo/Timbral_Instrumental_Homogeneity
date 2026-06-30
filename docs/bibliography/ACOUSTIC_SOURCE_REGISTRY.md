@@ -28,7 +28,7 @@ Authoritative structured entries: **`src/homogeneity_analyser/acoustic_profiles/
 | `discrimination_musical_instrument_sounds_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Discrimination of musical instrument sounds (exact title per document)* | pending page verification | psychoacoustics | low |
 | `fixed_average_spectra_orchestral_instrument_tones_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Fixed Average Spectra of Orchestral Instrument Tones* | pending page verification | measured_acoustic_data | medium |
 | `fletcher_rossing_1998_physics_of_musical_instruments` | Fletcher, Neville H.; Rossing, Thomas D. (1998). *The Physics of Musical Instruments* | pending page verification | theoretical_acoustics | high |
-| `homogeneity_analyser_timbral_fusion_evidence_stub` | Homogeneity Analyser project (2026). *Internal evidence map for symbolic timbral and planned fusion layers* | N/A (project documentation; no private PDF) | project_specific | medium |
+| `homogeneity_analyser_timbral_fusion_evidence_stub` | Timbral Instrumental Homogeneity project (2026). *Internal evidence map for symbolic timbral and planned fusion layers* | N/A (project documentation; no private PDF) | project_specific | medium |
 | `index_relative_quality_musical_instruments_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Index for the Relative Quality among Musical Instruments* | pending page verification | instrument_classification | low |
 | `meyer_acoustics_performance_of_music` | Meyer, Jürgen (2009). *Acoustics and the Performance of Music* | pending page verification | orchestration_performance_acoustics | medium |
 | `musical_instrument_classification_higher_order_spectra_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Musical instrument classification using higher order spectra* | pending page verification | instrument_classification | medium |
@@ -37,7 +37,7 @@ Authoritative structured entries: **`src/homogeneity_analyser/acoustic_profiles/
 | `relevance_spectral_features_instrument_classification_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *On the relevance of spectral features for instrument classification* | pending page verification | spectral_features | medium |
 | `rossing_2010_science_of_string_instruments` | Rossing, Thomas D. (editor); multiple contributors (2010). *The Science of String Instruments* | pending page verification | musical_instrument_acoustics | high |
 | `rossing_et_al_science_of_sound_pearson` | Rossing, Thomas D.; Wheeler, Paul A.; Fahy, Frank (editions vary) (2014). *Science of Sound (Pearson international edition; title varies by printing)* | pending page verification | psychoacoustics | medium |
-| `same_family_relief_rationale_sources` | Homogeneity Analyser project (registry grouping) (2026). *Bibliographic cluster for H_notated_fusion_potential same-family relief calibrat* | N/A (metadata group; consult individual source_key rows cited in docs/archive_legacy/model_audit/H_NOTATED_FUSION_POTENT | project_specific | medium |
+| `same_family_relief_rationale_sources` | Timbral Instrumental Homogeneity project (registry grouping) (2026). *Bibliographic cluster for H_notated_fusion_potential same-family relief calibrat* | N/A (metadata group; consult individual source_key rows cited in docs/archive_legacy/model_audit/H_NOTATED_FUSION_POTENT | project_specific | medium |
 | `science_percussion_instruments_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Science of Percussion Instruments* | pending page verification | musical_instrument_acoustics | medium |
 | `sivian_dunn_white_1931_absolute_amplitudes_spectra` | Sivian, L. J.; Dunn, H. K.; White, S. D. (1931). *Absolute Amplitudes and Spectra of Certain Musical Instruments and Orchestras* | 330-371 (journal pagination; verify scan numbering before citing as PDF page numbers) | measured_acoustic_data | high |
 | `sound_power_timbre_dynamic_strength_orchestral_pending` | *(redacted in public docs; see canonical JSON for maintainer notes)* (n.d.). *Sound power and timbre as cues for the dynamic strength of orchestral instrument* | pending page verification | orchestration_performance_acoustics | medium |
@@ -150,7 +150,7 @@ Authoritative structured entries: **`src/homogeneity_analyser/acoustic_profiles/
 
 ### `homogeneity_analyser_timbral_fusion_evidence_stub`
 
-- **Authors:** Homogeneity Analyser project
+- **Authors:** Timbral Instrumental Homogeneity project
 - **Year:** 2026
 - **Title:** Internal evidence map for symbolic timbral and planned fusion layers
 - **Publication or book:** Project documentation (this repository)
@@ -260,7 +260,7 @@ Authoritative structured entries: **`src/homogeneity_analyser/acoustic_profiles/
 
 ### `same_family_relief_rationale_sources`
 
-- **Authors:** Homogeneity Analyser project (registry grouping)
+- **Authors:** Timbral Instrumental Homogeneity project (registry grouping)
 - **Year:** 2026
 - **Title:** Bibliographic cluster for H_notated_fusion_potential same-family relief calibration
 - **Publication or book:** Synthetic registry grouping (this repository)

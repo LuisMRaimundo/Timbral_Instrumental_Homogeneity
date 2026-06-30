@@ -54,7 +54,7 @@ def main() -> None:
     _ensure_src_on_path()
     host = "127.0.0.1"
     port = pick_free_port(host=host, start=7860)
-    os.environ.setdefault("HOMOGENEITY_CACHE_DIR", str(Path(os.environ.get("LOCALAPPDATA", "")) / "HomogeneityAnalyser" / "exports"))
+    os.environ.setdefault("HOMOGENEITY_CACHE_DIR", str(Path(os.environ.get("LOCALAPPDATA", "")) / "TimbralInstrumentalHomogeneity" / "exports"))
     Path(os.environ["HOMOGENEITY_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
 
     from homogeneity_analyser.utils.output_paths import cleanup_stale_exports, gradio_launch_kwargs

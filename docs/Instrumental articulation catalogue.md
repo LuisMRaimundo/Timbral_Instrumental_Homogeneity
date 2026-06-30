@@ -1,6 +1,6 @@
 # Instrumental articulation catalogue
 
-Single reference for **canonical instruments**, **taxonomy families / macrofamilies**, **playing-state dimensions** (`TechniqueState`), **direction and articulation parsing** (notation-derived), and **legacy matrix technique labels** used across the Homogeneity Analyser codebase.
+Single reference for **canonical instruments**, **taxonomy families / macrofamilies**, **playing-state dimensions** (`TechniqueState`), **direction and articulation parsing** (notation-derived), and **legacy matrix technique labels** used across the Timbral Instrumental Homogeneity codebase.
 
 **Scope:** MusicXML / music21 symbolic pipeline only — **not** measured audio, **not** PDF semantics.
 

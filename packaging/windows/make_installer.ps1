@@ -7,20 +7,20 @@
     From the repository root:
       .\packaging\windows\make_installer.ps1
 
-    - Removes only prior installer outputs under Homogeneity_analiser_install
-      (e.g. HomogeneityAnalyserSetup.exe), never the repo root or unrelated files.
-    - Runs build_windows.ps1 unless dist\HomogeneityAnalyser\HomogeneityAnalyser.exe
+    - Removes only prior installer outputs under Homogeneity_analyser_install
+      (e.g. TimbralInstrumentalHomogeneitySetup.exe), never the repo root or unrelated files.
+    - Runs build_windows.ps1 unless dist\TimbralInstrumentalHomogeneity\TimbralInstrumentalHomogeneity.exe
       already exists and -ForceBuild was not specified.
-    - Runs Inno Setup ISCC.exe on HomogeneityAnalyser.iss (output is written by Inno
-      to Homogeneity_analiser_install\HomogeneityAnalyserSetup.exe).
+    - Runs Inno Setup ISCC.exe on TimbralInstrumentalHomogeneity.iss (output is written by Inno
+      to Homogeneity_analyser_install\TimbralInstrumentalHomogeneitySetup.exe).
     - Copies packaging\windows\README_INSTALLATION.txt to
-      Homogeneity_analiser_install\README_INSTALLATION.txt
+      Homogeneity_analyser_install\README_INSTALLATION.txt
 
 .PARAMETER ForceBuild
     Always run build_windows.ps1 before compiling the installer.
 
 .PARAMETER SkipPyInstaller
-    Never run build_windows.ps1 (fail if dist\HomogeneityAnalyser\HomogeneityAnalyser.exe is missing).
+    Never run build_windows.ps1 (fail if dist\TimbralInstrumentalHomogeneity\TimbralInstrumentalHomogeneity.exe is missing).
 
 .PARAMETER WhatIf
     Print steps only; do not remove files, build, or run ISCC.
@@ -34,12 +34,12 @@ param(
 $ErrorActionPreference = "Stop"
 $here = $PSScriptRoot
 $RepoRoot = Resolve-Path (Join-Path (Join-Path $here "..") "..")
-$InstallRoot = Join-Path $RepoRoot "Homogeneity_analiser_install"
-$DistDir = Join-Path $RepoRoot "dist\HomogeneityAnalyser"
-$DistExe = Join-Path $DistDir "HomogeneityAnalyser.exe"
-$Iss = Join-Path $RepoRoot "packaging\windows\HomogeneityAnalyser.iss"
+$InstallRoot = Join-Path $RepoRoot "Homogeneity_analyser_install"
+$DistDir = Join-Path $RepoRoot "dist\TimbralInstrumentalHomogeneity"
+$DistExe = Join-Path $DistDir "TimbralInstrumentalHomogeneity.exe"
+$Iss = Join-Path $RepoRoot "packaging\windows\TimbralInstrumentalHomogeneity.iss"
 $ReadmeTemplate = Join-Path $here "README_INSTALLATION.txt"
-$SetupExeName = "HomogeneityAnalyserSetup.exe"
+$SetupExeName = "TimbralInstrumentalHomogeneitySetup.exe"
 $SetupExePath = Join-Path $InstallRoot $SetupExeName
 
 function Remove-InstallerOutputsOnly {

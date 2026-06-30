@@ -25,9 +25,9 @@ coverage.xml
 # Gradio local uploads / exports
 .gradio/
 
-# Windows distribution binaries (README in Homogeneity_analiser_install stays committed)
-Homogeneity_analiser_install/HomogeneityAnalyserSetup.exe
-Homogeneity_analiser_install/portable/
+# Windows distribution binaries (README in Homogeneity_analyser_install stays committed)
+Homogeneity_analyser_install/TimbralInstrumentalHomogeneitySetup.exe
+Homogeneity_analyser_install/portable/
 
 # Optional: local env
 .env

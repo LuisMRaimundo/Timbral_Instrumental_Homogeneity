@@ -1,20 +1,20 @@
-; Inno Setup 6 — draft installer for Homogeneity Analyser (Windows, frozen PyInstaller onedir).
-; Prerequisites: run packaging/windows/build_pyinstaller.ps1 -Run so dist\HomogeneityAnalyser exists.
+; Inno Setup 6 — draft installer for Timbral Instrumental Homogeneity (Windows, frozen PyInstaller onedir).
+; Prerequisites: run packaging/windows/build_pyinstaller.ps1 -Run so dist\TimbralInstrumentalHomogeneity exists.
 ; Compile: packaging/windows/build_inno.ps1 -Run  or  packaging/windows/make_installer.ps1
-; Output: ..\..\Homogeneity_analiser_install\HomogeneityAnalyserSetup.exe (distribution folder only).
+; Output: ..\..\Homogeneity_analyser_install\TimbralInstrumentalHomogeneitySetup.exe (distribution folder only).
 ;
 ; Uninstall: standard Inno behaviour only — removes files installed under {app}, Start Menu / Desktop
 ; icons declared in [Icons], and empty directories the uninstaller created. User exports and scores live
-; outside {app} (e.g. %LOCALAPPDATA%\HomogeneityAnalyser\exports) and are not touched.
+; outside {app} (e.g. %LOCALAPPDATA%\TimbralInstrumentalHomogeneity\exports) and are not touched.
 ; Adjust AppVersion / publisher / license before shipping.
 
-#define MyAppName "Homogeneity Analyser"
+#define MyAppName "Timbral Instrumental Homogeneity"
 #define MyAppVersion "2.1.0"
-#define MyAppPublisher "Homogeneity Analyser contributors"
-#define MyAppExeName "HomogeneityAnalyser.exe"
+#define MyAppPublisher "Timbral Instrumental Homogeneity contributors"
+#define MyAppExeName "TimbralInstrumentalHomogeneity.exe"
 
 ; Path relative to this .iss file (packaging/windows/)
-#define PyDistRel "..\..\dist\HomogeneityAnalyser"
+#define PyDistRel "..\..\dist\TimbralInstrumentalHomogeneity"
 
 [Setup]
 AppId={{E7B3C4D5-6F01-4A2B-9C8D-1E2F3A4B5C6D}}
@@ -25,8 +25,8 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=..\..\Homogeneity_analiser_install
-OutputBaseFilename=HomogeneityAnalyserSetup
+OutputDir=..\..\Homogeneity_analyser_install
+OutputBaseFilename=TimbralInstrumentalHomogeneitySetup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -51,7 +51,7 @@ Source: "{#PyDistRel}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\Uninstall Homogeneity Analyser"; Filename: "{uninstallexe}"
+Name: "{group}\Uninstall Timbral Instrumental Homogeneity"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]

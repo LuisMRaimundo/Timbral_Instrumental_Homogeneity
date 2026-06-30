@@ -1,10 +1,10 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Smoke-test the frozen HomogeneityAnalyser.exe (Gradio responds on localhost).
+    Smoke-test the frozen TimbralInstrumentalHomogeneity.exe (Gradio responds on localhost).
 
 .PARAMETER ExePath
-    Full path to HomogeneityAnalyser.exe (default: dist\HomogeneityAnalyser under repo root).
+    Full path to TimbralInstrumentalHomogeneity.exe (default: dist\TimbralInstrumentalHomogeneity under repo root).
 
 .PARAMETER Port
     Must match GRADIO_SERVER_PORT used by frozen_launcher (default 7860).
@@ -22,7 +22,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path (Join-Path $PSScriptRoot "..") "..")
 
 if (-not $ExePath) {
-    $ExePath = Join-Path $RepoRoot "dist\HomogeneityAnalyser\HomogeneityAnalyser.exe"
+    $ExePath = Join-Path $RepoRoot "dist\TimbralInstrumentalHomogeneity\TimbralInstrumentalHomogeneity.exe"
 }
 if (-not (Test-Path $ExePath)) {
     throw "Executable not found: $ExePath"
@@ -45,7 +45,7 @@ try {
             $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5
             if ($r.StatusCode -eq 200) {
                 # Gradio's initial HTML shell may not include the full Blocks title verbatim; require app markers.
-                if ($r.Content -notmatch "Homogeneity Analyser|H_TI|Symbolic inspection|Loaded XML inspection") {
+                if ($r.Content -notmatch "Timbral Instrumental Homogeneity|Timbral_Instrumental_Homogeneity|H_TI|Symbolic inspection|Loaded XML inspection") {
                     throw "HTTP 200 but root page does not look like the H_TI app (wrong server on port $Port?)."
                 }
                 $ok = $true

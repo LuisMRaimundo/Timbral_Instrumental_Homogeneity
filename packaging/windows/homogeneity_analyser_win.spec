@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec for Homogeneity Analyser (Gradio H_TI UI).
+PyInstaller spec for Timbral Instrumental Homogeneity (Gradio H_TI UI).
 
 Build from repository root (see packaging/windows/README.md):
   pyinstaller packaging/windows/homogeneity_analyser_win.spec
@@ -94,7 +94,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="HomogeneityAnalyser",
+    name="TimbralInstrumentalHomogeneity",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -115,5 +115,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="HomogeneityAnalyser",
+    name="TimbralInstrumentalHomogeneity",
 )

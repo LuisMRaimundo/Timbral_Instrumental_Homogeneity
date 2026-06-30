@@ -5,11 +5,11 @@
 
 .DESCRIPTION
     Wraps build_pyinstaller.ps1 -Run. Output:
-      dist\HomogeneityAnalyser\HomogeneityAnalyser.exe
+      dist\TimbralInstrumentalHomogeneity\TimbralInstrumentalHomogeneity.exe
 
     From repository root:
       .\packaging\windows\build_windows.ps1
-      .\packaging\windows\build_windows.ps1 -Clean   # wipe prior build\pyinstaller and dist\HomogeneityAnalyser first
+      .\packaging\windows\build_windows.ps1 -Clean   # wipe prior build\pyinstaller and dist\TimbralInstrumentalHomogeneity first
 
     Prerequisites: pip install -e ".[dev]" ; pip install pyinstaller
 #>

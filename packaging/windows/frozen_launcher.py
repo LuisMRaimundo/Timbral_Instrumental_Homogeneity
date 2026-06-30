@@ -39,7 +39,7 @@ def _configure_runtime() -> None:
         return
     # PyInstaller one-file extracts to sys._MEIPASS; one-dir uses executable folder.
     base = os.environ.get("LOCALAPPDATA", "").strip() or os.path.expanduser("~")
-    cache = os.path.join(base, "HomogeneityAnalyser", "exports")
+    cache = os.path.join(base, "TimbralInstrumentalHomogeneity", "exports")
     os.makedirs(cache, exist_ok=True)
     os.environ.setdefault("HOMOGENEITY_CACHE_DIR", cache)
     # Local-only server; avoids binding 0.0.0.0 without user intent.

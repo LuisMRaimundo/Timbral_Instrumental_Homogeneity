@@ -518,7 +518,7 @@ def build_entries() -> list[dict]:
         ),
         _e(
             "homogeneity_analyser_timbral_fusion_evidence_stub",
-            authors="Homogeneity Analyser project",
+            authors="Timbral Instrumental Homogeneity project",
             year=2026,
             title="Internal evidence map for symbolic timbral and planned fusion layers",
             publication_or_book="Project documentation (this repository)",

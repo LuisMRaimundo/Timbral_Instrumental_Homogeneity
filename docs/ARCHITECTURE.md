@@ -15,13 +15,13 @@ This repository is a **Python package** (`homogeneity_analyser`) under a **src l
 | Plotting | `homogeneity_analyser/plotting/` | Matplotlib / Plotly figures (`time_series.py`, `summaries.py`, `common.py`) |
 | UI | `homogeneity_analyser/ui/` | Gradio app (`gradio_app.py`); **`callbacks.py`** = facade re-exporting **`callbacks_hti.py`** (product), **`callbacks_legacy.py`**, **`callbacks_inspection.py`**, **`callback_helpers.py`**; parameter helpers: **`hti_ui_params.py`**, **`legacy_ui_params.py`**, **`timbral_ui_params.py`**, **`legacy_multimetric_ui_params.py`**, **`callback_result_formatting.py`** (`ui/README.md`); **`validation.py`**, **`components.py`** |
 | Utils | `homogeneity_analyser/utils/` | Export path helpers (`output_paths.py`) |
-| Tests | `tests/` | Pytest + unittest-style modules; **no** `sys.path` hacks — install package first. Requires **`iav`** (Interval-Homogeneity-Analyser) for `cardinality` tests. |
+| Tests | `tests/` | Pytest + unittest-style modules; **no** `sys.path` hacks — install package first. Requires **`iav`** (Intervallic_Homogeneity) for `cardinality` tests. |
 | Validation | `validation/` | Scripted checks against annotated fixtures |
 
 ## Entry points
 
 - **CLI / module:** `python -m homogeneity_analyser` or console script `timbral-instrumental-homogeneity` (legacy: `homogeneity-analyser`; after `pip install -e .`).
-- **Development:** `pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"` then `pip install -e ".[dev]"`, then `pytest`, optional `ruff check .`, `mypy`.
+- **Development:** `pip install "git+https://github.com/LuisMRaimundo/Intervallic_Homogeneity.git"` then `pip install -e ".[dev]"`, then `pytest`, optional `ruff check .`, `mypy`.
 
 ## Static typing (mypy)
 

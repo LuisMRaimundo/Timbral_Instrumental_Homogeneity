@@ -1122,12 +1122,12 @@ Canonical machine-readable records live in **`src/homogeneity_analyser/acoustic_
 
 ### `homogeneity_analyser_timbral_fusion_evidence_stub`
 
-- **Citation line:** Homogeneity Analyser project (2026). *Internal evidence map for symbolic timbral and planned fusion layers*. Project documentation (this repository).
+- **Citation line:** Timbral Instrumental Homogeneity project (2026). *Internal evidence map for symbolic timbral and planned fusion layers*. Project documentation (this repository).
 - **Pages used in this project (`pages_consulted`):** N/A (project documentation; no private PDF)
 - **Evidence type:** `project_specific`; **reliability:** `medium`
 
 ### `same_family_relief_rationale_sources`
 
-- **Citation line:** Homogeneity Analyser project (2026). *Bibliographic cluster for H_notated_fusion_potential same-family relief calibration*. Synthetic registry grouping (this repository).
+- **Citation line:** Timbral Instrumental Homogeneity project (2026). *Bibliographic cluster for H_notated_fusion_potential same-family relief calibration*. Synthetic registry grouping (this repository).
 - **Pages used in this project (`pages_consulted`):** N/A (metadata group; consult individual `source_key` rows and `docs/archive_legacy/model_audit/H_NOTATED_FUSION_POTENTIAL_JUSTIFICATION.md`)
 - **Evidence type:** `project_specific`; **reliability:** `medium`

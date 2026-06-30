@@ -1,7 +1,7 @@
 # Repository cleanup report
 
 **Date:** 2026-05-20  
-**Repository:** Homogeneity_analyser (`homogeneity_analyser`)  
+**Repository:** Timbral_Instrumental_Homogeneity (`homogeneity_analyser`)  
 **Scope:** Documentation hygiene, transient artifacts, archival of point-in-time reports. **No** analytical, numeric, or public export-schema changes.
 
 ---

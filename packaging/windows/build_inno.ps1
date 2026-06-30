@@ -7,9 +7,9 @@
     Requires Inno Setup 6 (ISCC.exe). Default install path:
       ${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe
 
-    Run after build_pyinstaller.ps1 -Run so dist\HomogeneityAnalyser exists.
+    Run after build_pyinstaller.ps1 -Run so dist\TimbralInstrumentalHomogeneity exists.
 
-    Inno writes HomogeneityAnalyserSetup.exe to Homogeneity_analiser_install\ (see .iss).
+    Inno writes TimbralInstrumentalHomogeneitySetup.exe to Homogeneity_analyser_install\ (see .iss).
 
 .PARAMETER Run
     If set, runs ISCC. Otherwise prints the command only.
@@ -18,8 +18,8 @@ param([switch] $Run)
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path (Join-Path $PSScriptRoot "..") "..")
-$InstallRoot = Join-Path $RepoRoot "Homogeneity_analiser_install"
-$Iss = Join-Path $RepoRoot "packaging\windows\HomogeneityAnalyser.iss"
+$InstallRoot = Join-Path $RepoRoot "Homogeneity_analyser_install"
+$Iss = Join-Path $RepoRoot "packaging\windows\TimbralInstrumentalHomogeneity.iss"
 
 $candidates = @(
     "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
@@ -33,7 +33,7 @@ if (-not $iscc) {
     exit 0
 }
 
-$dist = Join-Path $RepoRoot "dist\HomogeneityAnalyser"
+$dist = Join-Path $RepoRoot "dist\TimbralInstrumentalHomogeneity"
 if (-not (Test-Path $dist)) {
     Write-Warning "PyInstaller output not found: $dist`nRun packaging\windows\build_pyinstaller.ps1 -Run first."
 }
@@ -51,7 +51,7 @@ New-Item -ItemType Directory -Force $InstallRoot | Out-Null
 & $iscc @args
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit $LASTEXITCODE" }
 
-$setupExe = Join-Path $InstallRoot "HomogeneityAnalyserSetup.exe"
+$setupExe = Join-Path $InstallRoot "TimbralInstrumentalHomogeneitySetup.exe"
 if (-not (Test-Path $setupExe)) {
     throw "Expected installer not found: $setupExe"
 }

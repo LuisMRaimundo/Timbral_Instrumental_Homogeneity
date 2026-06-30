@@ -39,7 +39,7 @@ def gradio_allowed_paths() -> list[str]:
         Path.cwd(),
         Path(tempfile.gettempdir()),
         Path(os.environ.get("LOCALAPPDATA", "")) / "Timbral_Instrumental_Homogeneity" / "exports",
-        Path(os.environ.get("LOCALAPPDATA", "")) / "HomogeneityAnalyser" / "exports",
+        Path(os.environ.get("LOCALAPPDATA", "")) / "TimbralInstrumentalHomogeneity" / "exports",
     ):
         s = str(raw)
         if not s or s in seen:
