@@ -16,8 +16,8 @@ jobs:
           python-version: '3.11'
       - name: Upgrade packaging tools
         run: python -m pip install --upgrade pip setuptools wheel
-      - name: Install iav dependency (Intervallic_Homogeneity)
-        run: python -m pip install "git+https://github.com/LuisMRaimundo/Intervallic_Homogeneity.git"
+      - name: Install iav dependency (Interval-Homogeneity-Analyser)
+        run: python -m pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
       - name: Install package with dev dependencies
         run: python -m pip install -e ".[dev]"
       - name: Run tests (exclude legacy by default)

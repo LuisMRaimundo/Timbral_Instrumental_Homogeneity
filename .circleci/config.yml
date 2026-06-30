@@ -52,11 +52,11 @@ jobs:
 
       - run:
 
-          name: Install iav dependency (Intervallic_Homogeneity)
+          name: Install iav dependency (Interval-Homogeneity-Analyser)
 
           command: |
 
-            python -m pip install "git+https://github.com/LuisMRaimundo/Intervallic_Homogeneity.git"
+            python -m pip install "git+https://github.com/LuisMRaimundo/Interval-Homogeneity-Analyser.git"
 
 
 
